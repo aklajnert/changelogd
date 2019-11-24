@@ -1,32 +1,33 @@
 import click
 
 
-@click.command()
-@click.pass_context
-def init(_) -> None:
+def command_decorator(func: callable) -> click.core.Command:
+    verbose = click.option("-v", "--verbose", count=True, help="Increase verbosity.")
+    return verbose(click.command()(click.pass_context(func)))
+
+
+@command_decorator
+def init(_: click.core.Context, verbose: int) -> None:
     """Initialize changelogd config."""
-    print("config")
+    print("config", verbose)
 
 
-@click.command()
-@click.pass_context
-def draft(_) -> None:
+@command_decorator
+def draft(_: click.core.Context, verbose: int) -> None:
     """Generate draft changelog."""
-    print("draft")
+    print("draft", verbose)
 
 
-@click.command()
-@click.pass_context
-def release(_) -> None:
+@command_decorator
+def release(_: click.core.Context, verbose: int) -> None:
     """Generate changelog, clear entries and make a new release."""
-    print("release")
+    print("release", verbose)
 
 
-@click.command()
-@click.pass_context
-def entry(_) -> None:
+@command_decorator
+def entry(_: click.core.Context, verbose: int) -> None:
     """Create a new changelog entry."""
-    print("entry")
+    print("entry", verbose)
 
 
 def register_commands(cli: click.core.Group) -> None:
