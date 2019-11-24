@@ -10,9 +10,6 @@ pool:
   vmImage: 'ubuntu-latest'
 strategy:
   matrix:
-    pypy3:
-      python.version: 'pypy36'
-      tox.env: 'pypy3'
     Python36:
       python.version: '3.6'
       tox.env: 'py36'
