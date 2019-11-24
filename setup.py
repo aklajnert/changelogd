@@ -1,15 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """The setup script."""
-
-from setuptools import setup, find_packages
+from setuptools import find_packages
+from setuptools import setup
 
 with open("README.rst") as readme_file:
     readme = readme_file.read()
 
 requirements = [
     "Click>=7.0",
+    "Jinja2>=2.10",
 ]
 
 test_requirements = [
@@ -19,15 +19,9 @@ test_requirements = [
 dev_requirements = [
     "bump2version==0.5.11",
     "wheel==0.33.6",
-    "watchdog==0.9.0",
-    "flake8==3.7.8",
-    "tox==3.14.0",
-    "coverage==4.5.4",
-    "Sphinx==1.8.5",
-    "twine==1.14.0",
-    "Click==7.0",
-    "pytest==4.6.5",
-    "pytest-runner==5.1",
+    "flake8==3.7.9",
+    "tox==3.14.1",
+    "mypy==0.740",
 ]
 
 setup(
