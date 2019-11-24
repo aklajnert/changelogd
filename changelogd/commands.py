@@ -1,7 +1,9 @@
+import typing
+
 import click
 
 
-def command_decorator(func: callable) -> click.core.Command:
+def command_decorator(func: typing.Callable) -> click.core.Command:
     verbose = click.option("-v", "--verbose", count=True, help="Increase verbosity.")
     return verbose(click.command()(click.pass_context(func)))
 
