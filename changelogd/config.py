@@ -59,13 +59,15 @@ class Config:
         config_path = self._search_config() or DEFAULT_CONFIG
         if not config_path.is_dir():
             sys.exit(
-                f"The configuration directory does not exist: {config_path.absolute().resolve()}"
+                f"The configuration directory does not exist: "
+                f"{config_path.absolute().resolve()}"
             )
 
         config_file = config_path / "config.yaml"
         if not config_file.is_file():
             sys.exit(
-                f"The main configuration file does not exist: {config_file.absolute().resolve()}"
+                f"The main configuration file does not exist: "
+                f"{config_file.absolute().resolve()}"
             )
 
         with config_file.open() as config:
@@ -104,7 +106,8 @@ class Config:
         output_directory = path or DEFAULT_PATH
         if output_directory.is_dir():
             if not click.confirm(
-                f"The config directory '{output_directory.absolute().resolve()}' already exists. "
+                f"The config directory '{output_directory.absolute().resolve()}' "
+                f"already exists. "
                 f"Do you want to overwrite the configuration files?"
             ):
                 sys.exit("Aborted")
@@ -134,6 +137,7 @@ class Config:
                     path=output_path.absolute().resolve()
                 )
                 logging.warning(
-                    f"The configuration path is not standard, please add a following snippet to "
-                    f"the '{config_file.absolute().resolve()}' file:\n\n{snippet}"
+                    f"The configuration path is not standard, please add a "
+                    f"following snippet to the '{config_file.absolute().resolve()}' "
+                    f"file:\n\n{snippet}"
                 )
