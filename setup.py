@@ -10,6 +10,7 @@ with open("README.rst") as readme_file:
 requirements = [
     "Click>=7.0",
     "Jinja2>=2.10",
+    "toml>=0.9.4",
     "PyYaml>=5.1",
 ]
 
@@ -23,6 +24,7 @@ dev_requirements = [
     "flake8==3.7.9",
     "tox==3.14.1",
     "mypy==0.740",
+    "pyfakefs==3.7",
 ]
 
 setup(
