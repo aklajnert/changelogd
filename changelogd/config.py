@@ -27,7 +27,7 @@ def load_toml(path: Path) -> typing.Optional[str]:
     with path.open() as file_handle:
         config = toml.load(file_handle)
 
-    return config.get("tool", {}).get("changelogd", {}).get("config")
+    return config.get("tool", {}).get("changelogd", {}).get("config")  # type:ignore
 
 
 def load_ini(path: Path) -> typing.Optional[str]:
@@ -44,18 +44,15 @@ def load_ini(path: Path) -> typing.Optional[str]:
 CONFIG_SNIPPET = "[tool:changelogd]\nconfig={path}"
 CONFIG_SNIPPET_TOML = "[tool.changelogd]\nconfig = '{path}'"
 
-SUPPORTED_CONFIG_FILES = [
-    (
-        Path("pyproject.toml"),
-        {"load_function": load_toml, "default": CONFIG_SNIPPET_TOML},
-    ),
-    (Path("setup.cfg"), {"load_function": load_ini, "default": CONFIG_SNIPPET}),
-    (Path("tox.ini"), {"load_function": load_ini, "default": CONFIG_SNIPPET}),
+SUPPORTED_CONFIG_FILES: typing.List[typing.Tuple[Path, typing.Callable, str]] = [
+    (Path("pyproject.toml"), load_toml, CONFIG_SNIPPET_TOML,),
+    (Path("setup.cfg"), load_ini, CONFIG_SNIPPET),
+    (Path("tox.ini"), load_ini, CONFIG_SNIPPET),
 ]
 
 
 class Config:
-    def load(self):
+    def load(self) -> None:
         config_path = self._search_config() or DEFAULT_CONFIG
         if not config_path.is_dir():
             sys.exit(
@@ -74,9 +71,11 @@ class Config:
             self.config = yaml.full_load(config)
 
     def _search_config(self) -> typing.Optional[Path]:
-        for config_file, file_data in SUPPORTED_CONFIG_FILES:
-            config_path = file_data["load_function"](config_file)
-            if not config_path.is_file():
+        for config_file, load_function, _ in SUPPORTED_CONFIG_FILES:
+            config_path = load_function(config_file)  # type: ignore
+            if config_path:
+                config_path = Path(config_path)
+            if not config_path or not config_path.is_file():
                 continue
 
             if config_path:
@@ -86,7 +85,7 @@ class Config:
                 logging.debug(
                     f"Configuration directory: {config_file.absolute().resolve()}"
                 )
-                return config_path
+                return config_path  # type: ignore
         return None
 
     @classmethod
@@ -99,7 +98,7 @@ class Config:
             format="%(asctime)s - %(message)s",
         )
 
-    def init_config(self, path: typing.Optional[str] = None):
+    def init_config(self, path: typing.Optional[str] = None) -> None:
         if path is not None:
             path = Path(path)
 

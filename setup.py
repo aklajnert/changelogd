@@ -14,9 +14,7 @@ requirements = [
     "PyYaml>=5.1",
 ]
 
-test_requirements = [
-    "pytest>=5",
-]
+test_requirements = ["pytest>=5", "pyfakefs==3.7"]
 
 dev_requirements = [
     "bump2version==0.5.11",
@@ -24,7 +22,6 @@ dev_requirements = [
     "flake8==3.7.9",
     "tox==3.14.1",
     "mypy==0.740",
-    "pyfakefs==3.7",
 ]
 
 setup(
