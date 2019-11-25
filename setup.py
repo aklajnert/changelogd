@@ -10,6 +10,7 @@ with open("README.rst") as readme_file:
 requirements = [
     "Click>=7.0",
     "Jinja2>=2.10",
+    "PyYaml>=5.1",
 ]
 
 test_requirements = [

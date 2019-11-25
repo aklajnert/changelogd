@@ -18,12 +18,15 @@ def command_decorator(func: typing.Callable) -> click.core.Command:
 
 
 @command_decorator
+@click.option(*("-p", "--path"), help="Custom configuration directory")
 def init(
-    _: click.core.Context, config: Config, **options: typing.Dict[str, typing.Any]
+    _: click.core.Context,
+    config: Config,
+    path: typing.Optional[str],
+    **options: typing.Dict[str, typing.Any]
 ) -> None:
     """Initialize changelogd config."""
-    logging.warning("init")
-    logging.info("test")
+    config.init_config(path)
 
 
 @command_decorator
