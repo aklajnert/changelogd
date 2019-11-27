@@ -19,8 +19,18 @@ DEFAULT_CONFIG = {
         {"name": "other", "title": "Other changes"},
     ],
     "entry-fields": [
-        {"name": "issue-id", "type": "str", "required": False},
-        {"name": "message", "type": "str", "required": True},
+        {
+            "name": "issue-id",
+            "verbose-name": "Issue ID",
+            "type": "str",
+            "required": False,
+        },
+        {
+            "name": "message",
+            "verbose-name": "Changelog message",
+            "type": "str",
+            "required": True,
+        },
     ],
     "output-file": "../changelog.md",
     "issues-url": "http://repo/issues",
@@ -28,6 +38,8 @@ DEFAULT_CONFIG = {
 
 
 def load_toml(path: Path) -> typing.Optional[str]:
+    if not path.is_file():
+        return None
     with path.open() as file_handle:
         config = toml.load(file_handle)
 
@@ -57,7 +69,7 @@ SUPPORTED_CONFIG_FILES: typing.List[typing.Tuple[Path, typing.Callable, str]] = 
 
 class Config:
     def load(self) -> None:
-        config_path = self._search_config() or DEFAULT_CONFIG
+        config_path = self._search_config() or DEFAULT_PATH
         if not config_path.is_dir():
             sys.exit(
                 f"The configuration directory does not exist: "
