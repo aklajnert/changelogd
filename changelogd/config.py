@@ -18,6 +18,10 @@ DEFAULT_CONFIG = {
         {"name": "deprecation", "title": "Deprecations"},
         {"name": "other", "title": "Other changes"},
     ],
+    "entry-fields": [
+        {"name": "issue-id", "type": "str", "required": False},
+        {"name": "message", "type": "str", "required": True},
+    ],
     "output-file": "../changelog.md",
     "issues-url": "http://repo/issues",
 }
