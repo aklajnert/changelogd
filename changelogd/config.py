@@ -1,5 +1,6 @@
 import configparser
 import logging
+import shutil
 import sys
 import typing
 from pathlib import Path
@@ -17,9 +18,8 @@ DEFAULT_CONFIG = {
         {"name": "deprecation", "title": "Deprecations"},
         {"name": "other", "title": "Other changes"},
     ],
-    "templates-dir": "./templates",
-    "releases-dir": "./releases",
     "output-file": "../changelog.md",
+    "issues-url": "http://repo/issues",
 }
 
 
@@ -122,19 +122,24 @@ class Config:
                 f"Created main configuration file: {output_path.absolute().resolve()}"
             )
 
+        target = output_directory / "templates"
+        if target.is_dir():
+            shutil.rmtree(target)
+        dst = shutil.copytree(Path(__file__).parent / "templates", target)
+        if dst:
+            logging.warning(f"Copied templates to {dst}")
+
         if path != DEFAULT_PATH:
-            config_file, details = next(
+            config_file, default = next(
                 (
-                    (config_file, details)
-                    for config_file, details in SUPPORTED_CONFIG_FILES
+                    (config_file, default)
+                    for config_file, _, default in SUPPORTED_CONFIG_FILES
                     if config_file.is_file()
                 ),
                 (None, None),
             )
             if config_file:
-                snippet = details["default"].format(
-                    path=output_path.absolute().resolve()
-                )
+                snippet = default.format(path=output_path.absolute().resolve())
                 logging.warning(
                     f"The configuration path is not standard, please add a "
                     f"following snippet to the '{config_file.absolute().resolve()}' "
