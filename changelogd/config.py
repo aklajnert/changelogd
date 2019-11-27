@@ -72,7 +72,7 @@ class Config:
             )
 
         with config_file.open() as config:
-            self.config = yaml.full_load(config)
+            self.data = yaml.full_load(config)
 
     def _search_config(self) -> typing.Optional[Path]:
         for config_file, load_function, _ in SUPPORTED_CONFIG_FILES:

@@ -2,6 +2,7 @@ import typing
 
 import click
 
+from . import changelogd
 from .config import Config
 
 
@@ -49,7 +50,7 @@ def entry(
     _: click.core.Context, config: Config, **options: typing.Dict[str, typing.Any]
 ) -> None:
     """Create a new changelog entry."""
-    print("entry")
+    changelogd.create_entry(config)
 
 
 def register_commands(cli: click.core.Group) -> None:
