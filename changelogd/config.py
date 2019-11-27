@@ -68,15 +68,17 @@ SUPPORTED_CONFIG_FILES: typing.List[typing.Tuple[Path, typing.Callable, str]] = 
 
 
 class Config:
+    path: Path
+
     def load(self) -> None:
-        config_path = self._search_config() or DEFAULT_PATH
-        if not config_path.is_dir():
+        self.path = self._search_config() or DEFAULT_PATH
+        if not self.path.is_dir():
             sys.exit(
                 f"The configuration directory does not exist: "
-                f"{config_path.absolute().resolve()}"
+                f"{self.path.absolute().resolve()}"
             )
 
-        config_file = config_path / "config.yaml"
+        config_file = self.path / "config.yaml"
         if not config_file.is_file():
             sys.exit(
                 f"The main configuration file does not exist: "
