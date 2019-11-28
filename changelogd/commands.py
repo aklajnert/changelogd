@@ -30,11 +30,15 @@ def init(
 
 
 @command_decorator
+@click.argument("version")
 def draft(
-    _: click.core.Context, config: Config, **options: typing.Dict[str, typing.Any]
+    _: click.core.Context,
+    config: Config,
+    version: str,
+    **options: typing.Dict[str, typing.Any]
 ) -> None:
     """Generate draft changelog."""
-    changelogd.prepare_draft(config)
+    changelogd.prepare_draft(config, version)
 
 
 @command_decorator

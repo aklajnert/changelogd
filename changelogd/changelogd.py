@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 """Main module."""
+import datetime
 import glob
 import hashlib
 import logging
 import sys
 import typing
+from collections import defaultdict
 
 import yaml
 
@@ -74,7 +76,26 @@ def create_entry(config: Config):
     logging.warning(f"Created changelog entry at {output_file.absolute()}")
 
 
-def prepare_draft(config):
+def prepare_draft(config: Config, version: str):
     config.load()
+    release = prepare_release(config, version)
+
+    from pprint import pprint
+
+    print(version)
+    pprint(release)
+
+
+def prepare_release(config, version):
     entries = glob.glob(str(config.path.absolute() / "*.entry.yaml"))
-    print(entries)
+    release = {
+        "entries": defaultdict(list),
+        "release-title": version,
+        "release-date": datetime.date.today().strftime("%Y-%m-%d"),
+        "release-description": input("Release description (hit ENTER to omit): "),
+    }
+    for entry in entries:
+        with open(entry) as entry_file:
+            entry_data = yaml.full_load(entry_file)
+        release["entries"][entry_data.pop("type")] = entry_data
+    return release
