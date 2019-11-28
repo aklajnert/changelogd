@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Main module."""
+import glob
 import hashlib
 import logging
 import sys
@@ -59,14 +60,21 @@ def create_entry(config: Config):
         selection = input("Select message type [1]: ") or 1
 
     entries = {entry.name: entry.value for entry in entry_fields}
+    entry_type = message_types[int(selection) - 1].get("name")
+    entries["type"] = entry_type
 
     hash = hashlib.md5()
     entries_flat = " ".join(f"{key}={value}" for key, value in entries.items())
     hash.update(entries_flat.encode())
 
-    entry_type = message_types[int(selection) - 1]
-    output_file = config.path / f"{entry_type.get('name')}.{hash.hexdigest()}.yaml"
+    output_file = config.path / f"{entry_type}.{hash.hexdigest()[:8]}.entry.yaml"
     with output_file.open("w") as output_fh:
         yaml.dump(entries, output_fh)
 
     logging.warning(f"Created changelog entry at {output_file.absolute()}")
+
+
+def prepare_draft(config):
+    config.load()
+    entries = glob.glob(str(config.path.absolute() / "*.entry.yaml"))
+    print(entries)

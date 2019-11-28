@@ -34,7 +34,7 @@ def draft(
     _: click.core.Context, config: Config, **options: typing.Dict[str, typing.Any]
 ) -> None:
     """Generate draft changelog."""
-    print("draft")
+    changelogd.prepare_draft(config)
 
 
 @command_decorator
