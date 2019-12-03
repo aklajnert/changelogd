@@ -4,9 +4,12 @@ import datetime
 import glob
 import hashlib
 import logging
+import os
+import re
 import sys
 import typing
 from collections import defaultdict
+from pathlib import Path
 
 import yaml
 from yaml.representer import Representer
@@ -81,19 +84,45 @@ def create_entry(config: Config):
 
 def prepare_draft(config: Config, version: str):
     config.load()
-    release = prepare_release(config, version)
+    releases_dir = config.path / "releases"
+    release = create_new_release(config, version)
+
+    releases = prepare_releases(release, releases_dir)
 
     from pprint import pprint
 
-    print(version)
-    pprint(release)
+    pprint(releases)
 
 
-def prepare_release(config, version):
+def prepare_releases(
+    release: typing.Dict, releases_dir: Path
+) -> typing.List[typing.Dict]:
+    versions: typing.Dict[int, Path] = dict()
+    for item in os.listdir(releases_dir.as_posix()):
+        match = re.match(r"(\d+).*\.ya?ml", item)
+        if match:
+            version = int(match.group(1))
+            if version in versions:
+                sys.exit(f"The version {version} is duplicated.")
+            versions[version] = releases_dir / match.group(0)
+    previous_release = None
+    releases = []
+    for version in sorted(versions.keys()):
+        with versions[version].open() as release_fh:
+            release_item = yaml.full_load(release_fh)
+            release_item["previous-release"] = previous_release
+            previous_release = release_item.get("release-version")
+            releases.append(release_item)
+    release["previous-release"] = previous_release
+    releases.append(release)
+    return releases
+
+
+def create_new_release(config, version):
     entries = glob.glob(str(config.path.absolute() / "*.entry.yaml"))
     release = {
         "entries": defaultdict(list),
-        "release-title": version,
+        "release-version": version,
         "release-date": datetime.date.today().strftime("%Y-%m-%d"),
         "release-description": input("Release description (hit ENTER to omit): "),
     }
