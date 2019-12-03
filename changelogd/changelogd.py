@@ -16,7 +16,6 @@ from yaml.representer import Representer
 
 from .config import Config
 
-SENTINEL = object()
 
 yaml.add_representer(defaultdict, Representer.represent_dict)
 
@@ -27,12 +26,11 @@ class EntryField:
     type: str
     required: bool
 
-    def __init__(self, **data):
-        self.name = data.get("name")
-        self.verbose_name = data.get("verbose-name")
-        self.type = data.get("type", "str")
-        self.required = data.get("required", True)
-        self._value = SENTINEL
+    def __init__(self, **data: typing.Dict[str, typing.Any]) -> None:
+        self.name = str(data.get("name"))
+        self.verbose_name = str(data.get("verbose-name", ""))
+        self.type = str(data.get("type", "str"))
+        self.required = bool(data.get("required", True))
 
     @property
     def value(self) -> typing.Any:
@@ -44,7 +42,7 @@ class EntryField:
         return value
 
 
-def _is_int(input):
+def _is_int(input: typing.Any) -> bool:
     try:
         int(input)
         return True
@@ -52,14 +50,16 @@ def _is_int(input):
         return False
 
 
-def create_entry(config: Config):
+def create_entry(config: Config) -> None:
     config.load()
     entry_fields = [EntryField(**entry) for entry in config.data.get("entry-fields")]
     message_types = config.data.get("message-types")
     for i, message_type in enumerate(message_types):
         print(f"\t[{i + 1}]: {message_type.get('name')}")
     selection = None
-    while not _is_int(selection) or not (0 < int(selection) < len(message_types) + 1):
+    while not _is_int(selection) or not (
+        0 < int(selection) < len(message_types) + 1  # type: ignore
+    ):
         if selection is not None:
             print(
                 f"Pick a positive number lower than {len(message_types) + 1}",
@@ -68,7 +68,7 @@ def create_entry(config: Config):
         selection = input("Select message type [1]: ") or 1
 
     entries = {entry.name: entry.value for entry in entry_fields}
-    entry_type = message_types[int(selection) - 1].get("name")
+    entry_type = message_types[int(selection) - 1].get("name")  # type: ignore
     entries["type"] = entry_type
 
     hash = hashlib.md5()
@@ -82,7 +82,7 @@ def create_entry(config: Config):
     logging.warning(f"Created changelog entry at {output_file.absolute()}")
 
 
-def prepare_draft(config: Config, version: str):
+def prepare_draft(config: Config, version: str) -> None:
     config.load()
     releases_dir = config.path / "releases"
     release = create_new_release(config, version)
@@ -118,9 +118,9 @@ def prepare_releases(
     return releases
 
 
-def create_new_release(config, version):
+def create_new_release(config: Config, version: str) -> typing.Dict[str, typing.Any]:
     entries = glob.glob(str(config.path.absolute() / "*.entry.yaml"))
-    release = {
+    release: typing.Dict[str, typing.Any] = {
         "entries": defaultdict(list),
         "release-version": version,
         "release-date": datetime.date.today().strftime("%Y-%m-%d"),

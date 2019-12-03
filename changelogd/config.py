@@ -116,8 +116,8 @@ class Config:
             format="%(asctime)s - %(message)s",
         )
 
-    def init(self, path: typing.Optional[str] = None) -> None:
-        if path is not None:
+    def init(self, path: typing.Union[str, Path, None] = None) -> None:
+        if isinstance(path, str):
             path = Path(path)
 
         output_directory = path or DEFAULT_PATH
@@ -156,7 +156,7 @@ class Config:
                 ),
                 (None, None),
             )
-            if config_file:
+            if config_file and default:
                 snippet = default.format(path=output_path.absolute().resolve())
                 logging.warning(
                     f"The configuration path is not standard, please add a "
