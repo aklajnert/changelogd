@@ -26,7 +26,7 @@ def init(
     **options: typing.Dict[str, typing.Any]
 ) -> None:
     """Initialize changelogd config."""
-    config.init_config(path)
+    config.init(path)
 
 
 @command_decorator

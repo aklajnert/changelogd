@@ -9,10 +9,13 @@ import typing
 from collections import defaultdict
 
 import yaml
+from yaml.representer import Representer
 
 from .config import Config
 
 SENTINEL = object()
+
+yaml.add_representer(defaultdict, Representer.represent_dict)
 
 
 class EntryField:

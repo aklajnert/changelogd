@@ -116,7 +116,7 @@ class Config:
             format="%(asctime)s - %(message)s",
         )
 
-    def init_config(self, path: typing.Optional[str] = None) -> None:
+    def init(self, path: typing.Optional[str] = None) -> None:
         if path is not None:
             path = Path(path)
 
@@ -163,3 +163,8 @@ class Config:
                     f"following snippet to the '{config_file.absolute().resolve()}' "
                     f"file:\n\n{snippet}"
                 )
+
+        releases_dir = output_directory / "releases"
+        releases_dir.mkdir(exist_ok=True)
+        with open(releases_dir / ".gitkeep", "w+"):
+            pass
