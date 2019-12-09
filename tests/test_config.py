@@ -41,11 +41,10 @@ def test_load_ini(fs):
 
 
 def test_init_config(fs, caplog, monkeypatch):
-    # remove `setup.cfg` from supported files, to make tests pass on azure pipelines
+    # remove `setup.cfg` and `tox.ini` from supported files,
+    # to make tests pass on azure pipelines
     monkeypatch.setattr(
-        config,
-        "SUPPORTED_CONFIG_FILES",
-        (config.SUPPORTED_CONFIG_FILES[0], config.SUPPORTED_CONFIG_FILES[2]),
+        config, "SUPPORTED_CONFIG_FILES", (config.SUPPORTED_CONFIG_FILES[0],),
     )
 
     fs.create_dir("/test")
