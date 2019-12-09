@@ -1,5 +1,6 @@
 import configparser
 import logging
+import os
 import shutil
 import sys
 import typing
@@ -9,7 +10,7 @@ import click
 import toml
 import yaml
 
-DEFAULT_PATH = Path() / "changelog.d"
+DEFAULT_PATH = Path(os.getcwd()) / "changelog.d"
 DEFAULT_CONFIG = {
     "message-types": [
         {"name": "feature", "title": "Features"},
@@ -162,6 +163,12 @@ class Config:
                     f"The configuration path is not standard, please add a "
                     f"following snippet to the '{config_file.absolute().resolve()}' "
                     f"file:\n\n{snippet}"
+                )
+            if not config_file:
+                logging.warning(
+                    "No configuration file found. Create a pyproject.toml "
+                    "file in root of your directory, with the following content:\n\n"
+                    f"{CONFIG_SNIPPET_TOML.format(path=path.absolute())}"
                 )
 
         releases_dir = output_directory / "releases"

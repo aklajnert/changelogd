@@ -62,6 +62,10 @@ def test_init_config(fs, caplog):
     messages = [record.message for record in caplog.records]
     assert messages[0].startswith("Created main configuration file: ")
     assert messages[1].startswith("Copied templates to ")
+    assert messages[2].startswith(
+        "No configuration file found. Create a pyproject.toml file in root of your "
+        "directory, with the following content:"
+    )
 
     result = runner.invoke(commands.init, "--path=/test/changelog.d", input="n")
     assert result.exit_code == 1
