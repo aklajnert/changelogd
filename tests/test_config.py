@@ -41,8 +41,12 @@ def test_load_ini(fs):
 
 
 def test_init_config(fs, caplog, monkeypatch):
-    if os.path.exists("/tmp"):
-        monkeypatch.chdir("/tmp")
+    # remove `setup.cfg` from supported files, to make tests pass on azure pipelines
+    monkeypatch.setattr(
+        config,
+        "SUPPORTED_CONFIG_FILES",
+        (config.SUPPORTED_CONFIG_FILES[0], config.SUPPORTED_CONFIG_FILES[2]),
+    )
 
     fs.create_dir("/test")
     fs.add_real_directory((Path(__file__).parents[1] / "changelogd" / "templates"))
