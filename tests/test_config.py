@@ -41,7 +41,9 @@ def test_load_ini(fs):
 
 
 def test_init_config(fs, caplog, monkeypatch):
-    monkeypatch.chdir("/")
+    if os.path.exists("/tmp"):
+        monkeypatch.chdir("/tmp")
+
     fs.create_dir("/test")
     fs.add_real_directory((Path(__file__).parents[1] / "changelogd" / "templates"))
 
