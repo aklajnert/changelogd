@@ -40,7 +40,8 @@ def test_load_ini(fs):
     assert config.load_ini(Path("config3.ini")) is None
 
 
-def test_init_config(fs, caplog):
+def test_init_config(fs, caplog, monkeypatch):
+    monkeypatch.chdir("/")
     fs.create_dir("/test")
     fs.add_real_directory((Path(__file__).parents[1] / "changelogd" / "templates"))
 
@@ -49,8 +50,12 @@ def test_init_config(fs, caplog):
     assert result.exit_code == 0
 
     assert os.listdir("/test") == ["changelog.d"]
-    assert os.listdir("/test/changelog.d") == ["config.yaml", "templates", "releases"]
-    assert os.listdir("/test/changelog.d/templates") == [
+    assert sorted(os.listdir("/test/changelog.d")) == [
+        "config.yaml",
+        "releases",
+        "templates",
+    ]
+    assert sorted(os.listdir("/test/changelog.d/templates")) == [
         "entry.md",
         "main.md",
         "release.md",

@@ -164,7 +164,7 @@ class Config:
                     f"following snippet to the '{config_file.absolute().resolve()}' "
                     f"file:\n\n{snippet}"
                 )
-            if not config_file:
+            if path and not config_file:
                 logging.warning(
                     "No configuration file found. Create a pyproject.toml "
                     "file in root of your directory, with the following content:\n\n"
