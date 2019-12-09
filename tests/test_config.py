@@ -1,5 +1,9 @@
+import os
 from pathlib import Path
 
+from click.testing import CliRunner
+
+from changelogd import commands
 from changelogd import config
 
 
@@ -34,3 +38,30 @@ def test_load_ini(fs):
         "config3.ini", contents="[tool:changelogd]\nother_option=/config/path"
     )
     assert config.load_ini(Path("config3.ini")) is None
+
+
+def test_init_config(fs, caplog):
+    fs.create_dir("/test")
+    fs.add_real_directory((Path(__file__).parents[1] / "changelogd" / "templates"))
+
+    runner = CliRunner()
+    result = runner.invoke(commands.init, "--path=/test/changelog.d")
+    assert result.exit_code == 0
+
+    assert os.listdir("/test") == ["changelog.d"]
+    assert os.listdir("/test/changelog.d") == ["config.yaml", "templates", "releases"]
+    assert os.listdir("/test/changelog.d/templates") == [
+        "entry.md",
+        "main.md",
+        "release.md",
+    ]
+    assert os.listdir("/test/changelog.d/releases") == [".gitkeep"]
+
+    assert all(record.levelname == "WARNING" for record in caplog.records)
+
+    messages = [record.message for record in caplog.records]
+    assert messages[0].startswith("Created main configuration file: ")
+    assert messages[1].startswith("Copied templates to ")
+
+    result = runner.invoke(commands.init, "--path=/test/changelog.d", input="n")
+    assert result.exit_code == 1
