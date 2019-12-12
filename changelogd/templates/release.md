@@ -1,8 +1,8 @@
-## {{ release-title }} ({{ release-date }})  
+## {{ release_title }} ({{ release_date }})  
 
-{{ release-description }}
+{{ release_description }}
 
-{% for group in entry-groups %}
-### {{ group.title %}  
+{% for group in entry_groups %}
+### {{ group.title }}  
 {% for entry in group.entries %}{{ entry }}{% endfor %}
 {% endfor %}  

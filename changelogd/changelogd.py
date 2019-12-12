@@ -124,14 +124,14 @@ def create_new_release(config: Config, version: str) -> typing.Dict[str, typing.
     entries = glob.glob(str(config.path.absolute() / "*.entry.yaml"))
     release: typing.Dict[str, typing.Any] = {
         "entries": defaultdict(list),
-        "release-version": version,
-        "release-date": datetime.date.today().strftime("%Y-%m-%d"),
-        "release-description": input("Release description (hit ENTER to omit): "),
+        "release_version": version,
+        "release_date": datetime.date.today().strftime("%Y-%m-%d"),
+        "release_description": input("Release description (hit ENTER to omit): "),
     }
     for entry in entries:
         with open(entry) as entry_file:
             entry_data = yaml.full_load(entry_file)
-        release["entries"][entry_data.pop("type")] = entry_data
+        release["entries"][entry_data.pop("type")].append(entry_data)
     return release
 
 
@@ -143,15 +143,17 @@ def resolve_template(releases: typing.List[typing.Dict], templates_dir: Path) ->
     )
 
     for release in releases:
-        entries = release.get("entries", [])
-        release["entries"] = [_resolve_entry(entry, env) for entry in entries]
+        for group_name, group in release.get("entries", {}).items():
+            release["entries"][group_name] = [
+                _resolve_entry(entry, templates.get("entry")) for entry in group
+            ]
 
     return ""
 
 
 def _get_template_file_names(
     templates_dir: Path, templates: typing.Tuple[str, ...], env: jinja2.Environment
-) -> typing.Dict[str, typing.Optional[str]]:
+) -> typing.Dict[str, typing.Optional[jinja2.Template]]:
     template_files = os.listdir(templates_dir.as_posix())
     try:
         return {
@@ -166,7 +168,5 @@ def _get_template_file_names(
         sys.exit(f"Template file for '{exc.name}' not found.")
 
 
-def _resolve_entry(entry: typing.Dict, env: jinja2.Environment):
-    template = env.get_template("entry.*")
-
-    return template
+def _resolve_entry(entry: typing.Dict, template: jinja2.Template):
+    return template.render(entry)

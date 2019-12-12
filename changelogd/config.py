@@ -12,29 +12,29 @@ import yaml
 
 DEFAULT_PATH = Path(os.getcwd()) / "changelog.d"
 DEFAULT_CONFIG = {
-    "message-types": [
+    "message_types": [
         {"name": "feature", "title": "Features"},
         {"name": "bug", "title": "Bug fixes"},
         {"name": "doc", "title": "Documentation changes"},
         {"name": "deprecation", "title": "Deprecations"},
         {"name": "other", "title": "Other changes"},
     ],
-    "entry-fields": [
+    "entry_fields": [
         {
-            "name": "issue-id",
-            "verbose-name": "Issue ID",
+            "name": "issue_id",
+            "verbose_name": "Issue ID",
             "type": "str",
             "required": False,
         },
         {
             "name": "message",
-            "verbose-name": "Changelog message",
+            "verbose_name": "Changelog message",
             "type": "str",
             "required": True,
         },
     ],
-    "output-file": "../changelog.md",
-    "issues-url": "http://repo/issues",
+    "output_file": "../changelog.md",
+    "issues_url": "http://repo/issues",
 }
 
 
