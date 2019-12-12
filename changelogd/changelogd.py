@@ -11,6 +11,7 @@ import typing
 from collections import defaultdict
 from pathlib import Path
 
+import jinja2
 import yaml
 from yaml.representer import Representer
 
@@ -89,9 +90,10 @@ def prepare_draft(config: Config, version: str) -> None:
 
     releases = prepare_releases(release, releases_dir)
 
-    from pprint import pprint
+    templates_dir = config.path / "templates"
+    draft = resolve_template(releases, templates_dir)
 
-    pprint(releases)
+    print(draft)
 
 
 def prepare_releases(
@@ -131,3 +133,40 @@ def create_new_release(config: Config, version: str) -> typing.Dict[str, typing.
             entry_data = yaml.full_load(entry_file)
         release["entries"][entry_data.pop("type")] = entry_data
     return release
+
+
+def resolve_template(releases: typing.List[typing.Dict], templates_dir: Path) -> str:
+    env = jinja2.Environment(loader=jinja2.FileSystemLoader(templates_dir.as_posix()),)
+
+    templates = _get_template_file_names(
+        templates_dir, ("entry", "main", "release"), env
+    )
+
+    for release in releases:
+        entries = release.get("entries", [])
+        release["entries"] = [_resolve_entry(entry, env) for entry in entries]
+
+    return ""
+
+
+def _get_template_file_names(
+    templates_dir: Path, templates: typing.Tuple[str, ...], env: jinja2.Environment
+) -> typing.Dict[str, typing.Optional[str]]:
+    template_files = os.listdir(templates_dir.as_posix())
+    try:
+        return {
+            entry: env.get_template(
+                next((item for item in template_files if item.startswith(entry)), entry)
+            )
+            for entry in templates
+        }
+    except jinja2.exceptions.TemplateSyntaxError as exc:
+        sys.exit(f"Syntax error in template '{exc.filename}':\n\t{exc.message}")
+    except jinja2.exceptions.TemplateNotFound as exc:
+        sys.exit(f"Template file for '{exc.name}' not found.")
+
+
+def _resolve_entry(entry: typing.Dict, env: jinja2.Environment):
+    template = env.get_template("entry.*")
+
+    return template
