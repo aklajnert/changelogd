@@ -11,14 +11,12 @@ import typing
 from collections import defaultdict
 from pathlib import Path
 
-import jinja2
 import yaml
 from yaml.representer import Representer
 
 from changelogd.resolver import Resolver
 
 from .config import Config
-
 
 yaml.add_representer(defaultdict, Representer.represent_dict)
 
@@ -54,8 +52,9 @@ def _is_int(input: typing.Any) -> bool:
 
 
 def create_entry(config: Config) -> None:
-    entry_fields = [EntryField(**entry) for entry in config.data.get("entry-fields")]
-    message_types = config.data.get("message-types")
+    data = config.get_data()
+    entry_fields = [EntryField(**entry) for entry in data.get("entry-fields", [])]
+    message_types = data.get("message-types", [])
     for i, message_type in enumerate(message_types):
         print(f"\t[{i + 1}]: {message_type.get('name')}")
     selection = None

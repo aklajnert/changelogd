@@ -31,7 +31,7 @@ class Resolver:
                     {
                         "name": group_name,
                         "entries": [
-                            self._resolve_entry(entry, templates.get("entry"))
+                            self._resolve_entry(entry, templates["entry"])
                             for entry in group
                         ],
                     }
@@ -45,7 +45,7 @@ class Resolver:
         templates_dir: Path,
         templates: typing.Tuple[str, ...],
         env: jinja2.Environment,
-    ) -> typing.Dict[str, typing.Optional[jinja2.Template]]:
+    ) -> typing.Dict[str, jinja2.Template]:
         template_files = os.listdir(templates_dir.as_posix())
         try:
             return {
@@ -62,5 +62,5 @@ class Resolver:
         except jinja2.exceptions.TemplateNotFound as exc:
             sys.exit(f"Template file for '{exc.name}' not found.")
 
-    def _resolve_entry(self, entry: typing.Dict, template: jinja2.Template):
+    def _resolve_entry(self, entry: typing.Dict, template: jinja2.Template) -> str:
         return template.render(**self._config.get_data(), **entry)

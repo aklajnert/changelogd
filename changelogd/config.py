@@ -70,30 +70,32 @@ SUPPORTED_CONFIG_FILES: typing.List[typing.Tuple[Path, typing.Callable, str]] = 
 
 
 class Config:
-    def __init__(self):
+    def __init__(self) -> None:
         self._path: typing.Optional[Path] = None
         self._data: typing.Optional[dict] = None
 
     @property
     def path(self) -> Path:
         if self._path is None:
-            self._load()
+            self._path = self._get_path()
         return self._path
 
     def get_data(self) -> dict:
         if self._data is None:
-            self._load()
+            self._data = self._load_data()
         return deepcopy(self._data)
 
-    def _load(self) -> None:
-        self._path = self._search_config() or DEFAULT_PATH
-        if not self._path.is_dir():
+    def _get_path(self) -> Path:
+        path = self._search_config() or DEFAULT_PATH
+        if not path.is_dir():
             sys.exit(
                 f"The configuration directory does not exist: "
-                f"{self._path.absolute().resolve()}"
+                f"{path.absolute().resolve()}"
             )
+        return path
 
-        config_file = self._path / "config.yaml"
+    def _load_data(self) -> dict:
+        config_file = self.path / "config.yaml"
         if not config_file.is_file():
             sys.exit(
                 f"The main configuration file does not exist: "
@@ -101,7 +103,7 @@ class Config:
             )
 
         with config_file.open() as config:
-            self._data = yaml.full_load(config)
+            return yaml.full_load(config) or {}
 
     def _search_config(self) -> typing.Optional[Path]:
         for config_file, load_function, _ in SUPPORTED_CONFIG_FILES:
