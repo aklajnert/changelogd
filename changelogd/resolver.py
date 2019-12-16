@@ -24,19 +24,23 @@ class Resolver:
             self._templates_dir, ("entry", "main", "release"), env
         )
 
+        message_types = self._config.get_data().get("message_types")
         for release in releases:
-            groups = []
+            groups = {}
             for group_name, group in release.pop("entries", {}).items():
-                groups.append(
-                    {
-                        "name": group_name,
-                        "entries": [
-                            self._resolve_entry(entry, templates["entry"])
-                            for entry in group
-                        ],
-                    }
-                )
-                release["entry_groups"] = groups
+                groups[group_name] = [
+                    self._resolve_entry(entry, templates["entry"]) for entry in group
+                ]
+
+                release["entry_groups"] = []
+                for message_type in message_types:
+                    name = message_type.get("name")
+                    title = message_type.get("title", name)
+
+                    if name in groups:
+                        release["entry_groups"].append(
+                            {"name": name, "title": title, "entries": groups.get(name)}
+                        )
 
         return ""
 

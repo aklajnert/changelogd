@@ -53,8 +53,8 @@ def _is_int(input: typing.Any) -> bool:
 
 def create_entry(config: Config) -> None:
     data = config.get_data()
-    entry_fields = [EntryField(**entry) for entry in data.get("entry-fields", [])]
-    message_types = data.get("message-types", [])
+    entry_fields = [EntryField(**entry) for entry in data.get("entry_fields", [])]
+    message_types = data.get("message_types", [])
     for i, message_type in enumerate(message_types):
         print(f"\t[{i + 1}]: {message_type.get('name')}")
     selection = None
@@ -111,8 +111,8 @@ def prepare_releases(
     for version in sorted(versions.keys()):
         with versions[version].open() as release_fh:
             release_item = yaml.full_load(release_fh)
-            release_item["previous-release"] = previous_release
-            previous_release = release_item.get("release-version")
+            release_item["previous_release"] = previous_release
+            previous_release = release_item.get("release_version")
             releases.append(release_item)
     release["previous-release"] = previous_release
     releases.append(release)
