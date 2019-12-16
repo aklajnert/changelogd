@@ -15,6 +15,8 @@ import jinja2
 import yaml
 from yaml.representer import Representer
 
+from changelogd.resolver import Resolver
+
 from .config import Config
 
 
@@ -52,7 +54,6 @@ def _is_int(input: typing.Any) -> bool:
 
 
 def create_entry(config: Config) -> None:
-    config.load()
     entry_fields = [EntryField(**entry) for entry in config.data.get("entry-fields")]
     message_types = config.data.get("message-types")
     for i, message_type in enumerate(message_types):
@@ -84,14 +85,13 @@ def create_entry(config: Config) -> None:
 
 
 def prepare_draft(config: Config, version: str) -> None:
-    config.load()
     releases_dir = config.path / "releases"
     release = create_new_release(config, version)
 
     releases = prepare_releases(release, releases_dir)
 
-    templates_dir = config.path / "templates"
-    draft = resolve_template(releases, templates_dir)
+    resolver = Resolver(config)
+    draft = resolver.resolve_template(releases)
 
     print(draft)
 
@@ -133,40 +133,3 @@ def create_new_release(config: Config, version: str) -> typing.Dict[str, typing.
             entry_data = yaml.full_load(entry_file)
         release["entries"][entry_data.pop("type")].append(entry_data)
     return release
-
-
-def resolve_template(releases: typing.List[typing.Dict], templates_dir: Path) -> str:
-    env = jinja2.Environment(loader=jinja2.FileSystemLoader(templates_dir.as_posix()),)
-
-    templates = _get_template_file_names(
-        templates_dir, ("entry", "main", "release"), env
-    )
-
-    for release in releases:
-        for group_name, group in release.get("entries", {}).items():
-            release["entries"][group_name] = [
-                _resolve_entry(entry, templates.get("entry")) for entry in group
-            ]
-
-    return ""
-
-
-def _get_template_file_names(
-    templates_dir: Path, templates: typing.Tuple[str, ...], env: jinja2.Environment
-) -> typing.Dict[str, typing.Optional[jinja2.Template]]:
-    template_files = os.listdir(templates_dir.as_posix())
-    try:
-        return {
-            entry: env.get_template(
-                next((item for item in template_files if item.startswith(entry)), entry)
-            )
-            for entry in templates
-        }
-    except jinja2.exceptions.TemplateSyntaxError as exc:
-        sys.exit(f"Syntax error in template '{exc.filename}':\n\t{exc.message}")
-    except jinja2.exceptions.TemplateNotFound as exc:
-        sys.exit(f"Template file for '{exc.name}' not found.")
-
-
-def _resolve_entry(entry: typing.Dict, template: jinja2.Template):
-    return template.render(entry)

@@ -4,6 +4,7 @@ import os
 import shutil
 import sys
 import typing
+from copy import deepcopy
 from pathlib import Path
 
 import click
@@ -69,9 +70,13 @@ SUPPORTED_CONFIG_FILES: typing.List[typing.Tuple[Path, typing.Callable, str]] = 
 
 
 class Config:
-    path: Path
+    def __init__(self):
+        self._load()
 
-    def load(self) -> None:
+    def get_data(self) -> dict:
+        return deepcopy(self._data)
+
+    def _load(self) -> None:
         self.path = self._search_config() or DEFAULT_PATH
         if not self.path.is_dir():
             sys.exit(
@@ -87,7 +92,7 @@ class Config:
             )
 
         with config_file.open() as config:
-            self.data = yaml.full_load(config)
+            self._data = yaml.full_load(config)
 
     def _search_config(self) -> typing.Optional[Path]:
         for config_file, load_function, _ in SUPPORTED_CONFIG_FILES:
