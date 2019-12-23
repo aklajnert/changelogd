@@ -49,6 +49,8 @@ def load_toml(path: Path) -> typing.Optional[str]:
 
 
 def load_ini(path: Path) -> typing.Optional[str]:
+    if not path.is_file():
+        return None
     config = configparser.ConfigParser()
     with path.open() as file_handle:
         config.read_file(file_handle)

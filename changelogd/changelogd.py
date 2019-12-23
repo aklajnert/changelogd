@@ -29,7 +29,7 @@ class EntryField:
 
     def __init__(self, **data: typing.Dict[str, typing.Any]) -> None:
         self.name = str(data.get("name"))
-        self.verbose_name = str(data.get("verbose-name", ""))
+        self.verbose_name = str(data.get("verbose_name", ""))
         self.type = str(data.get("type", "str"))
         self.required = bool(data.get("required", True))
 
