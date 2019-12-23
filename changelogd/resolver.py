@@ -24,7 +24,7 @@ class Resolver:
             self._templates_dir, ("entry", "main", "release"), env
         )
 
-        message_types = self._config.get_data().get("message_types")
+        message_types = self._config.get_data().get("message_types", [])
         resolved_releases = [
             self._resolve_release(message_types, release, templates)
             for release in releases
@@ -33,7 +33,12 @@ class Resolver:
         template = templates["main"]
         return template.render(**self._config.get_data(), releases=resolved_releases)
 
-    def _resolve_release(self, message_types, release, templates):
+    def _resolve_release(
+        self,
+        message_types: typing.List[typing.Dict],
+        release: typing.Dict,
+        templates: typing.Dict[str, jinja2.Template],
+    ) -> str:
         groups = {}
         for group_name, group in release.pop("entries", {}).items():
             groups[group_name] = [

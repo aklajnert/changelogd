@@ -71,13 +71,15 @@ def test_full_flow(tmpdir, monkeypatch):
     # start with init
     init = runner.invoke(commands.init)
     assert init.exit_code == 0
-    assert _list_directory(tmpdir) == [
-        "changelog.d/config.yaml",
-        "changelog.d/releases/.gitkeep",
-        "changelog.d/templates/entry.md",
-        "changelog.d/templates/main.md",
-        "changelog.d/templates/release.md",
-    ]
+    assert sorted(_list_directory(tmpdir)) == sorted(
+        [
+            "changelog.d/config.yaml",
+            "changelog.d/releases/.gitkeep",
+            "changelog.d/templates/entry.md",
+            "changelog.d/templates/main.md",
+            "changelog.d/templates/release.md",
+        ]
+    )
 
     # add some entries
     _create_entry(runner, "1", "100", "Test feature")
