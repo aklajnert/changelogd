@@ -25,24 +25,33 @@ class Resolver:
         )
 
         message_types = self._config.get_data().get("message_types")
-        for release in releases:
-            groups = {}
-            for group_name, group in release.pop("entries", {}).items():
-                groups[group_name] = [
-                    self._resolve_entry(entry, templates["entry"]) for entry in group
-                ]
+        resolved_releases = [
+            self._resolve_release(message_types, release, templates)
+            for release in releases
+        ]
 
-                release["entry_groups"] = []
-                for message_type in message_types:
-                    name = message_type.get("name")
-                    title = message_type.get("title", name)
+        template = templates["main"]
+        return template.render(**self._config.get_data(), releases=resolved_releases)
 
-                    if name in groups:
-                        release["entry_groups"].append(
-                            {"name": name, "title": title, "entries": groups.get(name)}
-                        )
+    def _resolve_release(self, message_types, release, templates):
+        groups = {}
+        for group_name, group in release.pop("entries", {}).items():
+            groups[group_name] = [
+                self._resolve_entry(entry, templates["entry"]) for entry in group
+            ]
 
-        return ""
+            release["entry_groups"] = []
+            for message_type in message_types:
+                name = message_type.get("name")
+                title = message_type.get("title", name)
+
+                if name in groups:
+                    release["entry_groups"].append(
+                        {"name": name, "title": title, "entries": groups.get(name)}
+                    )
+
+        template = templates["release"]
+        return template.render(**self._config.get_data(), **release)
 
     def _get_template_file_names(
         self,

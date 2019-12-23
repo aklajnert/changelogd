@@ -1,4 +1,4 @@
-## {{ release_title }} ({{ release_date }})  
+## {{ release_title or release_version }} ({{ release_date }})  
 
 {{ release_description }}
 
