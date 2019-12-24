@@ -16,21 +16,17 @@ DRAFT = """# Changelog
 
 ## beta-version (2020-02-02)  
 
-This is a test release.
-
+This is a test release.  
 
 ### Features  
 * [#101](http://repo/issues/101): Another test feature  
 * [#100](http://repo/issues/100): Test feature  
 
-
 ### Bug fixes  
 * [#102](http://repo/issues/102): Bug fixes  
 
-
 ### Documentation changes  
-* [#103](http://repo/issues/103): Documentation update  
-
+* Slight docs update  
   
 """
 
@@ -85,7 +81,7 @@ def test_full_flow(tmpdir, monkeypatch):
     _create_entry(runner, "1", "100", "Test feature")
     _create_entry(runner, "1", "101", "Another test feature")
     _create_entry(runner, "2", "102", "Bug fixes")
-    _create_entry(runner, "3", "103", "Documentation update")
+    _create_entry(runner, "3", "", "Slight docs update")
     assert (
         len(glob.glob((Path(tmpdir) / "changelog.d" / "*entry.yaml").as_posix())) == 4
     )
