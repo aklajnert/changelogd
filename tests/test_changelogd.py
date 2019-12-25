@@ -16,7 +16,7 @@ DRAFT = """# Changelog
 
 ## beta-version (2020-02-02)  
 
-This is a test release. 
+This is a test release.  
 
 ### Features  
 * [#101](http://repo/issues/101): Another test feature  

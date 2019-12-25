@@ -40,7 +40,6 @@ class Resolver:
         release: typing.Dict,
         templates: typing.Dict[str, jinja2.Template],
     ) -> str:
-        pprint.pprint(release)
         groups = {}
         for group_name, group in release.pop("entries", {}).items():
             groups[group_name] = [

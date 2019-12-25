@@ -127,7 +127,7 @@ def create_new_release(config: Config, version: str) -> typing.Dict[str, typing.
         "release_date": datetime.date.today().strftime("%Y-%m-%d"),
         "release_description": input("Release description (hit ENTER to omit): "),
     }
-    for entry in entries:
+    for entry in sorted(entries):
         with open(entry) as entry_file:
             entry_data = yaml.full_load(entry_file)
         release["entries"][entry_data.pop("type")].append(entry_data)
