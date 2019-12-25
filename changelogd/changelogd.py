@@ -93,15 +93,24 @@ def draft(config: Config, version: str) -> None:
 
 
 def release(config: Config, version: str) -> None:
-    print(_read_input_files(config, version))
+    releases, entries = _read_input_files(config, version)
+    _save_release_file(config, releases, version)
+
+
+def _save_release_file(config, releases, version):
+    current_release = releases[0]
+    release_id = releases[1]["id"] + 1 if len(releases) > 1 else 0
+    output_release_path = config.releases_dir / f"{release_id}.{version}.yaml"
+    with output_release_path.open("w") as output_release_fh:
+        yaml.dump(current_release, output_release_fh)
+        logging.warning(f"Saved new release data into {output_release_path}")
 
 
 def _read_input_files(
     config: Config, version: str
 ) -> typing.Tuple[typing.List[typing.Dict[str, typing.Any]], typing.List[str]]:
-    releases_dir = config.path / "releases"
     release, entries = _create_new_release(config, version)
-    releases = _prepare_releases(release, releases_dir)
+    releases = _prepare_releases(release, config.releases_dir)
 
     return releases, entries
 
@@ -122,12 +131,18 @@ def _prepare_releases(
     for version in sorted(versions.keys()):
         with versions[version].open() as release_fh:
             release_item = yaml.full_load(release_fh)
+            if not release_item:
+                logging.error(
+                    f"Release file {versions[version]} is corrupted and will be ignored."
+                )
+                continue
             release_item["previous_release"] = previous_release
+            release_item["id"] = version
             previous_release = release_item.get("release_version")
             releases.append(release_item)
     release["previous-release"] = previous_release
     releases.append(release)
-    return releases
+    return list(reversed(releases))
 
 
 def _create_new_release(

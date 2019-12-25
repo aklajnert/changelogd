@@ -82,6 +82,10 @@ class Config:
             self._path = self._get_path()
         return self._path
 
+    @property
+    def releases_dir(self) -> Path:
+        return self.path / "releases"
+
     def get_data(self) -> dict:
         if self._data is None:
             self._data = self._load_data()
