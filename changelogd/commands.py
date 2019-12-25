@@ -38,15 +38,19 @@ def draft(
     **options: typing.Dict[str, typing.Any]
 ) -> None:
     """Generate draft changelog."""
-    changelogd.prepare_draft(config, version)
+    changelogd.draft(config, version)
 
 
 @command_decorator
+@click.argument("version")
 def release(
-    _: click.core.Context, config: Config, **options: typing.Dict[str, typing.Any]
+    _: click.core.Context,
+    config: Config,
+    version: str,
+    **options: typing.Dict[str, typing.Any]
 ) -> None:
     """Generate changelog, clear entries and make a new release."""
-    print("release")
+    changelogd.release(config, version)
 
 
 @command_decorator
@@ -54,7 +58,7 @@ def entry(
     _: click.core.Context, config: Config, **options: typing.Dict[str, typing.Any]
 ) -> None:
     """Create a new changelog entry."""
-    changelogd.create_entry(config)
+    changelogd.entry(config)
 
 
 def register_commands(cli: click.core.Group) -> None:

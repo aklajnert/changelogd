@@ -51,7 +51,7 @@ def _is_int(input: typing.Any) -> bool:
         return False
 
 
-def create_entry(config: Config) -> None:
+def entry(config: Config) -> None:
     data = config.get_data()
     entry_fields = [EntryField(**entry) for entry in data.get("entry_fields", [])]
     message_types = data.get("message_types", [])
@@ -83,11 +83,8 @@ def create_entry(config: Config) -> None:
     logging.warning(f"Created changelog entry at {output_file.absolute()}")
 
 
-def prepare_draft(config: Config, version: str) -> None:
-    releases_dir = config.path / "releases"
-    release = create_new_release(config, version)
-
-    releases = prepare_releases(release, releases_dir)
+def draft(config: Config, version: str) -> None:
+    releases, _ = _read_input_files(config, version)
 
     resolver = Resolver(config)
     draft = resolver.full_resolve(releases)
@@ -95,7 +92,21 @@ def prepare_draft(config: Config, version: str) -> None:
     print(draft)
 
 
-def prepare_releases(
+def release(config: Config, version: str) -> None:
+    print(_read_input_files(config, version))
+
+
+def _read_input_files(
+    config: Config, version: str
+) -> typing.Tuple[typing.List[typing.Dict[str, typing.Any]], typing.List[str]]:
+    releases_dir = config.path / "releases"
+    release, entries = _create_new_release(config, version)
+    releases = _prepare_releases(release, releases_dir)
+
+    return releases, entries
+
+
+def _prepare_releases(
     release: typing.Dict, releases_dir: Path
 ) -> typing.List[typing.Dict]:
     versions: typing.Dict[int, Path] = dict()
@@ -119,7 +130,9 @@ def prepare_releases(
     return releases
 
 
-def create_new_release(config: Config, version: str) -> typing.Dict[str, typing.Any]:
+def _create_new_release(
+    config: Config, version: str
+) -> typing.Tuple[typing.Dict[str, typing.Any], typing.List[str]]:
     entries = glob.glob(str(config.path.absolute() / "*.entry.yaml"))
     release: typing.Dict[str, typing.Any] = {
         "entries": defaultdict(list),
@@ -131,4 +144,4 @@ def create_new_release(config: Config, version: str) -> typing.Dict[str, typing.
         with open(entry) as entry_file:
             entry_data = yaml.full_load(entry_file)
         release["entries"][entry_data.pop("type")].append(entry_data)
-    return release
+    return release, entries
