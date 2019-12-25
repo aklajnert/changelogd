@@ -96,6 +96,16 @@ def release(config: Config, version: str) -> None:
     releases, entries = _read_input_files(config, version)
     _save_release_file(config, releases, version)
 
+    resolver = Resolver(config)
+    release = resolver.full_resolve(releases)
+    with config.output_path.open("w") as ouput_fh:
+        ouput_fh.truncate(0)
+        ouput_fh.write(release.rstrip())
+
+    logging.info("Removing old entry files")
+    for entry in entries:
+        os.remove(entry)
+
 
 def _save_release_file(
     config: Config, releases: typing.List[typing.Dict[str, typing.Any]], version: str

@@ -12,11 +12,11 @@ from changelogd import cli
 from changelogd import commands
 from changelogd import config
 
-DRAFT = """# Changelog  
+INITIAL_RELEASE = """# Changelog  
 
-## beta-version (2020-02-02)  
+## initial-release (2020-02-02)  
 
-This is a test release.  
+This is the initial release.  
 
 ### Features  
 * [#101](http://repo/issues/101): Another test feature  
@@ -26,9 +26,7 @@ This is a test release.
 * [#102](http://repo/issues/102): Bug fixes  
 
 ### Documentation changes  
-* Slight docs update  
-  
-"""
+* Slight docs update"""
 
 
 class FakeDate(datetime.date):
@@ -56,7 +54,7 @@ def test_command_line_interface():
     assert "Show this message and exit." in help_result.output
 
 
-def test_full_flow(tmpdir, monkeypatch):
+def test_full_flow(tmpdir, monkeypatch, caplog):
     monkeypatch.setattr(config, "DEFAULT_PATH", Path(tmpdir) / "changelog.d")
     monkeypatch.chdir(tmpdir)
     monkeypatch.setattr(datetime, "date", FakeDate)
@@ -87,10 +85,34 @@ def test_full_flow(tmpdir, monkeypatch):
     )
 
     # try draft release
-    draft = runner.invoke(commands.draft, ["beta-version"], "This is a test release.")
+    draft = runner.invoke(
+        commands.draft, ["initial-release"], "This is the initial release."
+    )
     assert draft.exit_code == 0
-    output = draft.stdout[len("Release description (hit ENTER to omit): ") :]
-    assert output == DRAFT
+    output = draft.stdout[len("Release description (hit ENTER to omit): ") :].rstrip()
+    assert output == INITIAL_RELEASE
+
+    caplog.clear()
+    # now release first version
+    release = runner.invoke(
+        commands.release, ["initial-release"], "This is the initial release."
+    )
+    assert release.exit_code == 0
+    assert sorted(_list_directory(tmpdir)) == sorted(
+        [
+            "changelog.d/config.yaml",
+            "changelog.d/releases/.gitkeep",
+            "changelog.d/releases/0.initial-release.yaml",
+            "changelog.d/templates/entry.md",
+            "changelog.d/templates/main.md",
+            "changelog.d/templates/release.md",
+            "changelog.md",
+        ]
+    )
+    with open(tmpdir / "changelog.md") as changelog_fh:
+        changelog = changelog_fh.read()
+
+    assert changelog == INITIAL_RELEASE
 
 
 def _list_directory(directory):

@@ -12,6 +12,7 @@ import toml
 import yaml
 
 DEFAULT_PATH = Path(os.getcwd()) / "changelog.d"
+DEFAULT_OUTPUT = Path("../changelog.md")
 DEFAULT_CONFIG = {
     "message_types": [
         {"name": "feature", "title": "Features"},
@@ -34,7 +35,7 @@ DEFAULT_CONFIG = {
             "required": True,
         },
     ],
-    "output_file": "../changelog.md",
+    "output_file": str(DEFAULT_OUTPUT),
     "issues_url": "http://repo/issues",
 }
 
@@ -85,6 +86,11 @@ class Config:
     @property
     def releases_dir(self) -> Path:
         return self.path / "releases"
+
+    @property
+    def output_path(self) -> Path:
+        output_path = self.get_data().get("output_file", DEFAULT_OUTPUT)
+        return Path((self.path / output_path).resolve())
 
     def get_data(self) -> dict:
         if self._data is None:
