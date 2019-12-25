@@ -97,7 +97,9 @@ def release(config: Config, version: str) -> None:
     _save_release_file(config, releases, version)
 
 
-def _save_release_file(config, releases, version):
+def _save_release_file(
+    config: Config, releases: typing.List[typing.Dict[str, typing.Any]], version: str
+) -> None:
     current_release = releases[0]
     release_id = releases[1]["id"] + 1 if len(releases) > 1 else 0
     output_release_path = config.releases_dir / f"{release_id}.{version}.yaml"
