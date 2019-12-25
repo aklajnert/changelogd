@@ -90,7 +90,7 @@ def prepare_draft(config: Config, version: str) -> None:
     releases = prepare_releases(release, releases_dir)
 
     resolver = Resolver(config)
-    draft = resolver.resolve_template(releases)
+    draft = resolver.full_resolve(releases)
 
     print(draft)
 

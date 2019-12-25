@@ -1,4 +1,5 @@
 import os
+import pprint
 import sys
 import typing
 from pathlib import Path
@@ -15,7 +16,7 @@ class Resolver:
         self._config: Config = config
         self._templates_dir: Path = config.path / "templates"
 
-    def resolve_template(self, releases: typing.List[typing.Dict]) -> str:
+    def full_resolve(self, releases: typing.List[typing.Dict]) -> str:
         env = jinja2.Environment(
             loader=jinja2.FileSystemLoader(self._templates_dir.as_posix()),
         )
@@ -39,6 +40,7 @@ class Resolver:
         release: typing.Dict,
         templates: typing.Dict[str, jinja2.Template],
     ) -> str:
+        pprint.pprint(release)
         groups = {}
         for group_name, group in release.pop("entries", {}).items():
             groups[group_name] = [
