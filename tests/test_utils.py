@@ -18,7 +18,7 @@ def test_get_git_data(fake_process):
             "core.ignorecase=true\n"
             "branch.master.remote=origin\n"
             "branch.master.merge=refs/heads/master\n"
-        ).encode(),
+        ),
     )
 
     git_data = get_git_data()

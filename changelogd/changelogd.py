@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Main module."""
 import datetime
+import getpass
 import glob
 import hashlib
 import logging
@@ -15,6 +16,7 @@ import yaml
 from yaml.representer import Representer
 
 from changelogd.resolver import Resolver
+from changelogd.utils import get_git_data
 
 from .config import Config
 
@@ -71,6 +73,11 @@ def entry(config: Config) -> None:
     entries = {entry.name: entry.value for entry in entry_fields}
     entry_type = message_types[int(selection) - 1].get("name")  # type: ignore
     entries["type"] = entry_type
+
+    entries["os_user"] = getpass.getuser()
+    git_data = get_git_data()
+    if git_data:
+        entries["git_user"], entries["git_email"] = git_data
 
     hash = hashlib.md5()
     entries_flat = " ".join(f"{key}={value}" for key, value in entries.items())
