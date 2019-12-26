@@ -100,7 +100,7 @@ def release(config: Config, version: str) -> None:
     release = resolver.full_resolve(releases)
     with config.output_path.open("w") as ouput_fh:
         ouput_fh.truncate(0)
-        ouput_fh.write(release.rstrip())
+        ouput_fh.write(release)
 
     logging.info("Removing old entry files")
     for entry in entries:

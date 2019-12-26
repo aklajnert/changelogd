@@ -12,8 +12,10 @@ from changelogd import cli
 from changelogd import commands
 from changelogd import config
 
-INITIAL_RELEASE = """# Changelog  
+BASE = """# Changelog  
 
+"""
+INITIAL_RELEASE = """
 ## initial-release (2020-02-02)  
 
 This is the initial release.  
@@ -26,7 +28,23 @@ This is the initial release.
 * [#102](http://repo/issues/102): Bug fixes  
 
 ### Documentation changes  
-* Slight docs update"""
+* Slight docs update  
+"""
+SECOND_RELEASE = """
+## second-release (2020-02-03)  
+
+### Features  
+* [#202](http://repo/issues/202): Something new  
+* Great feature  
+* [#201](http://repo/issues/201): Super cool feature  
+
+### Deprecations  
+* [#200](http://repo/issues/200): Deprecated test feature  
+
+### Other changes  
+* Refactor  
+
+"""
 
 
 class FakeDate(datetime.date):
@@ -54,7 +72,7 @@ def test_command_line_interface():
     assert "Show this message and exit." in help_result.output
 
 
-def test_full_flow(tmpdir, monkeypatch, caplog):
+def test_full_flow(tmpdir, monkeypatch):
     monkeypatch.setattr(config, "DEFAULT_PATH", Path(tmpdir) / "changelog.d")
     monkeypatch.chdir(tmpdir)
     monkeypatch.setattr(datetime, "date", FakeDate)
@@ -89,10 +107,9 @@ def test_full_flow(tmpdir, monkeypatch, caplog):
         commands.draft, ["initial-release"], "This is the initial release."
     )
     assert draft.exit_code == 0
-    output = draft.stdout[len("Release description (hit ENTER to omit): ") :].rstrip()
-    assert output == INITIAL_RELEASE
+    output = draft.stdout[len("Release description (hit ENTER to omit): ") :]
+    assert output == BASE + INITIAL_RELEASE + "\n"
 
-    caplog.clear()
     # now release first version
     release = runner.invoke(
         commands.release, ["initial-release"], "This is the initial release."
@@ -112,7 +129,38 @@ def test_full_flow(tmpdir, monkeypatch, caplog):
     with open(tmpdir / "changelog.md") as changelog_fh:
         changelog = changelog_fh.read()
 
-    assert changelog == INITIAL_RELEASE
+    assert changelog == BASE + INITIAL_RELEASE
+
+    # create some other entries
+    _create_entry(runner, "4", "200", "Deprecated test feature")
+    _create_entry(runner, "1", "201", "Super cool feature")
+    _create_entry(runner, "5", "", "Refactor")
+    _create_entry(runner, "1", "", "Great feature")
+    _create_entry(runner, "1", "202", "Something new")
+    assert (
+        len(glob.glob((Path(tmpdir) / "changelog.d" / "*entry.yaml").as_posix())) == 5
+    )
+
+    FakeDate.set_date(datetime.date(2020, 2, 3))
+    # release a new version
+    release = runner.invoke(commands.release, ["second-release"], "\n")
+    assert release.exit_code == 0
+    assert sorted(_list_directory(tmpdir)) == sorted(
+        [
+            "changelog.d/config.yaml",
+            "changelog.d/releases/.gitkeep",
+            "changelog.d/releases/0.initial-release.yaml",
+            "changelog.d/releases/1.second-release.yaml",
+            "changelog.d/templates/entry.md",
+            "changelog.d/templates/main.md",
+            "changelog.d/templates/release.md",
+            "changelog.md",
+        ]
+    )
+    with open(tmpdir / "changelog.md") as changelog_fh:
+        changelog = changelog_fh.read()
+
+    assert changelog == BASE + SECOND_RELEASE + INITIAL_RELEASE
 
 
 def _list_directory(directory):
