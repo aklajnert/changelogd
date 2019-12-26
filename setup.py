@@ -14,7 +14,7 @@ requirements = [
     "PyYaml>=5.1",
 ]
 
-test_requirements = ["pytest>=5", "pyfakefs==3.7"]
+test_requirements = ["pytest>=5", "pyfakefs==3.7", "pytest-subprocess"]
 
 dev_requirements = [
     "bump2version==0.5.11",
