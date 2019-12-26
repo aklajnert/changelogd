@@ -21,8 +21,8 @@ INITIAL_RELEASE = """
 This is the initial release.  
 
 ### Features  
-* [#101](http://repo/issues/101): Another test feature  
 * [#100](http://repo/issues/100): Test feature  
+* [#101](http://repo/issues/101): Another test feature  
 
 ### Bug fixes  
 * [#102](http://repo/issues/102): Bug fixes  
