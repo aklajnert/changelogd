@@ -34,9 +34,9 @@ SECOND_RELEASE = """
 ## second-release (2020-02-03)  
 
 ### Features  
+* [#201](http://repo/issues/201): Super cool feature  
 * [#202](http://repo/issues/202): Something new  
 * Great feature  
-* [#201](http://repo/issues/201): Super cool feature  
 
 ### Deprecations  
 * [#200](http://repo/issues/200): Deprecated test feature  
@@ -72,7 +72,12 @@ def test_command_line_interface():
     assert "Show this message and exit." in help_result.output
 
 
-def test_full_flow(tmpdir, monkeypatch):
+def test_full_flow(tmpdir, monkeypatch, fake_process):
+    fake_process.keep_last_process(True)
+    fake_process.register_subprocess(
+        ["git", "config", "--list"],
+        stdout=("user.name=Some User\n" "user.email=user@example.com\n"),
+    )
     monkeypatch.setattr(config, "DEFAULT_PATH", Path(tmpdir) / "changelog.d")
     monkeypatch.chdir(tmpdir)
     monkeypatch.setattr(datetime, "date", FakeDate)
