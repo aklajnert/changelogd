@@ -97,7 +97,7 @@ class Config:
 
     @property
     def partial_name(self) -> str:
-        return self.get_value(PARTIAL_KEY_NAME, DEFAULT_PARTIAL_VALUE)
+        return str(self.get_value(PARTIAL_KEY_NAME, DEFAULT_PARTIAL_VALUE))
 
     def get_data(self) -> dict:
         if self._data is None:
