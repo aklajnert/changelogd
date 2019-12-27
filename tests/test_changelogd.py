@@ -78,7 +78,10 @@ def test_command_line_interface():
     assert "Show this message and exit." in help_result.output
 
 
-def test_full_flow(tmpdir, monkeypatch, fake_process):
+def test_full_flow(tmpdir, monkeypatch, fake_process, caplog):
+    """
+    This function tests full functionality from fresh start through few releases.
+    """
     fake_process.keep_last_process(True)
     fake_process.register_subprocess(
         ["git", "config", "--list"],
@@ -158,6 +161,12 @@ def test_full_flow(tmpdir, monkeypatch, fake_process):
     changelog = _read_changelog(tmpdir)
     assert changelog == BASE + PARTIAL_RELEASE_HEADER + SECOND_RELEASE + INITIAL_RELEASE
 
+    # another partial release shall generate exactly the same output
+    partial = runner.invoke(commands.partial)
+    assert partial.exit_code == 0
+
+    assert changelog == _read_changelog(tmpdir)
+
     # release a new version
     release = runner.invoke(commands.release, ["second-release"], "\n")
     assert release.exit_code == 0
@@ -177,6 +186,26 @@ def test_full_flow(tmpdir, monkeypatch, fake_process):
 
     changelog = _read_changelog(tmpdir)
     assert changelog == BASE + SECOND_RELEASE_HEADER + SECOND_RELEASE + INITIAL_RELEASE
+    caplog.clear()
+
+    # another attempt to release shall raise an error due to no entries
+    release = runner.invoke(commands.release, ["third-release"], "\n")
+    assert release.exit_code == 1
+    assert "Cannot create new release without any entries." in caplog.messages
+    caplog.clear()
+
+    # same should happen for draft
+    draft = runner.invoke(commands.draft, ["third-release"], "\n")
+    assert draft.exit_code == 1
+    assert "Cannot create new release without any entries." in caplog.messages
+    caplog.clear()
+
+    # but another attempt to partial release should be fine
+    partial = runner.invoke(commands.partial)
+    assert partial.exit_code == 0
+    # however, changelog shouldn't be changed
+    new_changelog = _read_changelog(tmpdir)
+    assert changelog == new_changelog
 
 
 def _count_entry_files(tmpdir):

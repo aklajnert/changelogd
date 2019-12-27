@@ -104,6 +104,7 @@ def release(config: Config, version: str, partial: bool = False) -> None:
 
     resolver = Resolver(config)
     release = resolver.full_resolve(releases)
+
     with config.output_path.open("w") as ouput_fh:
         ouput_fh.truncate(0)
         ouput_fh.write(release)
@@ -160,25 +161,32 @@ def _prepare_releases(
             release_item["id"] = version
             previous_release = release_item.get("release_version")
             releases.append(release_item)
-    release["previous-release"] = previous_release
-    releases.append(release)
+    if release:
+        release["previous-release"] = previous_release
+        releases.append(release)
     return list(reversed(releases))
 
 
 def _create_new_release(
     config: Config, version: str
 ) -> typing.Tuple[typing.Dict[str, typing.Any], typing.List[str]]:
+    partial = version == config.partial_name
     entries = glob.glob(str(config.path.absolute() / "*.entry.yaml"))
+    if not entries and not partial:
+        logging.error("Cannot create new release without any entries.")
+        sys.exit(1)
     release: typing.Dict[str, typing.Any] = {
         "entries": defaultdict(list),
         "release_version": version,
         "release_date": datetime.date.today().strftime("%Y-%m-%d"),
         "release_description": input("Release description (hit ENTER to omit): ")
-        if not version == config.partial_name
+        if not partial
         else None,
     }
     for entry in sorted(entries):
         with open(entry) as entry_file:
             entry_data = yaml.full_load(entry_file)
         release["entries"][entry_data.pop("type")].append(entry_data)
+    if not entries:
+        return {}, []
     return release, entries
