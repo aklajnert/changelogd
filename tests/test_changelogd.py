@@ -22,28 +22,28 @@ INITIAL_RELEASE = """
 This is the initial release.  
 
 ### Features  
-* [#100](http://repo/issues/100): Test feature  
-* [#101](http://repo/issues/101): Another test feature  
+* [#100](http://repo/issues/100): Test feature ([@test-user](user@example.com))  
+* [#101](http://repo/issues/101): Another test feature ([@test-user](user@example.com))  
 
 ### Bug fixes  
-* [#102](http://repo/issues/102): Bug fixes  
+* [#102](http://repo/issues/102): Bug fixes ([@test-user](user@example.com))  
 
 ### Documentation changes  
-* Slight docs update  
+* Slight docs update ([@test-user](user@example.com))  
 """
 SECOND_RELEASE = """
 ## second-release (2020-02-03)  
 
 ### Features  
-* [#202](http://repo/issues/202): Something new  
-* Great feature  
-* [#201](http://repo/issues/201): Super cool feature  
+* [#202](http://repo/issues/202): Something new ([@test-user](user@example.com))  
+* Great feature ([@test-user](user@example.com))  
+* [#201](http://repo/issues/201): Super cool feature ([@test-user](user@example.com))  
 
 ### Deprecations  
-* [#200](http://repo/issues/200): Deprecated test feature  
+* [#200](http://repo/issues/200): Deprecated test feature ([@test-user](user@example.com))  
 
 ### Other changes  
-* Refactor  
+* Refactor ([@test-user](user@example.com))  
 
 """
 
