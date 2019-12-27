@@ -173,7 +173,9 @@ def _create_new_release(
         "entries": defaultdict(list),
         "release_version": version,
         "release_date": datetime.date.today().strftime("%Y-%m-%d"),
-        "release_description": input("Release description (hit ENTER to omit): "),
+        "release_description": input("Release description (hit ENTER to omit): ")
+        if not version == config.partial_name
+        else None,
     }
     for entry in sorted(entries):
         with open(entry) as entry_file:

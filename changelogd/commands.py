@@ -58,8 +58,7 @@ def partial(
     _: click.core.Context, config: Config, **options: typing.Dict[str, typing.Any]
 ) -> None:
     """Generate changelog without clearing entries. Release name is taken from config file."""
-    version = config.get_value("partial_release_name", "unreleased")
-    changelogd.release(config, version, True)
+    changelogd.release(config, version=config.partial_name, partial=True)
 
 
 @command_decorator

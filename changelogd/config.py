@@ -13,6 +13,8 @@ import yaml
 
 DEFAULT_PATH = Path(os.getcwd()) / "changelog.d"
 DEFAULT_OUTPUT = Path("../changelog.md")
+PARTIAL_KEY_NAME = "partial_release_name"
+DEFAULT_PARTIAL_VALUE = "unreleased"
 DEFAULT_CONFIG = {
     "message_types": [
         {"name": "feature", "title": "Features"},
@@ -37,6 +39,7 @@ DEFAULT_CONFIG = {
     ],
     "output_file": str(DEFAULT_OUTPUT),
     "issues_url": "http://repo/issues",
+    PARTIAL_KEY_NAME: DEFAULT_PARTIAL_VALUE,
 }
 
 
@@ -91,6 +94,10 @@ class Config:
     def output_path(self) -> Path:
         output_path = self.get_value("output_file", DEFAULT_OUTPUT)
         return Path((self.path / output_path).resolve())
+
+    @property
+    def partial_name(self) -> str:
+        return self.get_value(PARTIAL_KEY_NAME, DEFAULT_PARTIAL_VALUE)
 
     def get_data(self) -> dict:
         if self._data is None:

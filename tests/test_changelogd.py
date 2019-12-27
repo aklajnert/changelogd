@@ -31,9 +31,14 @@ This is the initial release.
 ### Documentation changes  
 * Slight docs update ([@test-user](user@example.com))  
 """
-SECOND_RELEASE = """
-## second-release (2020-02-03)  
 
+PARTIAL_RELEASE_HEADER = """
+## unreleased (2020-02-03)  
+"""
+SECOND_RELEASE_HEADER = """
+## second-release (2020-02-03)  
+"""
+SECOND_RELEASE = """
 ### Features  
 * [#202](http://repo/issues/202): Something new ([@test-user](user@example.com))  
 * Great feature ([@test-user](user@example.com))  
@@ -105,9 +110,7 @@ def test_full_flow(tmpdir, monkeypatch, fake_process):
     _create_entry(runner, "1", "101", "Another test feature")
     _create_entry(runner, "2", "102", "Bug fixes")
     _create_entry(runner, "3", "", "Slight docs update")
-    assert (
-        len(glob.glob((Path(tmpdir) / "changelog.d" / "*entry.yaml").as_posix())) == 4
-    )
+    assert _count_entry_files(tmpdir) == 4
 
     # try draft release
     draft = runner.invoke(
@@ -133,8 +136,7 @@ def test_full_flow(tmpdir, monkeypatch, fake_process):
             "changelog.md",
         ]
     )
-    with open(tmpdir / "changelog.md") as changelog_fh:
-        changelog = changelog_fh.read()
+    changelog = _read_changelog(tmpdir)
 
     assert changelog == BASE + INITIAL_RELEASE
 
@@ -144,11 +146,18 @@ def test_full_flow(tmpdir, monkeypatch, fake_process):
     _create_entry(runner, "5", "", "Refactor")
     _create_entry(runner, "1", "", "Great feature")
     _create_entry(runner, "1", "202", "Something new")
-    assert (
-        len(glob.glob((Path(tmpdir) / "changelog.d" / "*entry.yaml").as_posix())) == 5
-    )
+    assert _count_entry_files(tmpdir) == 5
 
     FakeDate.set_date(datetime.date(2020, 2, 3))
+    # try a partial release
+    partial = runner.invoke(commands.partial)
+    assert partial.exit_code == 0
+
+    assert _count_entry_files(tmpdir) == 5
+
+    changelog = _read_changelog(tmpdir)
+    assert changelog == BASE + PARTIAL_RELEASE_HEADER + SECOND_RELEASE + INITIAL_RELEASE
+
     # release a new version
     release = runner.invoke(commands.release, ["second-release"], "\n")
     assert release.exit_code == 0
@@ -164,10 +173,20 @@ def test_full_flow(tmpdir, monkeypatch, fake_process):
             "changelog.md",
         ]
     )
+    assert _count_entry_files(tmpdir) == 0
+
+    changelog = _read_changelog(tmpdir)
+    assert changelog == BASE + SECOND_RELEASE_HEADER + SECOND_RELEASE + INITIAL_RELEASE
+
+
+def _count_entry_files(tmpdir):
+    return len(glob.glob((Path(tmpdir) / "changelog.d" / "*entry.yaml").as_posix()))
+
+
+def _read_changelog(tmpdir):
     with open(tmpdir / "changelog.md") as changelog_fh:
         changelog = changelog_fh.read()
-
-    assert changelog == BASE + SECOND_RELEASE + INITIAL_RELEASE
+    return changelog
 
 
 def _list_directory(directory):
