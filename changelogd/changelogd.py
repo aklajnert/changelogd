@@ -99,21 +99,31 @@ def draft(config: Config, version: str) -> None:
     print(draft)
 
 
-def release(config: Config, version: str, partial: bool = False) -> None:
+def release(
+    config: Config, version: str, partial: bool = False, check: bool = False
+) -> None:
     releases, entries = _read_input_files(config, version)
 
     resolver = Resolver(config)
     release = resolver.full_resolve(releases)
 
-    with config.output_path.open("w") as ouput_fh:
-        ouput_fh.truncate(0)
-        ouput_fh.write(release)
+    if check:
+        with config.output_path.open("r") as output_fh:
+            previous_content = output_fh.read()
+
+    with config.output_path.open("w") as output_fh:
+        output_fh.truncate(0)
+        output_fh.write(release)
 
     if not partial:
         _save_release_file(config, releases, version)
         logging.info("Removing old entry files")
         for entry in entries:
             os.remove(entry)
+
+    if check and previous_content != release:
+        logging.error("Output file content is different than before.")
+        sys.exit(1)
 
 
 def _save_release_file(
@@ -175,10 +185,13 @@ def _create_new_release(
     if not entries and not partial:
         logging.error("Cannot create new release without any entries.")
         sys.exit(1)
+    date = datetime.date.today()
+    if partial:
+        date = _get_partial_timestamp(config, entries)
     release: typing.Dict[str, typing.Any] = {
         "entries": defaultdict(list),
         "release_version": version,
-        "release_date": datetime.date.today().strftime("%Y-%m-%d"),
+        "release_date": date.strftime("%Y-%m-%d"),
         "release_description": input("Release description (hit ENTER to omit): ")
         if not partial
         else None,
@@ -190,3 +203,17 @@ def _create_new_release(
     if not entries:
         return {}, []
     return release, entries
+
+
+def _get_partial_timestamp(
+    config: Config, entries: typing.List[str]
+) -> datetime.datetime:
+    timestamps = []
+    if config.output_path.is_file():
+        timestamps.append(os.path.getmtime(config.output_path.as_posix()))
+    for entry in entries:
+        timestamps.append(os.path.getmtime(entry))
+    timestamps.sort()
+    if not timestamps:
+        return datetime.datetime.today()
+    return datetime.datetime.fromtimestamp(timestamps[-1])

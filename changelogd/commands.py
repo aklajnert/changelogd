@@ -54,13 +54,19 @@ def release(
 
 
 @command_decorator
+@click.option(
+    "--check", help="Return exit code 1 if output file is different.", is_flag=True
+)
 def partial(
-    _: click.core.Context, config: Config, **options: typing.Dict[str, typing.Any]
+    _: click.core.Context,
+    config: Config,
+    check: bool,
+    **options: typing.Dict[str, typing.Any]
 ) -> None:
     """
     Generate changelog without clearing entries, release name is taken from config file.
     """
-    changelogd.release(config, version=config.partial_name, partial=True)
+    changelogd.release(config, version=config.partial_name, partial=True, check=check)
 
 
 @command_decorator

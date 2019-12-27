@@ -13,6 +13,9 @@ from changelogd import cli
 from changelogd import commands
 from changelogd import config
 
+EPOCH_02_02_2020 = 1580608922
+EPOCH_03_02_2020 = 1580695322
+
 BASE = """# Changelog  
 
 """
@@ -90,6 +93,7 @@ def test_full_flow(tmpdir, monkeypatch, fake_process, caplog):
     monkeypatch.setattr(getpass, "getuser", lambda: "test-user")
     monkeypatch.setattr(config, "DEFAULT_PATH", Path(tmpdir) / "changelog.d")
     monkeypatch.chdir(tmpdir)
+    monkeypatch.setattr(os.path, "getmtime", lambda _: EPOCH_02_02_2020)
     monkeypatch.setattr(datetime, "date", FakeDate)
     FakeDate.set_date(datetime.date(2020, 2, 2))
 
@@ -152,6 +156,7 @@ def test_full_flow(tmpdir, monkeypatch, fake_process, caplog):
     assert _count_entry_files(tmpdir) == 5
 
     FakeDate.set_date(datetime.date(2020, 2, 3))
+    monkeypatch.setattr(os.path, "getmtime", lambda _: EPOCH_03_02_2020)
     # try a partial release
     partial = runner.invoke(commands.partial)
     assert partial.exit_code == 0
@@ -203,9 +208,56 @@ def test_full_flow(tmpdir, monkeypatch, fake_process, caplog):
     # but another attempt to partial release should be fine
     partial = runner.invoke(commands.partial)
     assert partial.exit_code == 0
-    # however, changelog shouldn't be changed
+    # however, changelog shouldn't be modified
     new_changelog = _read_changelog(tmpdir)
     assert changelog == new_changelog
+
+    # even with the --check argument
+    partial = runner.invoke(commands.partial, ["--check"])
+    assert partial.exit_code == 0
+
+
+def test_partial_releases(tmpdir, monkeypatch, fake_process, caplog):
+    """Test more sophisticated scenarios with partial releases."""
+    fake_process.keep_last_process(True)
+    fake_process.register_subprocess(
+        ["git", "config", "--list"],
+        stdout=("user.name=Some User\n" "user.email=user@example.com\n"),
+    )
+    monkeypatch.setattr(getpass, "getuser", lambda: "test-user")
+    monkeypatch.setattr(config, "DEFAULT_PATH", Path(tmpdir) / "changelog.d")
+    monkeypatch.chdir(tmpdir)
+    monkeypatch.setattr(datetime, "date", FakeDate)
+    monkeypatch.setattr(os.path, "getmtime", lambda _: EPOCH_02_02_2020)
+    FakeDate.set_date(datetime.date(2020, 2, 2))
+
+    runner = CliRunner()
+
+    init = runner.invoke(commands.init)
+    assert init.exit_code == 0
+
+    _create_entry(runner, "1", "1", "First entry")
+    partial = runner.invoke(commands.partial)
+    assert partial.exit_code == 0
+
+    _create_entry(runner, "1", "2", "Second entry")
+    # now run partial with --check, which should fail
+    caplog.clear()
+    partial = runner.invoke(commands.partial, ["--check"])
+    assert partial.exit_code == 1
+    assert "Output file content is different than before." in caplog.messages
+
+    # another partial should pass, since previous partial updated the changelog
+    caplog.clear()
+    partial = runner.invoke(commands.partial, ["--check"])
+    assert partial.exit_code == 0
+    assert not caplog.messages
+
+    # even the next day shouldn't cause --check to fail
+    FakeDate.set_date(datetime.date(2020, 2, 3))
+    partial = runner.invoke(commands.partial, ["--check"])
+    assert partial.exit_code == 0
+    assert not caplog.messages
 
 
 def _count_entry_files(tmpdir):
