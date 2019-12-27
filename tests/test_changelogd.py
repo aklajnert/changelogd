@@ -260,6 +260,29 @@ def test_partial_releases(tmpdir, monkeypatch, fake_process, caplog):
     assert not caplog.messages
 
 
+def test_init(tmpdir, monkeypatch, caplog):
+    monkeypatch.chdir(tmpdir)
+    monkeypatch.setattr(config, "DEFAULT_PATH", Path(tmpdir) / "changelog.d")
+    with open(tmpdir / "setup.cfg", "w+") as setup_file:
+        setup_file.write("[tool:pytest]\ncollect_ignore = ['setup.py']")
+
+    runner = CliRunner()
+
+    init = runner.invoke(commands.init)
+    assert init.exit_code == 0
+
+    config_yaml = tmpdir / "changelog.d" / "config.yaml"
+    assert f"Created main configuration file: {config_yaml}" in caplog.messages
+    assert (
+        f"Copied templates to {tmpdir / 'changelog.d' / 'templates'}" in caplog.messages
+    )
+    assert (
+        f"The configuration path is not standard, please add a following snippet to "
+        f"the '{tmpdir / 'setup.cfg'}' file:\n\n[tool:changelogd]\n"
+        f"config={config_yaml}" not in caplog.messages
+    )
+
+
 def _count_entry_files(tmpdir):
     return len(glob.glob((Path(tmpdir) / "changelog.d" / "*entry.yaml").as_posix()))
 

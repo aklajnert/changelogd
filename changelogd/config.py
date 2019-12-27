@@ -186,7 +186,7 @@ class Config:
         if dst:
             logging.warning(f"Copied templates to {dst}")
 
-        if path != DEFAULT_PATH:
+        if path is not None and path != DEFAULT_PATH:
             config_file, default = next(
                 (
                     (config_file, default)
