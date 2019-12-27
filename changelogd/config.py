@@ -89,13 +89,16 @@ class Config:
 
     @property
     def output_path(self) -> Path:
-        output_path = self.get_data().get("output_file", DEFAULT_OUTPUT)
+        output_path = self.get_value("output_file", DEFAULT_OUTPUT)
         return Path((self.path / output_path).resolve())
 
     def get_data(self) -> dict:
         if self._data is None:
             self._data = self._load_data()
         return deepcopy(self._data)
+
+    def get_value(self, key: str, default: typing.Any = None) -> typing.Any:
+        return self.get_data().get(key, default)
 
     def _get_path(self) -> Path:
         path = self._search_config() or DEFAULT_PATH

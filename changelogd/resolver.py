@@ -24,7 +24,7 @@ class Resolver:
             self._templates_dir, ("entry", "main", "release"), env
         )
 
-        message_types = self._config.get_data().get("message_types", [])
+        message_types = self._config.get_value("message_types", [])
         resolved_releases = [
             self._resolve_release(message_types, release, templates)
             for release in releases

@@ -54,6 +54,15 @@ def release(
 
 
 @command_decorator
+def partial(
+    _: click.core.Context, config: Config, **options: typing.Dict[str, typing.Any]
+) -> None:
+    """Generate changelog without clearing entries. Release name is taken from config file."""
+    version = config.get_value("partial_release_name", "unreleased")
+    changelogd.release(config, version, True)
+
+
+@command_decorator
 def entry(
     _: click.core.Context, config: Config, **options: typing.Dict[str, typing.Any]
 ) -> None:
@@ -62,7 +71,7 @@ def entry(
 
 
 def register_commands(cli: click.core.Group) -> None:
-    commands = (init, draft, release, entry)
+    commands = (init, draft, partial, release, entry)
 
     for command in commands:
         cli.add_command(command)

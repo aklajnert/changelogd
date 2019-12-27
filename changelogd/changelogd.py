@@ -99,9 +99,8 @@ def draft(config: Config, version: str) -> None:
     print(draft)
 
 
-def release(config: Config, version: str) -> None:
+def release(config: Config, version: str, partial: bool = False) -> None:
     releases, entries = _read_input_files(config, version)
-    _save_release_file(config, releases, version)
 
     resolver = Resolver(config)
     release = resolver.full_resolve(releases)
@@ -109,9 +108,11 @@ def release(config: Config, version: str) -> None:
         ouput_fh.truncate(0)
         ouput_fh.write(release)
 
-    logging.info("Removing old entry files")
-    for entry in entries:
-        os.remove(entry)
+    if not partial:
+        _save_release_file(config, releases, version)
+        logging.info("Removing old entry files")
+        for entry in entries:
+            os.remove(entry)
 
 
 def _save_release_file(
