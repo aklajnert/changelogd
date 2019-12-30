@@ -114,6 +114,7 @@ def release(
     with config.output_path.open("w") as output_fh:
         output_fh.truncate(0)
         output_fh.write(release)
+        logging.info(f"Generated changelog file to {config.output_path}")
 
     if not partial:
         _save_release_file(config, releases, version)
