@@ -7,6 +7,7 @@ import glob
 import os
 from pathlib import Path
 
+import pytest
 from click.testing import CliRunner
 
 from changelogd import cli
@@ -55,6 +56,20 @@ SECOND_RELEASE = """
 
 """
 
+@pytest.fixture
+def setup_env(fake_process, monkeypatch, tmpdir):
+    fake_process.keep_last_process(True)
+    fake_process.register_subprocess(
+        ["git", "config", "--list"],
+        stdout=("user.name=Some User\n" "user.email=user@example.com\n"),
+    )
+    monkeypatch.setattr(getpass, "getuser", lambda: "test-user")
+    monkeypatch.setattr(config, "DEFAULT_PATH", Path(tmpdir) / "changelog.d")
+    monkeypatch.chdir(tmpdir)
+    monkeypatch.setattr(datetime, "date", FakeDate)
+    monkeypatch.setattr(os.path, "getmtime", lambda _: EPOCH_02_02_2020)
+    FakeDate.set_date(datetime.date(2020, 2, 2))
+    yield tmpdir
 
 class FakeDate(datetime.date):
     _date = None
@@ -81,28 +96,17 @@ def test_command_line_interface():
     assert "Show this message and exit." in help_result.output
 
 
-def test_full_flow(tmpdir, monkeypatch, fake_process, caplog):
+def test_full_flow(setup_env, monkeypatch, caplog):
     """
     This function tests full functionality from fresh start through few releases.
     """
-    fake_process.keep_last_process(True)
-    fake_process.register_subprocess(
-        ["git", "config", "--list"],
-        stdout=("user.name=Some User\n" "user.email=user@example.com\n"),
-    )
-    monkeypatch.setattr(getpass, "getuser", lambda: "test-user")
-    monkeypatch.setattr(config, "DEFAULT_PATH", Path(tmpdir) / "changelog.d")
-    monkeypatch.chdir(tmpdir)
-    monkeypatch.setattr(os.path, "getmtime", lambda _: EPOCH_02_02_2020)
-    monkeypatch.setattr(datetime, "date", FakeDate)
-    FakeDate.set_date(datetime.date(2020, 2, 2))
 
     runner = CliRunner()
 
     # start with init
     init = runner.invoke(commands.init)
     assert init.exit_code == 0
-    assert sorted(_list_directory(tmpdir)) == sorted(
+    assert sorted(_list_directory(setup_env)) == sorted(
         [
             "changelog.d/config.yaml",
             "changelog.d/releases/.gitkeep",
@@ -117,7 +121,7 @@ def test_full_flow(tmpdir, monkeypatch, fake_process, caplog):
     _create_entry(runner, "1", "101", "Another test feature")
     _create_entry(runner, "2", "102", "Bug fixes")
     _create_entry(runner, "3", "", "Slight docs update")
-    assert _count_entry_files(tmpdir) == 4
+    assert _count_entry_files(setup_env) == 4
 
     # try draft release
     draft = runner.invoke(
@@ -132,7 +136,7 @@ def test_full_flow(tmpdir, monkeypatch, fake_process, caplog):
         commands.release, ["initial-release"], "This is the initial release."
     )
     assert release.exit_code == 0
-    assert sorted(_list_directory(tmpdir)) == sorted(
+    assert sorted(_list_directory(setup_env)) == sorted(
         [
             "changelog.d/config.yaml",
             "changelog.d/releases/.gitkeep",
@@ -143,7 +147,7 @@ def test_full_flow(tmpdir, monkeypatch, fake_process, caplog):
             "changelog.md",
         ]
     )
-    changelog = _read_changelog(tmpdir)
+    changelog = _read_changelog(setup_env)
 
     assert changelog == BASE + INITIAL_RELEASE
 
@@ -153,7 +157,7 @@ def test_full_flow(tmpdir, monkeypatch, fake_process, caplog):
     _create_entry(runner, "5", "", "Refactor")
     _create_entry(runner, "1", "", "Great feature")
     _create_entry(runner, "1", "202", "Something new")
-    assert _count_entry_files(tmpdir) == 5
+    assert _count_entry_files(setup_env) == 5
 
     FakeDate.set_date(datetime.date(2020, 2, 3))
     monkeypatch.setattr(os.path, "getmtime", lambda _: EPOCH_03_02_2020)
@@ -161,21 +165,21 @@ def test_full_flow(tmpdir, monkeypatch, fake_process, caplog):
     partial = runner.invoke(commands.partial)
     assert partial.exit_code == 0
 
-    assert _count_entry_files(tmpdir) == 5
+    assert _count_entry_files(setup_env) == 5
 
-    changelog = _read_changelog(tmpdir)
+    changelog = _read_changelog(setup_env)
     assert changelog == BASE + PARTIAL_RELEASE_HEADER + SECOND_RELEASE + INITIAL_RELEASE
 
     # another partial release shall generate exactly the same output
     partial = runner.invoke(commands.partial)
     assert partial.exit_code == 0
 
-    assert changelog == _read_changelog(tmpdir)
+    assert changelog == _read_changelog(setup_env)
 
     # release a new version
     release = runner.invoke(commands.release, ["second-release"], "\n")
     assert release.exit_code == 0
-    assert sorted(_list_directory(tmpdir)) == sorted(
+    assert sorted(_list_directory(setup_env)) == sorted(
         [
             "changelog.d/config.yaml",
             "changelog.d/releases/.gitkeep",
@@ -187,9 +191,9 @@ def test_full_flow(tmpdir, monkeypatch, fake_process, caplog):
             "changelog.md",
         ]
     )
-    assert _count_entry_files(tmpdir) == 0
+    assert _count_entry_files(setup_env) == 0
 
-    changelog = _read_changelog(tmpdir)
+    changelog = _read_changelog(setup_env)
     assert changelog == BASE + SECOND_RELEASE_HEADER + SECOND_RELEASE + INITIAL_RELEASE
     caplog.clear()
 
@@ -209,7 +213,7 @@ def test_full_flow(tmpdir, monkeypatch, fake_process, caplog):
     partial = runner.invoke(commands.partial)
     assert partial.exit_code == 0
     # however, changelog shouldn't be modified
-    new_changelog = _read_changelog(tmpdir)
+    new_changelog = _read_changelog(setup_env)
     assert changelog == new_changelog
 
     # even with the --check argument
@@ -217,20 +221,8 @@ def test_full_flow(tmpdir, monkeypatch, fake_process, caplog):
     assert partial.exit_code == 0
 
 
-def test_partial_releases(tmpdir, monkeypatch, fake_process, caplog):
+def test_partial_releases(setup_env, caplog):
     """Test more sophisticated scenarios with partial releases."""
-    fake_process.keep_last_process(True)
-    fake_process.register_subprocess(
-        ["git", "config", "--list"],
-        stdout=("user.name=Some User\n" "user.email=user@example.com\n"),
-    )
-    monkeypatch.setattr(getpass, "getuser", lambda: "test-user")
-    monkeypatch.setattr(config, "DEFAULT_PATH", Path(tmpdir) / "changelog.d")
-    monkeypatch.chdir(tmpdir)
-    monkeypatch.setattr(datetime, "date", FakeDate)
-    monkeypatch.setattr(os.path, "getmtime", lambda _: EPOCH_02_02_2020)
-    FakeDate.set_date(datetime.date(2020, 2, 2))
-
     runner = CliRunner()
 
     init = runner.invoke(commands.init)
