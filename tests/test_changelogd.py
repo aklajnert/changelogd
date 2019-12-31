@@ -253,6 +253,13 @@ def test_partial_releases(setup_env, caplog):
     assert partial.exit_code == 0
     assert not caplog.messages
 
+    # but running partial without --check should update the timestamp
+    changelog_before = _read_changelog(setup_env)
+    partial = runner.invoke(commands.partial)
+    assert partial.exit_code == 0
+    assert not caplog.messages
+    assert changelog_before != _read_changelog(setup_env)
+
 
 def test_init(tmpdir, monkeypatch, caplog):
     monkeypatch.chdir(tmpdir)

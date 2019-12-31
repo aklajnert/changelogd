@@ -102,7 +102,7 @@ def draft(config: Config, version: str) -> None:
 def release(
     config: Config, version: str, partial: bool = False, check: bool = False
 ) -> None:
-    releases, entries = _read_input_files(config, version)
+    releases, entries = _read_input_files(config, version, check)
 
     resolver = Resolver(config)
     release = resolver.full_resolve(releases)
@@ -139,9 +139,9 @@ def _save_release_file(
 
 
 def _read_input_files(
-    config: Config, version: str
+    config: Config, version: str, is_checking: bool = False
 ) -> typing.Tuple[typing.List[typing.Dict[str, typing.Any]], typing.List[str]]:
-    release, entries = _create_new_release(config, version)
+    release, entries = _create_new_release(config, version, is_checking)
     releases = _prepare_releases(release, config.releases_dir)
 
     return releases, entries
@@ -179,7 +179,7 @@ def _prepare_releases(
 
 
 def _create_new_release(
-    config: Config, version: str
+    config: Config, version: str, is_checking: bool
 ) -> typing.Tuple[typing.Dict[str, typing.Any], typing.List[str]]:
     partial = version == config.partial_name
     entries = glob.glob(str(config.path.absolute() / "*.entry.yaml"))
@@ -187,7 +187,7 @@ def _create_new_release(
         logging.error("Cannot create new release without any entries.")
         sys.exit(1)
     date = datetime.date.today()
-    if partial:
+    if partial and is_checking:
         date = _get_partial_timestamp(config, entries)
     release: typing.Dict[str, typing.Any] = {
         "entries": defaultdict(list),
