@@ -112,7 +112,8 @@ class Config:
         if not path.is_dir():
             sys.exit(
                 f"The configuration directory does not exist: "
-                f"{path.absolute().resolve()}"
+                f"{path.absolute().resolve()}.\n"
+                f"Run `changelogd init` to create it."
             )
         return path
 
@@ -121,7 +122,8 @@ class Config:
         if not config_file.is_file():
             sys.exit(
                 f"The main configuration file does not exist: "
-                f"{config_file.absolute().resolve()}"
+                f"{config_file.absolute().resolve()}.\n"
+                f"Run `changelogd init` to create it."
             )
 
         with config_file.open() as config:

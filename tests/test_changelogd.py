@@ -56,6 +56,7 @@ SECOND_RELEASE = """
 
 """
 
+
 @pytest.fixture
 def setup_env(fake_process, monkeypatch, tmpdir):
     fake_process.keep_last_process(True)
@@ -70,6 +71,7 @@ def setup_env(fake_process, monkeypatch, tmpdir):
     monkeypatch.setattr(os.path, "getmtime", lambda _: EPOCH_02_02_2020)
     FakeDate.set_date(datetime.date(2020, 2, 2))
     yield tmpdir
+
 
 class FakeDate(datetime.date):
     _date = None
@@ -273,6 +275,37 @@ def test_init(tmpdir, monkeypatch, caplog):
         f"the '{tmpdir / 'setup.cfg'}' file:\n\n[tool:changelogd]\n"
         f"config={config_yaml}" not in caplog.messages
     )
+
+
+def test_no_init(tmpdir, monkeypatch):
+    """All commands, except `init` should crash if no configuration is found."""
+    monkeypatch.chdir(tmpdir)
+    monkeypatch.setattr(config, "DEFAULT_PATH", Path(tmpdir) / "changelog.d")
+
+    runner = CliRunner()
+
+    error = (
+        f"The configuration directory does not exist: {tmpdir/'changelog.d'}.\n"
+        f"Run `changelogd init` to create it.\n"
+    )
+
+    def check_command(command):
+        result = runner.invoke(*command)
+        assert result.exit_code == 1
+        assert result.stdout == error
+
+    test_commands = (
+        (commands.entry,),
+        (commands.draft, ["version"]),
+        (commands.release, ["version"]),
+        (commands.partial,),
+    )
+
+    for command in test_commands:
+        check_command(command)
+
+    init = runner.invoke(commands.init)
+    assert init.exit_code == 0
 
 
 def _count_entry_files(tmpdir):
