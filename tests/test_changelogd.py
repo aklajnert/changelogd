@@ -2,20 +2,15 @@
 # -*- coding: utf-8 -*-
 """Tests for `changelogd` package."""
 import datetime
-import getpass
 import glob
 import os
 from pathlib import Path
 
-import pytest
 from click.testing import CliRunner
 
 from changelogd import cli
 from changelogd import commands
 from changelogd import config
-
-EPOCH_02_02_2020 = 1580608922
-EPOCH_03_02_2020 = 1580695322
 
 BASE = """# Changelog  
 
@@ -57,36 +52,6 @@ SECOND_RELEASE = """
 """
 
 
-@pytest.fixture
-def setup_env(fake_process, monkeypatch, tmpdir):
-    fake_process.keep_last_process(True)
-    fake_process.register_subprocess(
-        ["git", "config", "--list"],
-        stdout=("user.name=Some User\n" "user.email=user@example.com\n"),
-    )
-    monkeypatch.setattr(getpass, "getuser", lambda: "test-user")
-    monkeypatch.setattr(config, "DEFAULT_PATH", Path(tmpdir) / "changelog.d")
-    monkeypatch.chdir(tmpdir)
-    monkeypatch.setattr(datetime, "date", FakeDate)
-    monkeypatch.setattr(os.path, "getmtime", lambda _: EPOCH_02_02_2020)
-    FakeDate.set_date(datetime.date(2020, 2, 2))
-    yield tmpdir
-
-
-class FakeDate(datetime.date):
-    _date = None
-
-    @classmethod
-    def today(cls) -> datetime.date:
-        if not cls._date:
-            return super().today()
-        return cls._date
-
-    @classmethod
-    def set_date(cls, date: datetime.date) -> None:
-        cls._date = date
-
-
 def test_command_line_interface():
     """Test the CLI."""
     runner = CliRunner()
@@ -98,7 +63,7 @@ def test_command_line_interface():
     assert "Show this message and exit." in help_result.output
 
 
-def test_full_flow(setup_env, monkeypatch, caplog):
+def test_full_flow(setup_env, monkeypatch, caplog, fake_date):
     """
     This function tests full functionality from fresh start through few releases.
     """
@@ -161,8 +126,8 @@ def test_full_flow(setup_env, monkeypatch, caplog):
     _create_entry(runner, "1", "202", "Something new")
     assert _count_entry_files(setup_env) == 5
 
-    FakeDate.set_date(datetime.date(2020, 2, 3))
-    monkeypatch.setattr(os.path, "getmtime", lambda _: EPOCH_03_02_2020)
+    fake_date.set_date(datetime.date(2020, 2, 3))
+    monkeypatch.setattr(os.path, "getmtime", lambda _: fake_date.EPOCH_03_02_2020)
     # try a partial release
     partial = runner.invoke(commands.partial)
     assert partial.exit_code == 0
@@ -223,7 +188,7 @@ def test_full_flow(setup_env, monkeypatch, caplog):
     assert partial.exit_code == 0
 
 
-def test_partial_releases(setup_env, caplog):
+def test_partial_releases(setup_env, caplog, fake_date):
     """Test more sophisticated scenarios with partial releases."""
     runner = CliRunner()
 
@@ -248,7 +213,7 @@ def test_partial_releases(setup_env, caplog):
     assert not caplog.messages
 
     # even the next day shouldn't cause --check to fail
-    FakeDate.set_date(datetime.date(2020, 2, 3))
+    fake_date.set_date(datetime.date(2020, 2, 3))
     partial = runner.invoke(commands.partial, ["--check"])
     assert partial.exit_code == 0
     assert not caplog.messages
@@ -292,7 +257,7 @@ def test_no_init(tmpdir, monkeypatch):
     runner = CliRunner()
 
     error = (
-        f"The configuration directory does not exist: {tmpdir/'changelog.d'}.\n"
+        f"The configuration directory does not exist: {tmpdir / 'changelog.d'}.\n"
         f"Run `changelogd init` to create it.\n"
     )
 
