@@ -23,7 +23,7 @@ def init(
     _: click.core.Context,
     config: Config,
     path: typing.Optional[str],
-    **options: typing.Dict[str, typing.Any]
+    **options: typing.Optional[str]
 ) -> None:
     """Initialize changelogd config."""
     config.init(path)
@@ -32,10 +32,7 @@ def init(
 @command_decorator
 @click.argument("version")
 def draft(
-    _: click.core.Context,
-    config: Config,
-    version: str,
-    **options: typing.Dict[str, typing.Any]
+    _: click.core.Context, config: Config, version: str, **options: typing.Optional[str]
 ) -> None:
     """Generate draft changelog."""
     changelogd.draft(config, version)
@@ -44,10 +41,7 @@ def draft(
 @command_decorator
 @click.argument("version")
 def release(
-    _: click.core.Context,
-    config: Config,
-    version: str,
-    **options: typing.Dict[str, typing.Any]
+    _: click.core.Context, config: Config, version: str, **options: typing.Optional[str]
 ) -> None:
     """Generate changelog, clear entries and make a new release."""
     changelogd.release(config, version)
@@ -58,10 +52,7 @@ def release(
     "--check", help="Return exit code 1 if output file is different.", is_flag=True
 )
 def partial(
-    _: click.core.Context,
-    config: Config,
-    check: bool,
-    **options: typing.Dict[str, typing.Any]
+    _: click.core.Context, config: Config, check: bool, **options: typing.Optional[str]
 ) -> None:
     """
     Generate changelog without clearing entries, release name is taken from config file.
@@ -73,9 +64,7 @@ def partial(
 @click.option("--type", help="Provide message type (as number or string).")
 @click.option("--message", help="Changelog message.")
 def entry(
-    _: click.core.Context,
-    config: Config,
-    **options: typing.Dict[str, typing.Optional[str]]
+    _: click.core.Context, config: Config, **options: typing.Optional[str]
 ) -> None:
     """Create a new changelog entry."""
     changelogd.entry(config, options)

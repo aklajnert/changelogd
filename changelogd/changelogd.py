@@ -60,7 +60,7 @@ def entry(config: Config, options: typing.Dict[str, typing.Optional[str]]) -> No
     ]
     additional_entry_fields.append(
         EntryField(
-            **{
+            **{  # type: ignore
                 "name": "message",
                 "verbose_name": "Changelog message",
                 "type": "str",
@@ -92,11 +92,13 @@ def entry(config: Config, options: typing.Dict[str, typing.Optional[str]]) -> No
     logging.warning(f"Created changelog entry at {output_file.absolute()}")
 
 
-def _get_entry_type(data, options) -> str:
+def _get_entry_type(
+    data: typing.Dict[str, typing.Any], options: typing.Dict[str, typing.Any]
+) -> str:
     message_types = data.get("message_types", [])
 
-    provided_type = options.get("type")
-    if provided_type:
+    provided_type: typing.Union[int, str, None] = options.get("type")
+    if provided_type is not None:
         if _is_int(provided_type):
             if not _is_in_range(int(provided_type), message_types):
                 sys.exit(
@@ -104,7 +106,7 @@ def _get_entry_type(data, options) -> str:
                     f"lower than {len(message_types) + 1}"
                 )
             return _get_type_name(message_types, provided_type)
-        else:
+        elif isinstance(provided_type, str):
             type_names = {type_.get("name") for type_ in message_types}
             if provided_type not in type_names:
                 sys.exit(
@@ -112,6 +114,8 @@ def _get_entry_type(data, options) -> str:
                     f"Available types: {', '.join(type_names)}"
                 )
             return provided_type
+        else:
+            raise TypeError
 
     for i, message_type in enumerate(message_types):
         print(f"\t[{i + 1}]: {message_type.get('name')}")
@@ -129,11 +133,16 @@ def _get_entry_type(data, options) -> str:
     return entry_type
 
 
-def _get_type_name(message_types, selection):
-    return message_types[int(selection) - 1].get("name")
+def _get_type_name(
+    message_types: typing.List[typing.Dict[str, typing.Any]],
+    selection: typing.Union[int, str],
+) -> str:
+    return message_types[int(selection) - 1].get("name", "")
 
 
-def _is_in_range(index, message_types) -> bool:
+def _is_in_range(
+    index: int, message_types: typing.List[typing.Dict[str, typing.Any]]
+) -> bool:
     return 0 < int(index) < len(message_types) + 1
 
 
