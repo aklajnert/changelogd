@@ -55,24 +55,11 @@ def _is_int(input: typing.Any) -> bool:
 
 def entry(config: Config, options: typing.Dict[str, typing.Optional[str]]) -> None:
     data = config.get_data()
-    additional_entry_fields = [
-        EntryField(**entry) for entry in data.get("additional_entry_fields", [])
-    ]
-    additional_entry_fields.append(
-        EntryField(
-            **{  # type: ignore
-                "name": "message",
-                "verbose_name": "Changelog message",
-                "type": "str",
-                "required": True,
-            },
-        )
-    )
+    entry_fields = [EntryField(**entry) for entry in data.get("entry_fields", [])]
     entry_type = _get_entry_type(data, options)
 
     entry = {
-        entry_.name: options.get(entry_.name) or entry_.value
-        for entry_ in additional_entry_fields
+        entry_.name: options.get(entry_.name) or entry_.value for entry_ in entry_fields
     }
     entry["type"] = entry_type
 

@@ -23,12 +23,18 @@ DEFAULT_CONFIG = {
         {"name": "deprecation", "title": "Deprecations"},
         {"name": "other", "title": "Other changes"},
     ],
-    "additional_entry_fields": [
+    "entry_fields": [
         {
             "name": "issue_id",
             "verbose_name": "Issue ID",
             "type": "str",
             "required": False,
+        },
+        {
+            "name": "message",
+            "verbose_name": "Changelog message",
+            "type": "str",
+            "required": True,
         },
     ],
     "output_file": str(DEFAULT_OUTPUT),

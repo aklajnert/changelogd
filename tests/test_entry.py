@@ -1,4 +1,5 @@
-import os
+import glob
+import importlib
 from pathlib import Path
 
 import pytest
@@ -24,13 +25,57 @@ def test_incorrect_input_entry():
     assert entry.exit_code == 1
 
 
+def test_entry_help(setup_env):
+    runner = CliRunner()
+    runner.invoke(commands.init)
+
+    # this is required to update the decorators which can be done
+    # after initializing configuration
+    importlib.reload(commands)
+
+    entry = runner.invoke(commands.entry, ["--help"],)
+    assert entry.exit_code == 0
+    assert (
+        entry.stdout
+        == """Usage: entry [OPTIONS]
+
+  Create a new changelog entry.
+
+Options:
+  -v, --verbose    Increase verbosity.
+  --message TEXT   Changelog message
+  --issue-id TEXT  Issue ID
+  --type TEXT      Message type (as number or string).
+  --help           Show this message and exit.
+"""
+    )
+
+
 def test_non_interactive_data(setup_env):
     runner = CliRunner()
     runner.invoke(commands.init)
 
+    # this is required to update the decorators which can be done
+    # after initializing configuration
+    importlib.reload(commands)
+
     entry = runner.invoke(
         commands.entry,
-        ["--type", "1", "--message", "test message"],
-        input=os.linesep.join(["", ""]),
+        ["--type", "1", "--message", "test message", "--issue-id", "100"],
     )
     assert entry.exit_code == 0
+
+    entries = glob.glob(str(setup_env / "changelog.d" / "*entry.yaml"))
+    assert len(entries) == 1
+
+    with open(entries[0]) as entry_fh:
+        entry_content = yaml.load(entry_fh)
+
+    assert entry_content == {
+        "git_email": "user@example.com",
+        "git_user": "Some User",
+        "issue_id": "100",
+        "message": "test message",
+        "os_user": "test-user",
+        "type": "feature",
+    }

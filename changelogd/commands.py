@@ -12,9 +12,23 @@ def command_decorator(func: typing.Callable) -> click.core.Command:
         *("-v", "--verbose"),
         count=True,
         help="Increase verbosity.",
-        callback=Config.set_verbosity  # type: ignore
+        callback=Config.set_verbosity,  # type: ignore
     )
     return click.command()(verbose(pass_state(click.pass_context(func))))
+
+
+def dynamic_options(func: typing.Callable) -> click.core.Command:
+    output = click.option("--type", help="Message type (as number or string).")(func)
+    try:
+        entry_fields = Config().get_value("entry_fields")
+    except SystemExit:
+        return output
+    for entry_field in entry_fields:
+        output = click.option(
+            f"--{entry_field.get('name').replace('_', '-')}",
+            help=entry_field.get("verbose_name"),
+        )(output)
+    return output
 
 
 @command_decorator
@@ -23,7 +37,7 @@ def init(
     _: click.core.Context,
     config: Config,
     path: typing.Optional[str],
-    **options: typing.Optional[str]
+    **options: typing.Optional[str],
 ) -> None:
     """Initialize changelogd config."""
     config.init(path)
@@ -61,8 +75,7 @@ def partial(
 
 
 @command_decorator
-@click.option("--type", help="Provide message type (as number or string).")
-@click.option("--message", help="Changelog message.")
+@dynamic_options
 def entry(
     _: click.core.Context, config: Config, **options: typing.Optional[str]
 ) -> None:
