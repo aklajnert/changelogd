@@ -70,11 +70,15 @@ def partial(
 
 
 @command_decorator
+@click.option("--type", help="Provide message type (as number or string).")
+@click.option("--message", help="Changelog message.")
 def entry(
-    _: click.core.Context, config: Config, **options: typing.Dict[str, typing.Any]
+    _: click.core.Context,
+    config: Config,
+    **options: typing.Dict[str, typing.Optional[str]]
 ) -> None:
     """Create a new changelog entry."""
-    changelogd.entry(config)
+    changelogd.entry(config, options)
 
 
 def register_commands(cli: click.core.Group) -> None:

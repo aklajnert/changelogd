@@ -19,7 +19,3 @@ def get_git_data() -> typing.Optional[typing.Tuple[str, str]]:
         )
     }
     return data.get("user.name", ""), data.get("user.email", "")
-
-
-if __name__ == "__main__":
-    print(get_git_data())

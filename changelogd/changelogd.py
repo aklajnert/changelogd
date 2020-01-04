@@ -53,7 +53,7 @@ def _is_int(input: typing.Any) -> bool:
         return False
 
 
-def entry(config: Config) -> None:
+def entry(config: Config, options: typing.Dict[str, typing.Optional[str]]) -> None:
     data = config.get_data()
     additional_entry_fields = [
         EntryField(**entry) for entry in data.get("additional_entry_fields", [])
@@ -68,12 +68,56 @@ def entry(config: Config) -> None:
             },
         )
     )
+    entry_type = _get_entry_type(data, options)
+
+    entry = {
+        entry_.name: options.get(entry_.name) or entry_.value
+        for entry_ in additional_entry_fields
+    }
+    entry["type"] = entry_type
+
+    entry["os_user"] = getpass.getuser()
+    git_data = get_git_data()
+    if git_data:
+        entry["git_user"], entry["git_email"] = git_data
+
+    hash = hashlib.md5()
+    entries_flat = " ".join(f"{key}={value}" for key, value in entry.items())
+    hash.update(entries_flat.encode())
+
+    output_file = config.path / f"{entry_type}.{hash.hexdigest()[:8]}.entry.yaml"
+    with output_file.open("w") as output_fh:
+        yaml.dump(entry, output_fh)
+
+    logging.warning(f"Created changelog entry at {output_file.absolute()}")
+
+
+def _get_entry_type(data, options) -> str:
     message_types = data.get("message_types", [])
+
+    provided_type = options.get("type")
+    if provided_type:
+        if _is_int(provided_type):
+            if not _is_in_range(int(provided_type), message_types):
+                sys.exit(
+                    f"Given --type has to be positive number, "
+                    f"lower than {len(message_types) + 1}"
+                )
+            return _get_type_name(message_types, provided_type)
+        else:
+            type_names = {type_.get("name") for type_ in message_types}
+            if provided_type not in type_names:
+                sys.exit(
+                    f"No such type: '{provided_type}'. "
+                    f"Available types: {', '.join(type_names)}"
+                )
+            return provided_type
+
     for i, message_type in enumerate(message_types):
         print(f"\t[{i + 1}]: {message_type.get('name')}")
     selection = None
     while not _is_int(selection) or not (
-        0 < int(selection) < len(message_types) + 1  # type: ignore
+        _is_in_range(selection, message_types)  # type: ignore
     ):
         if selection is not None:
             print(
@@ -81,25 +125,16 @@ def entry(config: Config) -> None:
                 file=sys.stderr,
             )
         selection = input("Select message type [1]: ") or 1
+    entry_type = _get_type_name(message_types, selection)  # type: ignore
+    return entry_type
 
-    entries = {entry.name: entry.value for entry in additional_entry_fields}
-    entry_type = message_types[int(selection) - 1].get("name")  # type: ignore
-    entries["type"] = entry_type
 
-    entries["os_user"] = getpass.getuser()
-    git_data = get_git_data()
-    if git_data:
-        entries["git_user"], entries["git_email"] = git_data
+def _get_type_name(message_types, selection):
+    return message_types[int(selection) - 1].get("name")
 
-    hash = hashlib.md5()
-    entries_flat = " ".join(f"{key}={value}" for key, value in entries.items())
-    hash.update(entries_flat.encode())
 
-    output_file = config.path / f"{entry_type}.{hash.hexdigest()[:8]}.entry.yaml"
-    with output_file.open("w") as output_fh:
-        yaml.dump(entries, output_fh)
-
-    logging.warning(f"Created changelog entry at {output_file.absolute()}")
+def _is_in_range(index, message_types) -> bool:
+    return 0 < int(index) < len(message_types) + 1
 
 
 def draft(config: Config, version: str) -> None:

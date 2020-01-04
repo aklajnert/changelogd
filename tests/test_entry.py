@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 import pytest
@@ -16,8 +17,20 @@ def prepare_config(fs):
         yaml.dump(config.DEFAULT_CONFIG, config_fh)
 
 
-def test_incorrect_input_entry(fs):
+def test_incorrect_input_entry():
     runner = CliRunner()
 
     entry = runner.invoke(commands.entry)
     assert entry.exit_code == 1
+
+
+def test_non_interactive_data(setup_env):
+    runner = CliRunner()
+    runner.invoke(commands.init)
+
+    entry = runner.invoke(
+        commands.entry,
+        ["--type", "1", "--message", "test message"],
+        input=os.linesep.join(["", ""]),
+    )
+    assert entry.exit_code == 0
