@@ -17,7 +17,7 @@ def command_decorator(func: typing.Callable) -> click.core.Command:
     return click.command()(verbose(pass_state(click.pass_context(func))))
 
 
-def dynamic_options(func: typing.Callable) -> click.core.Command:
+def dynamic_options(func: typing.Callable) -> typing.Callable:
     output = click.option("--type", help="Message type (as number or string).")(func)
     try:
         entry_fields = Config().get_value("entry_fields")
