@@ -19,5 +19,5 @@ def prepare_config(fs):
 def test_incorrect_input_entry(fs):
     runner = CliRunner()
 
-    entry = runner.invoke(commands.entry,)
+    entry = runner.invoke(commands.entry)
     assert entry.exit_code == 1

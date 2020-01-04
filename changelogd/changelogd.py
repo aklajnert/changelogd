@@ -55,7 +55,19 @@ def _is_int(input: typing.Any) -> bool:
 
 def entry(config: Config) -> None:
     data = config.get_data()
-    entry_fields = [EntryField(**entry) for entry in data.get("entry_fields", [])]
+    additional_entry_fields = [
+        EntryField(**entry) for entry in data.get("additional_entry_fields", [])
+    ]
+    additional_entry_fields.append(
+        EntryField(
+            **{
+                "name": "message",
+                "verbose_name": "Changelog message",
+                "type": "str",
+                "required": True,
+            },
+        )
+    )
     message_types = data.get("message_types", [])
     for i, message_type in enumerate(message_types):
         print(f"\t[{i + 1}]: {message_type.get('name')}")
@@ -70,7 +82,7 @@ def entry(config: Config) -> None:
             )
         selection = input("Select message type [1]: ") or 1
 
-    entries = {entry.name: entry.value for entry in entry_fields}
+    entries = {entry.name: entry.value for entry in additional_entry_fields}
     entry_type = message_types[int(selection) - 1].get("name")  # type: ignore
     entries["type"] = entry_type
 
