@@ -51,7 +51,8 @@ Options:
     )
 
 
-def test_non_interactive_data(setup_env):
+@pytest.mark.parametrize("type_input", ["1", "feature"])
+def test_non_interactive_data(setup_env, type_input):
     runner = CliRunner()
     runner.invoke(commands.init)
 
@@ -61,7 +62,7 @@ def test_non_interactive_data(setup_env):
 
     entry = runner.invoke(
         commands.entry,
-        ["--type", "1", "--message", "test message", "--issue-id", "100"],
+        ["--type", type_input, "--message", "test message", "--issue-id", "100"],
     )
     assert entry.exit_code == 0
 
