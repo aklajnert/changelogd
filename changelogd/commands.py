@@ -54,10 +54,20 @@ def draft(
 
 @command_decorator
 @click.argument("version")
+@click.option(
+    "--empty",
+    is_flag=True,
+    help="Generate release without entries (e.g. only with a general description).",
+)
 def release(
-    _: click.core.Context, config: Config, version: str, **options: typing.Optional[str]
+    _: click.core.Context,
+    config: Config,
+    version: str,
+    empty: bool = False,
+    **options: typing.Optional[str],
 ) -> None:
     """Generate changelog, clear entries and make a new release."""
+    config.settings["empty"] = empty
     changelogd.release(config, version)
 
 

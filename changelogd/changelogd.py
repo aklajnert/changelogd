@@ -142,9 +142,7 @@ def draft(config: Config, version: str) -> None:
     print(draft)
 
 
-def release(
-    config: Config, version: str, check: bool = False
-) -> None:
+def release(config: Config, version: str, check: bool = False) -> None:
     releases, entries = _read_input_files(config, version, check)
 
     if not config.get_bool_setting("partial"):
@@ -224,9 +222,10 @@ def _prepare_releases(
 def _create_new_release(
     config: Config, version: str, is_checking: bool
 ) -> typing.Tuple[typing.Dict[str, typing.Any], typing.List[str]]:
-    partial = version == config.partial_name
+    empty = config.get_bool_setting("empty")
+    partial = config.get_bool_setting("partial")
     entries = glob.glob(str(config.path.absolute() / "*.entry.yaml"))
-    if not entries and not partial:
+    if not entries and not partial and not empty:
         logging.error("Cannot create new release without any entries.")
         sys.exit(1)
     date = datetime.date.today()
