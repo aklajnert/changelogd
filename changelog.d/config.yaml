@@ -1,0 +1,18 @@
+entry_fields:
+- name: message
+  required: true
+  type: str
+  verbose_name: Changelog message
+message_types:
+- name: feature
+  title: Features
+- name: bug
+  title: Bug fixes
+- name: doc
+  title: Documentation changes
+- name: deprecation
+  title: Deprecations
+- name: other
+  title: Other changes
+output_file: ..\changelog.md
+partial_release_name: unreleased
