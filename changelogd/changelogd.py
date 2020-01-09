@@ -143,11 +143,11 @@ def draft(config: Config, version: str) -> None:
 
 
 def release(
-    config: Config, version: str, partial: bool = False, check: bool = False
+    config: Config, version: str, check: bool = False
 ) -> None:
     releases, entries = _read_input_files(config, version, check)
 
-    if not partial:
+    if not config.get_bool_setting("partial"):
         _save_release_file(config, releases, version)
         logging.info("Removing old entry files")
         for entry in entries:

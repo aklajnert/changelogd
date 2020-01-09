@@ -76,9 +76,14 @@ SUPPORTED_CONFIG_FILES: typing.List[typing.Tuple[Path, typing.Callable, str]] = 
 
 
 class Config:
+    settings: typing.Dict[str, typing.Any] = dict()
+
     def __init__(self) -> None:
         self._path: typing.Optional[Path] = None
         self._data: typing.Optional[dict] = None
+
+    def get_bool_setting(self, name: str) -> bool:
+        return bool(self.settings.get(name))
 
     @property
     def path(self) -> Path:

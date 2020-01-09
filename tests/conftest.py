@@ -5,8 +5,20 @@ import typing
 from pathlib import Path
 
 import pytest
+from click.testing import CliRunner
 
 from changelogd import config
+
+old_invoke = CliRunner.invoke
+
+
+def invoke(*args, **kwargs):
+    result = old_invoke(*args, **kwargs)
+    config.Config.settings = {}
+    return result
+
+
+CliRunner.invoke = invoke
 
 
 @pytest.fixture

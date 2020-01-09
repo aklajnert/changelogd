@@ -71,7 +71,8 @@ def partial(
     """
     Generate changelog without clearing entries, release name is taken from config file.
     """
-    changelogd.release(config, version=config.partial_name, partial=True, check=check)
+    config.settings["partial"] = True
+    changelogd.release(config, version=config.partial_name, check=check)
 
 
 @command_decorator
