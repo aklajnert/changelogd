@@ -147,6 +147,12 @@ def release(
 ) -> None:
     releases, entries = _read_input_files(config, version, check)
 
+    if not partial:
+        _save_release_file(config, releases, version)
+        logging.info("Removing old entry files")
+        for entry in entries:
+            os.remove(entry)
+
     resolver = Resolver(config)
     release = resolver.full_resolve(releases)
 
@@ -158,12 +164,6 @@ def release(
         output_fh.truncate(0)
         output_fh.write(release)
         logging.info(f"Generated changelog file to {config.output_path}")
-
-    if not partial:
-        _save_release_file(config, releases, version)
-        logging.info("Removing old entry files")
-        for entry in entries:
-            os.remove(entry)
 
     if check and previous_content != release:
         logging.error("Output file content is different than before.")
