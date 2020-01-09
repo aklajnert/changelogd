@@ -243,7 +243,7 @@ def _create_new_release(
         with open(entry) as entry_file:
             entry_data = yaml.full_load(entry_file)
         release["entries"][entry_data.pop("type")].append(entry_data)
-    if not entries:
+    if not entries and not empty:
         return {}, []
     return release, entries
 

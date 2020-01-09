@@ -187,6 +187,12 @@ def test_full_flow(setup_env, monkeypatch, caplog, fake_date):
     partial = runner.invoke(commands.partial, ["--check"])
     assert partial.exit_code == 0
 
+    # running release with --empty should also pass and generate a new release
+    release = runner.invoke(commands.release, ["third-release", "--empty"], "\n")
+    assert release.exit_code == 0
+    new_changelog = _read_changelog(setup_env)
+    assert changelog != new_changelog
+
 
 def test_partial_releases(setup_env, caplog, fake_date):
     """Test more sophisticated scenarios with partial releases."""
@@ -224,6 +230,27 @@ def test_partial_releases(setup_env, caplog, fake_date):
     assert partial.exit_code == 0
     assert not caplog.messages
     assert changelog_before != _read_changelog(setup_env)
+
+
+def test_empty_release(setup_env):
+    """
+    This is also a regression. The program was crashing when there was 
+    no releases and no entries with --empty argument.
+    """
+    runner = CliRunner()
+
+    init = runner.invoke(commands.init)
+    assert init.exit_code == 0
+
+    release = runner.invoke(commands.release, ["0.1.0", "--empty"], "Initial release\n")
+    assert release.exit_code == 0
+
+    changelog = _read_changelog(setup_env)
+    assert (
+        changelog == "# Changelog  \n\n\n"
+        "## 0.1.0 (2020-02-02)  \n\n"
+        "Initial release  \n"
+    )
 
 
 def test_init(tmpdir, monkeypatch, caplog):
