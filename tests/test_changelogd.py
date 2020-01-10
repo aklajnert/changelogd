@@ -232,11 +232,20 @@ def test_partial_releases(setup_env, caplog, fake_date):
     assert changelog_before != _read_changelog(setup_env)
 
 
-def test_empty_release(setup_env):
+def test_empty_release(setup_env, caplog):
     """
     This is also a regression. The program was crashing when there was 
     no releases and no entries with --empty argument.
     """
+    HEADER = "# Changelog  \n\n\n"
+    CHANGELOG_0_1_0 = "## 0.1.0 (2020-02-02)  \n\nInitial release  \n"
+    CHANGELOG_0_1_1 = (
+        "## 0.1.1 (2020-02-02)  \n\nPatch release  \n\n"
+        "### Features  \n"
+        "* Sample entry ([@test-user](user@example.com))  \n\n\n"
+    )
+    CHANGELOG_0_1_2 = "## 0.1.2 (2020-02-02)  \n\nMaintenance release  \n\n\n"
+
     runner = CliRunner()
 
     init = runner.invoke(commands.init)
@@ -246,10 +255,21 @@ def test_empty_release(setup_env):
     assert release.exit_code == 0
 
     changelog = _read_changelog(setup_env)
+    assert changelog == HEADER + CHANGELOG_0_1_0
+
+    _create_entry(runner, "1", "", "Sample entry")
+    release = runner.invoke(commands.release, ["0.1.1"], "Patch release\n")
+    assert release.exit_code == 0
+    assert _read_changelog(setup_env) == HEADER + CHANGELOG_0_1_1 + CHANGELOG_0_1_0
+
+    caplog.clear()
+    release = runner.invoke(
+        commands.release, ["0.1.2", "--empty"], "Maintenance release\n"
+    )
+    assert release.exit_code == 0
     assert (
-        changelog == "# Changelog  \n\n\n"
-        "## 0.1.0 (2020-02-02)  \n\n"
-        "Initial release  \n"
+        _read_changelog(setup_env)
+        == HEADER + CHANGELOG_0_1_2 + CHANGELOG_0_1_1 + CHANGELOG_0_1_0
     )
 
 
