@@ -40,7 +40,7 @@ SECOND_RELEASE_HEADER = """
 SECOND_RELEASE = """
 ### Features  
 * Great feature ([@test-user](user@example.com))  
-* [#202](http://repo/issues/202): Something new ([@test-user](user@example.com))  
+* [#202](http://repo/issues/202), [#203](http://repo/issues/203), [#204](http://repo/issues/204): Something new ([@test-user](user@example.com))  
 * [#201](http://repo/issues/201): Super cool feature ([@test-user](user@example.com))  
 
 ### Deprecations  
@@ -123,7 +123,7 @@ def test_full_flow(setup_env, monkeypatch, caplog, fake_date):
     _create_entry(runner, "1", "201", "Super cool feature")
     _create_entry(runner, "5", "", "Refactor")
     _create_entry(runner, "1", "", "Great feature")
-    _create_entry(runner, "1", "202", "Something new")
+    _create_entry(runner, "1", "202,203,204", "Something new")
     assert _count_entry_files(setup_env) == 5
 
     fake_date.set_date(datetime.date(2020, 2, 3))
