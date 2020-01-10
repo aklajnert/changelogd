@@ -262,7 +262,7 @@ def _create_new_release(
 def _sort_entries(entries: typing.List[str]) -> typing.Iterator[str]:
     with_timestamp = {entry: os.path.getmtime(entry) for entry in entries}
     return reversed(
-        [item[0] for item in sorted(with_timestamp.items(), key=lambda x: x[1])]
+        [item[0] for item in sorted(with_timestamp.items(), key=lambda x: (x[1], x[0]))]
     )
 
 
