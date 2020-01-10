@@ -28,20 +28,31 @@ class EntryField:
     verbose_name: str
     type: str
     required: bool
+    multiple: bool
 
     def __init__(self, **data: typing.Dict[str, typing.Any]) -> None:
         self.name = str(data.get("name"))
         self.verbose_name = str(data.get("verbose_name", ""))
         self.type = str(data.get("type", "str"))
         self.required = bool(data.get("required", True))
+        self.multiple = bool(data.get("multiple", False))
 
     @property
     def value(self) -> typing.Any:
         value = None
         while value is None:
-            value = input(f"{self.verbose_name}: ") or None
+            modifiers = []
+            if self.required:
+                modifiers.append("required")
+            if self.multiple:
+                modifiers.append("separate multiple values with comma")
+            modifiers = ", ".join(modifiers)
+            aux = f" ({modifiers})" if modifiers else ""
+            value = input(f"{self.verbose_name}{aux}: ") or None
             if value is None and not self.required:
                 break
+        if self.multiple:
+            value = value.split(",")
         return value
 
 
