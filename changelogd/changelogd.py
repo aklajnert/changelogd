@@ -249,13 +249,21 @@ def _create_new_release(
         if not partial
         else None,
     }
-    for entry in sorted(entries):
+
+    for entry in _sort_entries(entries):
         with open(entry) as entry_file:
             entry_data = yaml.full_load(entry_file)
         release["entries"][entry_data.pop("type")].append(entry_data)
     if not entries and not empty:
         return {}, []
     return release, entries
+
+
+def _sort_entries(entries: typing.List[str]) -> typing.Iterator[str]:
+    with_timestamp = {entry: os.path.getmtime(entry) for entry in entries}
+    return reversed(
+        [item[0] for item in sorted(with_timestamp.items(), key=lambda x: x[1])]
+    )
 
 
 def _get_partial_timestamp(

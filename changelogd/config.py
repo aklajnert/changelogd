@@ -29,6 +29,7 @@ DEFAULT_CONFIG = {
             "verbose_name": "Issue ID",
             "type": "str",
             "required": False,
+            "multiple": True,
         },
         {
             "name": "message",
@@ -39,6 +40,7 @@ DEFAULT_CONFIG = {
     ],
     "output_file": str(DEFAULT_OUTPUT),
     "issues_url": "http://repo/issues",
+    "reverse_entry_order": True,
     PARTIAL_KEY_NAME: DEFAULT_PARTIAL_VALUE,
 }
 

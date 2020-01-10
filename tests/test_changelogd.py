@@ -21,8 +21,8 @@ INITIAL_RELEASE = """
 This is the initial release.  
 
 ### Features  
-* [#100](http://repo/issues/100): Test feature ([@test-user](user@example.com))  
 * [#101](http://repo/issues/101): Another test feature ([@test-user](user@example.com))  
+* [#100](http://repo/issues/100): Test feature ([@test-user](user@example.com))  
 
 ### Bug fixes  
 * [#102](http://repo/issues/102): Bug fixes ([@test-user](user@example.com))  
@@ -39,8 +39,8 @@ SECOND_RELEASE_HEADER = """
 """
 SECOND_RELEASE = """
 ### Features  
-* [#202](http://repo/issues/202): Something new ([@test-user](user@example.com))  
 * Great feature ([@test-user](user@example.com))  
+* [#202](http://repo/issues/202): Something new ([@test-user](user@example.com))  
 * [#201](http://repo/issues/201): Super cool feature ([@test-user](user@example.com))  
 
 ### Deprecations  
