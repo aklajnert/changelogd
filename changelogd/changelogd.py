@@ -46,12 +46,11 @@ class EntryField:
                 modifiers.append("required")
             if self.multiple:
                 modifiers.append("separate multiple values with comma")
-            modifiers = ", ".join(modifiers)
-            aux = f" ({modifiers})" if modifiers else ""
+            aux = f" ({', '.join(modifiers)})" if modifiers else ""
             value = input(f"{self.verbose_name}{aux}: ") or None
             if value is None and not self.required:
                 break
-        if self.multiple:
+        if value is not None and self.multiple:
             value = value.split(",")
         return value
 
