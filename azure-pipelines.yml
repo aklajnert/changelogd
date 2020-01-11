@@ -25,6 +25,9 @@ strategy:
     mypy:
       python.version: '3.7'
       tox.env: 'mypy'
+    docs:
+      python.version: '3.7'
+      tox.env: 'docs'
 
 steps:
   - task: UsePythonVersion@0
