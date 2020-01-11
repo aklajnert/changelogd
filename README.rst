@@ -38,25 +38,25 @@ Then, create changelog entries:
 
 .. code-block:: bash
 
-    > changelogd entry
+    $ changelogd entry
             [1]: feature
             [2]: bug
             [3]: doc
             [4]: deprecation
             [5]: other
-    Select message type [1]: 2
-    Issue ID: 100
-    Changelog message: Changelog message
-    2019-12-30 19:45:37,825 - Created changelog entry at changelog.d\bug.a3f13823.entry.yaml
+    > Select message type [1]: 2
+    > Issue ID: 100
+    > Changelog message: Changelog message
+    Created changelog entry at changelog.d\bug.a3f13823.entry.yaml
 
 Finally, generate changelog file.
 
 .. code-block:: bash
 
-    > changelogd release <release-name>
-    Release description (hit ENTER to omit): This is the initial release.
-    2019-12-30 19:50:10 - Saved new release data into changelog.d\releases\0.release-name.yaml
-    2019-12-30 19:50:10 - Generated changelog file to changelog.md
+    $ changelogd release <release-name>
+    > Release description (hit ENTER to omit): This is the initial release.
+    Saved new release data into changelog.d\releases\0.release-name.yaml
+    Generated changelog file to changelog.md
 
 
 License

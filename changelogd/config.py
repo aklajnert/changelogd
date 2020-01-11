@@ -178,8 +178,7 @@ class Config:
     ) -> None:
         levels = {0: logging.WARNING, 1: logging.INFO, 2: logging.DEBUG}
         logging.basicConfig(
-            level=levels.get(verbose, logging.WARNING),
-            format="%(asctime)s - %(message)s",
+            level=levels.get(verbose, logging.WARNING), format="%(message)s",
         )
 
     def init(self, path: typing.Union[str, Path, None] = None) -> None:
