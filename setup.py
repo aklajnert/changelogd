@@ -24,6 +24,8 @@ dev_requirements = [
     "mypy==0.740",
 ]
 
+docs_requirements = ["sphinx", "sphinxcontrib-napoleon", "sphinx-autodoc-typehints",]
+
 setup(
     author="Andrzej Klajnert",
     author_email="python@aklajnert.pl",
@@ -41,7 +43,7 @@ setup(
     description="Changelogs without conflicts.",
     entry_points={"console_scripts": ["changelogd=changelogd.cli:main",],},
     install_requires=requirements,
-    extras_require={"test": test_requirements, "dev": dev_requirements},
+    extras_require={"test": test_requirements, "dev": dev_requirements, "docs": docs_requirements},
     license="MIT license",
     long_description=readme,
     include_package_data=True,
