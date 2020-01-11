@@ -4,6 +4,8 @@
 from setuptools import find_packages
 from setuptools import setup
 
+from changelogd import __version__
+
 with open("README.rst") as readme_file:
     readme = readme_file.read()
 
@@ -24,7 +26,11 @@ dev_requirements = [
     "mypy==0.740",
 ]
 
-docs_requirements = ["sphinx", "sphinxcontrib-napoleon", "sphinx-autodoc-typehints",]
+docs_requirements = [
+    "sphinx",
+    "sphinxcontrib-napoleon",
+    "sphinx-autodoc-typehints",
+]
 
 setup(
     author="Andrzej Klajnert",
@@ -43,7 +49,11 @@ setup(
     description="Changelogs without conflicts.",
     entry_points={"console_scripts": ["changelogd=changelogd.cli:main",],},
     install_requires=requirements,
-    extras_require={"test": test_requirements, "dev": dev_requirements, "docs": docs_requirements},
+    extras_require={
+        "test": test_requirements,
+        "dev": dev_requirements,
+        "docs": docs_requirements,
+    },
     license="MIT license",
     long_description=readme,
     include_package_data=True,
@@ -52,6 +62,6 @@ setup(
     packages=find_packages(include=["changelogd", "changelogd.*"]),
     test_suite="tests",
     url="https://github.com/aklajnert/changelogd",
-    version="0.1.0",
+    version=__version__,
     zip_safe=False,
 )
