@@ -12,7 +12,7 @@ import typing
 from collections import defaultdict
 from pathlib import Path
 
-from ruamel.yaml import YAML
+from ruamel.yaml import YAML  # type: ignore
 
 from changelogd.resolver import Resolver
 from changelogd.utils import get_git_data

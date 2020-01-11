@@ -9,7 +9,7 @@ from pathlib import Path
 
 import click
 import toml
-from ruamel.yaml import YAML
+from ruamel.yaml import YAML  # type: ignore
 
 yaml = YAML()
 
@@ -87,7 +87,7 @@ class Config:
         self._data: typing.Optional[dict] = None
 
     def get_context(self) -> typing.Dict[str, typing.Any]:
-        return self.get_value("context", {})
+        return self.get_value("context") or {}
 
     def get_bool_setting(self, name: str) -> bool:
         return bool(self.settings.get(name))
