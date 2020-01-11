@@ -12,14 +12,6 @@ from changelogd import config
 yaml = YAML()
 
 
-@pytest.fixture()
-def prepare_config(fs):
-    config_dir = Path("changelog.d")
-    fs.create_dir(config_dir)
-    with (config_dir / "config.yaml").open("w+") as config_fh:
-        yaml.dump(config.DEFAULT_CONFIG, config_fh)
-
-
 def test_incorrect_input_entry():
     runner = CliRunner()
 
@@ -82,3 +74,23 @@ def test_non_interactive_data(setup_env, type_input):
         "os_user": "test-user",
         "type": "feature",
     }
+
+
+def test_entry_missing_message_types(setup_env, caplog):
+    runner = CliRunner()
+    runner.invoke(commands.init)
+
+    with open(setup_env / "changelog.d" / "config.yaml") as config_fh:
+        config_content = yaml.load(config_fh)
+
+    config_content.pop("message_types")
+
+    with open(setup_env / "changelog.d" / "config.yaml", "w+") as config_fh:
+        yaml.dump(config_content, config_fh)
+
+    caplog.clear()
+    entry = runner.invoke(commands.entry)
+    assert entry.exit_code == 1
+    assert (
+        "The 'message_types' field is missing from the configuration" in caplog.messages
+    )

@@ -93,6 +93,9 @@ def _get_entry_type(
     data: typing.Dict[str, typing.Any], options: typing.Dict[str, typing.Any]
 ) -> str:
     message_types = data.get("message_types", [])
+    if not message_types:
+        logging.error("The 'message_types' field is missing from the configuration")
+        sys.exit(1)
 
     provided_type: typing.Union[int, str, None] = options.get("type")
     if provided_type is not None:
