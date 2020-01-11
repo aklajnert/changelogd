@@ -10,6 +10,7 @@ from pathlib import Path
 import click
 import toml
 from ruamel.yaml import YAML  # type: ignore
+from ruamel.yaml.comments import CommentedMap  # type: ignore
 
 yaml = YAML()
 
@@ -17,34 +18,46 @@ DEFAULT_PATH = Path(os.getcwd()) / "changelog.d"
 DEFAULT_OUTPUT = Path("../changelog.md")
 PARTIAL_KEY_NAME = "partial_release_name"
 DEFAULT_PARTIAL_VALUE = "unreleased"
-DEFAULT_CONFIG = {
-    "message_types": [
+DEFAULT_CONFIG = CommentedMap(
+    {
+        "entry_fields": [
+            {
+                "name": "issue_id",
+                "verbose_name": "Issue ID",
+                "type": "str",
+                "required": False,
+                "multiple": True,
+            },
+            {
+                "name": "message",
+                "verbose_name": "Changelog message",
+                "type": "str",
+                "required": True,
+            },
+        ],
+        "output_file": str(DEFAULT_OUTPUT),
+        "reverse_entry_order": True,
+        PARTIAL_KEY_NAME: DEFAULT_PARTIAL_VALUE,
+    }
+)
+DEFAULT_CONFIG.insert(
+    0,
+    "context",
+    {"issues_url": "http://repo/issues"},
+    comment="All variables defined here will be passed into templates",
+)
+DEFAULT_CONFIG.insert(
+    1,
+    "message_types",
+    [
         {"name": "feature", "title": "Features"},
         {"name": "bug", "title": "Bug fixes"},
         {"name": "doc", "title": "Documentation changes"},
         {"name": "deprecation", "title": "Deprecations"},
         {"name": "other", "title": "Other changes"},
     ],
-    "entry_fields": [
-        {
-            "name": "issue_id",
-            "verbose_name": "Issue ID",
-            "type": "str",
-            "required": False,
-            "multiple": True,
-        },
-        {
-            "name": "message",
-            "verbose_name": "Changelog message",
-            "type": "str",
-            "required": True,
-        },
-    ],
-    "output_file": str(DEFAULT_OUTPUT),
-    "context": {"issues_url": "http://repo/issues",},
-    "reverse_entry_order": True,
-    PARTIAL_KEY_NAME: DEFAULT_PARTIAL_VALUE,
-}
+    comment="The order defined below will be preserved in the output changelog file",
+)
 
 
 def load_toml(path: Path) -> typing.Optional[str]:
