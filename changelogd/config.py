@@ -39,7 +39,7 @@ DEFAULT_CONFIG = {
         },
     ],
     "output_file": str(DEFAULT_OUTPUT),
-    "issues_url": "http://repo/issues",
+    "context": {"issues_url": "http://repo/issues",},
     "reverse_entry_order": True,
     PARTIAL_KEY_NAME: DEFAULT_PARTIAL_VALUE,
 }
@@ -83,6 +83,9 @@ class Config:
     def __init__(self) -> None:
         self._path: typing.Optional[Path] = None
         self._data: typing.Optional[dict] = None
+
+    def get_context(self) -> typing.Dict[str, typing.Any]:
+        return self.get_value("context", {})
 
     def get_bool_setting(self, name: str) -> bool:
         return bool(self.settings.get(name))

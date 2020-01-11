@@ -31,7 +31,7 @@ class Resolver:
         ]
 
         template = templates["main"]
-        return template.render(**self._config.get_data(), releases=resolved_releases)
+        return template.render(**self._config.get_context(), releases=resolved_releases)
 
     def _resolve_release(
         self,
@@ -56,7 +56,7 @@ class Resolver:
                     )
 
         template = templates["release"]
-        return template.render(**self._config.get_data(), **release)
+        return template.render(**self._config.get_context(), **release)
 
     def _get_template_file_names(
         self,
@@ -81,4 +81,4 @@ class Resolver:
             sys.exit(f"Template file for '{exc.name}' not found.")
 
     def _resolve_entry(self, entry: typing.Dict, template: jinja2.Template) -> str:
-        return template.render(**self._config.get_data(), **entry)
+        return template.render(**self._config.get_context(), **entry)
