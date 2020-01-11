@@ -70,7 +70,7 @@ Finally, generate changelog file.
 
 Output file:
 
-.. code-block:: markdown
+.. code-block:: md
 
     # Changelog  
     
