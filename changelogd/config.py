@@ -9,7 +9,9 @@ from pathlib import Path
 
 import click
 import toml
-import yaml
+from ruamel.yaml import YAML
+
+yaml = YAML()
 
 DEFAULT_PATH = Path(os.getcwd()) / "changelog.d"
 DEFAULT_OUTPUT = Path("../changelog.md")
@@ -137,7 +139,7 @@ class Config:
             )
 
         with config_file.open() as config:
-            return yaml.full_load(config) or {}
+            return yaml.load(config) or {}
 
     def _search_config(self) -> typing.Optional[Path]:
         for config_file, load_function, _ in SUPPORTED_CONFIG_FILES:
@@ -184,7 +186,7 @@ class Config:
 
         output_path = output_directory / "config.yaml"
         with output_path.open("w+") as output_stream:
-            yaml.safe_dump(DEFAULT_CONFIG, output_stream)
+            yaml.dump(DEFAULT_CONFIG, output_stream)
 
         if output_path.is_file():
             logging.warning(

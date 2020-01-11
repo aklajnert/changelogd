@@ -12,15 +12,15 @@ import typing
 from collections import defaultdict
 from pathlib import Path
 
-import yaml
-from yaml.representer import Representer
+from ruamel.yaml import YAML
 
 from changelogd.resolver import Resolver
 from changelogd.utils import get_git_data
 
 from .config import Config
 
-yaml.add_representer(defaultdict, Representer.represent_dict)
+yaml = YAML(typ="unsafe")
+yaml.default_flow_style = False
 
 
 class EntryField:
@@ -213,7 +213,7 @@ def _prepare_releases(
     releases = []
     for version in sorted(versions.keys()):
         with versions[version].open() as release_fh:
-            release_item = yaml.full_load(release_fh)
+            release_item = yaml.load(release_fh)
             if not release_item:
                 logging.error(
                     f"Release file {versions[version]} is corrupted and will be ignored."
@@ -252,7 +252,7 @@ def _create_new_release(
 
     for entry in _sort_entries(entries):
         with open(entry) as entry_file:
-            entry_data = yaml.full_load(entry_file)
+            entry_data = yaml.load(entry_file)
         release["entries"][entry_data.pop("type")].append(entry_data)
     if not entries and not empty:
         return {}, []

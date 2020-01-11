@@ -11,7 +11,7 @@ requirements = [
     "Click>=7.0",
     "Jinja2>=2.10",
     "toml>=0.9.4",
-    "PyYaml>=5.1",
+    "ruamel.yaml>=0.16.0",
 ]
 
 test_requirements = ["pytest>=5", "pyfakefs==3.7", "pytest-subprocess"]
