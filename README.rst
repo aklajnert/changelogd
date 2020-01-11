@@ -30,9 +30,9 @@ First, initialize ``changelogd`` configuration.
 
 .. code-block:: bash
 
-    > changelogd init
-    2019-12-30 19:45:10 - Created main configuration file: changelog.d\config.yaml
-    2019-12-30 19:45:10 - Copied templates to changelog.d\templates
+    $ changelogd init
+    Created main configuration file: changelog.d\config.yaml
+    Copied templates to changelog.d\templates
 
 Then, create changelog entries:
 
@@ -53,11 +53,16 @@ Finally, generate changelog file.
 
 .. code-block:: bash
 
-    $ changelogd release <release-name>
+    $ changelogd release <version-number>
     > Release description (hit ENTER to omit): This is the initial release.
     Saved new release data into changelog.d\releases\0.release-name.yaml
     Generated changelog file to changelog.md
 
+
+Documentation
+-------------
+
+For full documentation, please see https://changelogd.readthedocs.io/en/latest/.
 
 License
 -------
