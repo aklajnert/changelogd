@@ -13,9 +13,9 @@ You can select different directory with ``--path`` argument.
 
 .. code-block:: bash
 
-    $ changelogd init
-    Created main configuration file: /workdir/changelog.d/config.yaml
-    Copied templates to /workdir/changelog.d/templates
+   $ changelogd init
+   Created main configuration file: /workdir/changelog.d/config.yaml
+   Copied templates to /workdir/changelog.d/templates
 
 Entry
 -----
@@ -27,16 +27,16 @@ username.
 
 .. code-block:: bash
 
-    $ changelogd entry
-            [1]: feature
-            [2]: bug
-            [3]: doc
-            [4]: deprecation
-            [5]: other
-    > Select message type [1]: 1
-    > Issue ID (separate multiple values with comma): 100
-    > Changelog message (required): A new feature implementation.
-    Created changelog entry at /workdir/changelog.d/feature.f155ee47.entry.yaml
+   $ changelogd entry
+           [1]: feature
+           [2]: bug
+           [3]: doc
+           [4]: deprecation
+           [5]: other
+   > Select message type [1]: 1
+   > Issue ID (separate multiple values with comma): 100
+   > Changelog message (required): A new feature implementation.
+   Created changelog entry at /workdir/changelog.d/feature.f155ee47.entry.yaml
 
 As a result, a following ``YAML`` file will be created:
 
@@ -49,4 +49,56 @@ As a result, a following ``YAML`` file will be created:
    message: A new feature implementation.
    os_user: aklajnert
    type: feature
+
+Draft
+-----
+
+Load all input files and resolve templates to generate a changelog. The changelog
+will be printed to stdout stream. 
+
+.. code-block:: bash
+   
+   changelogd draft
+   Release description (hit ENTER to omit): Just draft
+   # Changelog
+   
+   
+   ## draft (2020-01-13)
+   
+   Just draft
+   
+   ### Features
+   * [#100](http://repo/issues/100): A new feature implementation. ([@aklajnert](github@aklajnert.pl))
+    
+Release
+-------
+
+Generate new release file, remove all entries and generate changelog file. You need to
+specify the new release name.
+
+.. code-block:: bash
+
+   $ changelogd release 0.1.0
+   Release description (hit ENTER to omit): Demo release
+   Saved new release data into /workdir/changelog.d/releases/0.0.1.0.yaml
+   Generated changelog file to /workdir/changelog.md
+
+The generated ``YAML`` file will have all entries combined. The release file name will
+always start with a number, which will indicate the order of releases within generated
+changelog file. A default content of the ``0.0.1.0.yaml`` file:  
+
+.. code-block:: yaml
+
+   entries:
+     feature:
+     - git_email: github@aklajnert.pl
+       git_user: Andrzej Klajnert
+       issue_id:
+       - '100'
+       message: A new feature implementation.
+       os_user: aklajnert
+   previous_release: null
+   release_date: '2020-01-13'
+   release_description: Demo release
+   release_version: 0.1.0
 
