@@ -23,7 +23,9 @@ entry
 Creates a new changelog entry. By default, it asks for the entry type, issue id, and the
 changelog message. This can be changed by modifying the ``message_types`` in ``config.yaml``. 
 Also, the ``entry`` subcommand will try to extract git username and e-mail and the system
-username.
+username. The entry file name will contain a md5 checksum of the file content, to avoid
+conflicts. The filename can be changed, as long as it follows the following pattern: 
+``<message-type>.<any-string>.entry.yaml``.
 
 .. code-block:: bash
 
@@ -42,12 +44,12 @@ As a result, a following ``YAML`` file will be created:
 
 .. code-block:: yaml
 
-   git_email: github@aklajnert.pl
-   git_user: Andrzej Klajnert
+   git_email: user@example.com
+   git_user: Some User
    issue_id:
    - '100'
    message: A new feature implementation.
-   os_user: aklajnert
+   os_user: user
    type: feature
 
 draft
@@ -68,7 +70,7 @@ will be printed to the stdout stream.
    Just draft
    
    ### Features
-   * [#100](http://repo/issues/100): A new feature implementation. ([@aklajnert](github@aklajnert.pl))
+   * [#100](http://repo/issues/100): A new feature implementation. ([@user](user@example.com))
     
 release
 -------
@@ -93,12 +95,12 @@ changelog file. The default content of the ``0.0.1.0.yaml`` file:
 
    entries:
      feature:
-     - git_email: github@aklajnert.pl
-       git_user: Andrzej Klajnert
+     - git_email: user@example.com
+       git_user: Some User
        issue_id:
        - '100'
        message: A new feature implementation.
-       os_user: aklajnert
+       os_user: user
    previous_release: null
    release_date: '2020-01-13'
    release_description: Demo release
