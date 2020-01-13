@@ -22,6 +22,7 @@ by modifying the templates it can be changed into any text format you like.
    :caption: Contents:
 
    commands
+   configuration
 
 Installation
 ------------
