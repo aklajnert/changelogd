@@ -8,7 +8,7 @@ init
 ----
 
 This command initialized ``changelogd`` configuration including default templates. 
-By default, it will create a new ``changelog.d`` directory in current work directory. 
+By default, it will create a new ``changelog.d`` directory in the current work directory. 
 You can select different directory with ``--path`` argument.
 
 .. code-block:: bash
@@ -20,7 +20,7 @@ You can select different directory with ``--path`` argument.
 entry
 -----
 
-Creates a new changelog entry. By default it asks for the entry type, issue id and the
+Creates a new changelog entry. By default, it asks for the entry type, issue id, and the
 changelog message. This can be changed by modifying the ``message_types`` in ``config.yaml``. 
 Also, the ``entry`` subcommand will try to extract git username and e-mail and the system
 username.
@@ -54,7 +54,7 @@ draft
 -----
 
 Load all input files and resolve templates to generate a changelog. The changelog
-will be printed to stdout stream. 
+will be printed to the stdout stream. 
 
 .. code-block:: bash
    
@@ -73,10 +73,10 @@ will be printed to stdout stream.
 release
 -------
 
-Generate new release file, remove all entries and generate changelog file. You need to
+Generate a new release file, remove all entries and generate a changelog file. You need to
 specify the new release name.
 
-.. warning:: This command will fail, if there's no entry files.
+.. warning:: This command will fail if there are no entry files.
 
 .. code-block:: bash
 
@@ -86,8 +86,8 @@ specify the new release name.
    Generated changelog file to /workdir/changelog.md
 
 The generated ``YAML`` file will have all entries combined. The release file name will
-always start with a number, which will indicate the order of releases within generated
-changelog file. A default content of the ``0.0.1.0.yaml`` file:  
+always start with a number, which will indicate the order of releases within the generated
+changelog file. The default content of the ``0.0.1.0.yaml`` file:  
 
 .. code-block:: yaml
 
