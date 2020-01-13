@@ -4,6 +4,7 @@ import datetime
 import getpass
 import glob
 import hashlib
+import json
 import logging
 import os
 import re
@@ -227,7 +228,7 @@ def _prepare_releases(
             previous_release = release_item.get("release_version")
             releases.append(release_item)
     if release:
-        release["previous-release"] = previous_release
+        release["previous_release"] = previous_release
         releases.append(release)
     return list(reversed(releases))
 
@@ -257,6 +258,8 @@ def _create_new_release(
         with open(entry) as entry_file:
             entry_data = yaml.load(entry_file)
         release["entries"][entry_data.pop("type")].append(entry_data)
+    # normalize release by dumping and loading it back via JSON
+    release = json.loads(json.dumps(release))
     if not entries and not empty:
         return {}, []
     return release, entries
