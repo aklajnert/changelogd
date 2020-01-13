@@ -216,19 +216,21 @@ def test_partial_releases(setup_env, caplog, fake_date):
     caplog.clear()
     partial = runner.invoke(commands.partial, ["--check"])
     assert partial.exit_code == 0
-    assert not caplog.messages
+    assert len(caplog.messages) == 1
 
     # even the next day shouldn't cause --check to fail
+    caplog.clear()
     fake_date.set_date(datetime.date(2020, 2, 3))
     partial = runner.invoke(commands.partial, ["--check"])
     assert partial.exit_code == 0
-    assert not caplog.messages
+    assert len(caplog.messages) == 1
 
     # but running partial without --check should update the timestamp
+    caplog.clear()
     changelog_before = _read_changelog(setup_env)
     partial = runner.invoke(commands.partial)
     assert partial.exit_code == 0
-    assert not caplog.messages
+    assert len(caplog.messages) == 1
     assert changelog_before != _read_changelog(setup_env)
 
 

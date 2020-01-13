@@ -175,7 +175,7 @@ def release(config: Config, version: str, check: bool = False) -> None:
     with config.output_path.open("w") as output_fh:
         output_fh.truncate(0)
         output_fh.write(release)
-        logging.info(f"Generated changelog file to {config.output_path}")
+        logging.warning(f"Generated changelog file to {config.output_path}")
 
     if check and previous_content != release:
         logging.error("Output file content is different than before.")
