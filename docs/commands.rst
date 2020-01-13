@@ -4,7 +4,7 @@ Commands
 Changelogd consists of multiple independent subcommands to make the changelog 
 management as easy as possible.
 
-Init
+init
 ----
 
 This command initialized ``changelogd`` configuration including default templates. 
@@ -17,7 +17,7 @@ You can select different directory with ``--path`` argument.
    Created main configuration file: /workdir/changelog.d/config.yaml
    Copied templates to /workdir/changelog.d/templates
 
-Entry
+entry
 -----
 
 Creates a new changelog entry. By default it asks for the entry type, issue id and the
@@ -50,7 +50,7 @@ As a result, a following ``YAML`` file will be created:
    os_user: aklajnert
    type: feature
 
-Draft
+draft
 -----
 
 Load all input files and resolve templates to generate a changelog. The changelog
@@ -58,8 +58,8 @@ will be printed to stdout stream.
 
 .. code-block:: bash
    
-   changelogd draft
-   Release description (hit ENTER to omit): Just draft
+   $ changelogd draft
+   > Release description (hit ENTER to omit): Just draft
    # Changelog
    
    
@@ -70,16 +70,18 @@ will be printed to stdout stream.
    ### Features
    * [#100](http://repo/issues/100): A new feature implementation. ([@aklajnert](github@aklajnert.pl))
     
-Release
+release
 -------
 
 Generate new release file, remove all entries and generate changelog file. You need to
 specify the new release name.
 
+.. warning:: This command will fail, if there's no entry files.
+
 .. code-block:: bash
 
    $ changelogd release 0.1.0
-   Release description (hit ENTER to omit): Demo release
+   > Release description (hit ENTER to omit): Demo release
    Saved new release data into /workdir/changelog.d/releases/0.0.1.0.yaml
    Generated changelog file to /workdir/changelog.md
 
@@ -101,4 +103,18 @@ changelog file. A default content of the ``0.0.1.0.yaml`` file:
    release_date: '2020-01-13'
    release_description: Demo release
    release_version: 0.1.0
+
+partial
+-------
+
+Generate changelog without clearing entries, release name is taken from config file. 
+This will overwrite the changelog file.
+Use ``--check`` argument to return exit code = 1 if the output file is different than the 
+previously generated one (can be useful in CI/CD).
+
+.. code-block:: bash
+
+   $ changelogd partial
+   Generated changelog file to /workdir/changelog.md
+
 
