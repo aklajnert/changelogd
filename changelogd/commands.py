@@ -44,11 +44,13 @@ def init(
 
 
 @command_decorator
-@click.argument("version")
+@click.argument("version", required=False)
 def draft(
     _: click.core.Context, config: Config, version: str, **options: typing.Optional[str]
 ) -> None:
-    """Generate draft changelog."""
+    """Generate draft changelog to stdout."""
+    if version is None:
+        version = "draft"
     changelogd.draft(config, version)
 
 
