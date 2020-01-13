@@ -52,3 +52,22 @@ below:
    output_file: ..\changelog.md
    reverse_entry_order: true
    partial_release_name: unreleased
+
+context
+-------
+
+This is a place for user defined key-value pairs that will be passed into all templates. 
+There is no limitation how many variables will be passed here.
+
+message_types
+-------------
+
+Define supported message types. The ``name`` argument defines the type name which will 
+be saved in the entry file name, ``tittle`` is meant to be displayed as a headers in 
+the changelog file.
+
+The changelog entries are grouped by their message type. The order of the message types 
+definitions within the configuration file will be preserved in the output changelog file.
+
+If the a message type will be removed from configuration, and there still will be some
+entries that are using that type, they will not be generated into the output changelog file.
