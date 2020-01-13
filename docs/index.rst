@@ -17,6 +17,12 @@ into one release file. The script uses Jinja2 templates to generate one consiste
 text file out of all input YAML files. The default output format is Markdown, but 
 by modifying the templates it can be changed into any text format you like. 
 
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
+
+   commands
+
 Installation
 ------------
 
