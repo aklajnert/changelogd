@@ -3,5 +3,5 @@
 [#{{ iid }}]({{ issues_url }}/{{ iid }}){% if not loop.last %}, {% endif %}
 {%- endfor %}: {% endif -%}
 {{ message }}
-{%- if os_user and git_email %} ([@{{ os_user }}]({{ git_email }})){% endif %}  
+{%- if os_user and git_email %} ([@{{ os_user }}](mailto:{{ git_email }})){% endif %}  
 

@@ -21,14 +21,14 @@ INITIAL_RELEASE = """
 This is the initial release.  
 
 ### Features  
-* [#101](http://repo/issues/101): Another test feature ([@test-user](user@example.com))  
-* [#100](http://repo/issues/100): Test feature ([@test-user](user@example.com))  
+* [#101](http://repo/issues/101): Another test feature ([@test-user](mailto:user@example.com))  
+* [#100](http://repo/issues/100): Test feature ([@test-user](mailto:user@example.com))  
 
 ### Bug fixes  
-* [#102](http://repo/issues/102): Bug fixes ([@test-user](user@example.com))  
+* [#102](http://repo/issues/102): Bug fixes ([@test-user](mailto:user@example.com))  
 
 ### Documentation changes  
-* Slight docs update ([@test-user](user@example.com))  
+* Slight docs update ([@test-user](mailto:user@example.com))  
 """
 
 PARTIAL_RELEASE_HEADER = """
@@ -39,15 +39,15 @@ SECOND_RELEASE_HEADER = """
 """
 SECOND_RELEASE = """
 ### Features  
-* Great feature ([@test-user](user@example.com))  
-* [#202](http://repo/issues/202), [#203](http://repo/issues/203), [#204](http://repo/issues/204): Something new ([@test-user](user@example.com))  
-* [#201](http://repo/issues/201): Super cool feature ([@test-user](user@example.com))  
+* Great feature ([@test-user](mailto:user@example.com))  
+* [#202](http://repo/issues/202), [#203](http://repo/issues/203), [#204](http://repo/issues/204): Something new ([@test-user](mailto:user@example.com))  
+* [#201](http://repo/issues/201): Super cool feature ([@test-user](mailto:user@example.com))  
 
 ### Deprecations  
-* [#200](http://repo/issues/200): Deprecated test feature ([@test-user](user@example.com))  
+* [#200](http://repo/issues/200): Deprecated test feature ([@test-user](mailto:user@example.com))  
 
 ### Other changes  
-* Refactor ([@test-user](user@example.com))  
+* Refactor ([@test-user](mailto:user@example.com))  
 
 """
 
@@ -244,7 +244,7 @@ def test_empty_release(setup_env, caplog):
     CHANGELOG_0_1_1 = (
         "## 0.1.1 (2020-02-02)  \n\nPatch release  \n\n"
         "### Features  \n"
-        "* Sample entry ([@test-user](user@example.com))  \n\n\n"
+        "* Sample entry ([@test-user](mailto:user@example.com))  \n\n\n"
     )
     CHANGELOG_0_1_2 = "## 0.1.2 (2020-02-02)  \n\nMaintenance release  \n\n\n"
 
