@@ -72,4 +72,26 @@ entries that are using that type, they will not be generated into the output cha
 entry_fields
 ------------
 
-Define which values will ``changelogd entry`` ask for. 
+Define which fields will be asked with ``changelogd entry`` command. This is a list of
+objects with following fields:
+
+ | - **name** - name under which the field will be available in the template. Cannot contain spaces, or dashes. 
+ | - **verbose_name** - name displayed when the program will ask for the field value.
+ | - **required** (default: *true*) - the ``changelog entry`` won't allow to leave the field blank if ``required=True``
+ | - **multiple** (default: *false*) - the variable can be provided as comma-separated values. This will be converted into a list of strings (even if there is no comma in it).
+ 
+The defined ``entry_fields`` can be also provided as a *command-line* arguments, e.g. 
+``changelogd entry --message "Some message"``. The missing fields will be asked 
+interactively. Use ``changelogd entry --help`` to see which fields are available.
+
+output_file
+-----------
+
+Path to the output changelog file. By default it is ``../changelogd.md``, which is relative
+to the ``config.yaml`` file.
+
+partial_release_name
+--------------------
+
+Name of the current, not-yet-released version when using the ``changelogd partial`` command. 
+Default: *unreleased*.
