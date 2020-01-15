@@ -76,7 +76,7 @@ def release(
 ) -> None:
     """Generate changelog, clear entries and make a new release."""
     config.settings["empty"] = empty
-    changelogd.release(config, version)
+    changelogd.release(config=config, version=version)
 
 
 @command_decorator
@@ -89,8 +89,7 @@ def partial(
     """
     Generate changelog without clearing entries, release name is taken from config file.
     """
-    config.settings["partial"] = True
-    changelogd.release(config, version=config.partial_name, check=check)
+    changelogd.release(config=config, check=check, partial=True)
 
 
 @command_decorator

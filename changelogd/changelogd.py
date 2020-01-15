@@ -162,7 +162,18 @@ def draft(config: Config, version: str) -> None:
     print(draft)
 
 
-def release(config: Config, version: str, check: bool = False) -> None:
+def release(
+    version: typing.Optional[str] = None,
+    check: bool = False,
+    partial: bool = False,
+    output: str = "",
+    config: typing.Optional[Config] = None,
+) -> None:
+    if config is None:
+        config = Config()
+    config.settings["partial"] = partial
+    if version is None:
+        version = config.partial_name
     releases, entries = _read_input_files(config, version, check)
 
     if not config.get_bool_setting("partial"):
@@ -174,14 +185,16 @@ def release(config: Config, version: str, check: bool = False) -> None:
     resolver = Resolver(config)
     release = resolver.full_resolve(releases)
 
+    output_path = Path(output) if output else config.output_path
+
     if check:
-        with config.output_path.open("r") as output_fh:
+        with output_path.open("r") as output_fh:
             previous_content = output_fh.read()
 
-    with config.output_path.open("w") as output_fh:
+    with output_path.open("w") as output_fh:
         output_fh.truncate(0)
         output_fh.write(release)
-        logging.warning(f"Generated changelog file to {config.output_path}")
+        logging.warning(f"Generated changelog file to {output_path}")
 
     if check and previous_content != release:
         logging.error("Output file content is different than before.")
