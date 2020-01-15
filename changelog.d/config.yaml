@@ -1,9 +1,6 @@
-entry_fields:
-- name: message
-  required: true
-  type: str
-  verbose_name: Changelog message
-message_types:
+context:  # All variables defined here will be passed into templates
+  pr_url: https://github.com/aklajnert/changelogd/pull/8
+message_types: # The order defined below will be preserved in the output changelog file
 - name: feature
   title: Features
 - name: bug
@@ -14,5 +11,15 @@ message_types:
   title: Deprecations
 - name: other
   title: Other changes
+entry_fields:
+- name: pr_ids
+  verbose_name: PR number
+  type: str
+  required: false
+  multiple: true
+- name: message
+  verbose_name: Changelog message
+  type: str
+  required: true
 output_file: ..\changelog.md
 partial_release_name: unreleased
