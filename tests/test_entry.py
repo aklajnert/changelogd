@@ -94,3 +94,43 @@ def test_entry_missing_message_types(setup_env, caplog):
     assert (
         "The 'message_types' field is missing from the configuration" in caplog.messages
     )
+
+
+def test_entry_incorrect_entry_fields(setup_env, caplog):
+    runner = CliRunner()
+    runner.invoke(commands.init)
+
+    with open(setup_env / "changelog.d" / "config.yaml") as config_fh:
+        config_content = yaml.load(config_fh)
+
+    # just name with correct value, this should be fine
+    config_content["entry_fields"] = [{"name": "just_name", "required": False}]
+    with open(setup_env / "changelog.d" / "config.yaml", "w+") as config_fh:
+        yaml.dump(config_content, config_fh)
+
+    caplog.clear()
+    entry = runner.invoke(commands.entry, input="1\n\n")
+    assert entry.exit_code == 0
+
+    # name contains space, not good
+    config_content["entry_fields"] = [{"name": "just name", "required": False}]
+    with open(setup_env / "changelog.d" / "config.yaml", "w+") as config_fh:
+        yaml.dump(config_content, config_fh)
+
+    caplog.clear()
+    entry = runner.invoke(commands.entry, input="1\n\n")
+    assert entry.exit_code == 1
+    assert (
+        "The 'name' argument of an 'entry_fields' element cannot contain spaces."
+        in caplog.messages
+    )
+
+    # no name at all, also bad
+    config_content["entry_fields"] = [{"verbose_name": "just_name", "required": False}]
+    with open(setup_env / "changelog.d" / "config.yaml", "w+") as config_fh:
+        yaml.dump(config_content, config_fh)
+
+    caplog.clear()
+    entry = runner.invoke(commands.entry, input="1\n\n")
+    assert entry.exit_code == 1
+    assert "Each 'entry_fields' element needs to have 'name'." in caplog.messages

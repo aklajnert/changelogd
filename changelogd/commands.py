@@ -24,10 +24,12 @@ def dynamic_options(func: typing.Callable) -> typing.Callable:
     except SystemExit:
         return output
     for entry_field in entry_fields:
-        output = click.option(
-            f"--{entry_field.get('name').replace('_', '-')}",
-            help=entry_field.get("verbose_name"),
-        )(output)
+        name = entry_field.get("name").replace("_", "-")
+        if not name or " " in name:
+            continue
+        output = click.option(f"--{name}", help=entry_field.get("verbose_name"),)(
+            output
+        )
     return output
 
 

@@ -31,7 +31,15 @@ class EntryField:
     multiple: bool
 
     def __init__(self, **data: typing.Dict[str, typing.Any]) -> None:
-        self.name = str(data.get("name"))
+        self.name = str(data.get("name", ""))
+        if not self.name:
+            logging.error("Each 'entry_fields' element needs to have 'name'.")
+            sys.exit(1)
+        if " " in self.name:
+            logging.error(
+                "The 'name' argument of an 'entry_fields' element cannot contain spaces."
+            )
+            sys.exit(1)
         self.verbose_name = str(data.get("verbose_name", ""))
         self.required = bool(data.get("required", True))
         self.multiple = bool(data.get("multiple", False))
@@ -46,7 +54,7 @@ class EntryField:
             if self.multiple:
                 modifiers.append("separate multiple values with comma")
             aux = f" ({', '.join(modifiers)})" if modifiers else ""
-            value = input(f"{self.verbose_name}{aux}: ") or None
+            value = input(f"{self.verbose_name or self.name}{aux}: ") or None
             if value is None and not self.required:
                 break
         if value is not None and self.multiple:
