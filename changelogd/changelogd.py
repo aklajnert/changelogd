@@ -27,14 +27,12 @@ yaml.default_flow_style = False
 class EntryField:
     name: str
     verbose_name: str
-    type: str
     required: bool
     multiple: bool
 
     def __init__(self, **data: typing.Dict[str, typing.Any]) -> None:
         self.name = str(data.get("name"))
         self.verbose_name = str(data.get("verbose_name", ""))
-        self.type = str(data.get("type", "str"))
         self.required = bool(data.get("required", True))
         self.multiple = bool(data.get("multiple", False))
 

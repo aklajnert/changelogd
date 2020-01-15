@@ -42,12 +42,10 @@ below:
    entry_fields:
    - name: issue_id
      verbose_name: Issue ID
-     type: str
      required: false
      multiple: true
    - name: message
      verbose_name: Changelog message
-     type: str
      required: true
    output_file: ..\changelog.md
    reverse_entry_order: true
@@ -71,3 +69,8 @@ definitions within the configuration file will be preserved in the output change
 
 If the a message type will be removed from configuration, and there still will be some
 entries that are using that type, they will not be generated into the output changelog file.
+
+entry_fields
+------------
+
+Define which values will ``changelogd entry`` ask for. 
