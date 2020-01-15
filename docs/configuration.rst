@@ -53,30 +53,30 @@ below:
 context
 -------
 
-This is a place for user defined key-value pairs that will be passed into all templates. 
-There is no limitation how many variables will be passed here.
+This is a place for user-defined key-value pairs that will be passed into all templates. 
+There is no limitation on how many variables will be passed here.
 
 message_types
 -------------
 
 Define supported message types. The ``name`` argument defines the type name which will 
-be saved in the entry file name, ``tittle`` is meant to be displayed as a headers in 
+be saved in the entry file name, ``tittle`` is meant to be displayed as a header in 
 the changelog file.
 
 The changelog entries are grouped by their message type. The order of the message types 
 definitions within the configuration file will be preserved in the output changelog file.
 
-If the a message type will be removed from configuration, and there still will be some
+If a message type will be removed from the configuration, and they're still will be some
 entries that are using that type, they will not be generated into the output changelog file.
 
 entry_fields
 ------------
 
 Define which fields will be asked with ``changelogd entry`` command. This is a list of
-objects with following fields:
+objects with the following fields:
 
- | - **name** - name under which the field will be available in the template. Cannot contain spaces, or dashes. 
- | - **verbose_name** - name displayed when the program will ask for the field value.
+ | - **name** - the name under which the field will be available in the template. It cannot contain spaces or dashes. 
+ | - **verbose_name** - the name displayed when the program will ask for the field value.
  | - **required** (default: *true*) - the ``changelog entry`` won't allow to leave the field blank if ``required=True``
  | - **multiple** (default: *false*) - the variable can be provided as comma-separated values. This will be converted into a list of strings (even if there is no comma in it).
  
@@ -87,7 +87,7 @@ interactively. Use ``changelogd entry --help`` to see which fields are available
 output_file
 -----------
 
-Path to the output changelog file. By default it is ``../changelogd.md``, which is relative
+Path to the output changelog file. By default, it is ``../changelogd.md``, which is relative
 to the ``config.yaml`` file.
 
 partial_release_name
