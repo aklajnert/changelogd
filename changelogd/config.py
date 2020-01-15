@@ -15,7 +15,7 @@ from ruamel.yaml.comments import CommentedMap  # type: ignore
 yaml = YAML()
 
 DEFAULT_PATH = Path(os.getcwd()) / "changelog.d"
-DEFAULT_OUTPUT = Path("../changelog.md")
+DEFAULT_OUTPUT = "../changelog."
 PARTIAL_KEY_NAME = "partial_release_name"
 DEFAULT_PARTIAL_VALUE = "unreleased"
 DEFAULT_CONFIG = CommentedMap(
@@ -35,7 +35,7 @@ DEFAULT_CONFIG = CommentedMap(
                 "required": True,
             },
         ],
-        "output_file": str(DEFAULT_OUTPUT),
+        "output_file": DEFAULT_OUTPUT,
         PARTIAL_KEY_NAME: DEFAULT_PARTIAL_VALUE,
     }
 )
@@ -197,9 +197,12 @@ class Config:
         else:
             output_directory.mkdir()
 
+        config_data = {**DEFAULT_CONFIG}
+        config_data["output_file"] += format
+
         output_path = output_directory / "config.yaml"
         with output_path.open("w+") as output_stream:
-            yaml.dump(DEFAULT_CONFIG, output_stream)
+            yaml.dump(config_data, output_stream)
 
         if output_path.is_file():
             logging.warning(

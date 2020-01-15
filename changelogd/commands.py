@@ -48,7 +48,7 @@ def init(
 ) -> None:
     """Initialize changelogd config."""
     format = "rst" if rst else "md"
-    config.init(path, "md")
+    config.init(path, format)
 
 
 @command_decorator

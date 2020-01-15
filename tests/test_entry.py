@@ -1,13 +1,11 @@
 import glob
 import importlib
-from pathlib import Path
 
 import pytest
 from click.testing import CliRunner
 from ruamel.yaml import YAML
 
 from changelogd import commands
-from changelogd import config
 
 yaml = YAML()
 

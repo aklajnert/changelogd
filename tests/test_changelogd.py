@@ -7,10 +7,13 @@ import os
 from pathlib import Path
 
 from click.testing import CliRunner
+from ruamel.yaml import YAML
 
 from changelogd import cli
 from changelogd import commands
 from changelogd import config
+
+yaml = YAML()
 
 BASE = """# Changelog  
 
@@ -327,6 +330,27 @@ def test_no_init(tmpdir, monkeypatch):
 
     init = runner.invoke(commands.init)
     assert init.exit_code == 0
+
+
+def test_init_rst(setup_env, monkeypatch, caplog, fake_date):
+    runner = CliRunner()
+
+    init = runner.invoke(commands.init, ["--rst"])
+    assert init.exit_code == 0
+    assert sorted(_list_directory(setup_env)) == sorted(
+        [
+            "changelog.d/config.yaml",
+            "changelog.d/releases/.gitkeep",
+            "changelog.d/templates/entry.rst",
+            "changelog.d/templates/main.rst",
+            "changelog.d/templates/release.rst",
+        ]
+    )
+
+    with Path(setup_env / "changelog.d" / "config.yaml").open() as config_fh:
+        output_config = yaml.load(config_fh)
+
+    assert output_config["output_file"] == "../changelog.rst"
 
 
 def _count_entry_files(tmpdir):
