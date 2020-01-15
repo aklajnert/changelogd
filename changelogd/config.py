@@ -36,7 +36,6 @@ DEFAULT_CONFIG = CommentedMap(
             },
         ],
         "output_file": str(DEFAULT_OUTPUT),
-        "reverse_entry_order": True,
         PARTIAL_KEY_NAME: DEFAULT_PARTIAL_VALUE,
     }
 )

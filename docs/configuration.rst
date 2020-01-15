@@ -48,7 +48,6 @@ below:
      verbose_name: Changelog message
      required: true
    output_file: ..\changelog.md
-   reverse_entry_order: true
    partial_release_name: unreleased
 
 context
