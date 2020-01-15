@@ -1,6 +1,6 @@
 
 
-## {{ release_title or release_version }} ({{ release_date }})  
+## {{ release_version }} ({{ release_date }})  
 {% if release_description %}
 {{ release_description }}  
 {% endif %}{% for group in entry_groups %}
