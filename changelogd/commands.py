@@ -27,9 +27,12 @@ def dynamic_options(func: typing.Callable) -> typing.Callable:
         name = entry_field.get("name").replace("_", "-")
         if not name or " " in name:
             continue
-        output = click.option(f"--{name}", help=entry_field.get("verbose_name"),)(
-            output
-        )
+        kwargs = dict()
+        verbose_name = entry_field.get("verbose_name")
+        if verbose_name:
+            kwargs["help"] = verbose_name
+
+        output = click.option(f"--{name}", **kwargs)(output)
     return output
 
 

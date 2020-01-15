@@ -112,6 +112,25 @@ def test_entry_incorrect_entry_fields(setup_env, caplog):
     entry = runner.invoke(commands.entry, input="1\n\n")
     assert entry.exit_code == 0
 
+    importlib.reload(commands)
+    # make sure that missing verbose_name doesn't cause a problem
+    entry = runner.invoke(commands.entry, ["--help"],)
+    assert entry.exit_code == 0
+    # also the `--just-name` option won't have any help
+    assert (
+        entry.stdout
+        == """Usage: entry [OPTIONS]
+
+  Create a new changelog entry.
+
+Options:
+  -v, --verbose     Increase verbosity.
+  --just-name TEXT
+  --type TEXT       Message type (as number or string).
+  --help            Show this message and exit.
+"""
+    )
+
     # name contains space, not good
     config_content["entry_fields"] = [{"name": "just name", "required": False}]
     with open(setup_env / "changelog.d" / "config.yaml", "w+") as config_fh:
