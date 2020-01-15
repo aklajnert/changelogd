@@ -1,5 +1,5 @@
 context:  # All variables defined here will be passed into templates
-  pr_url: https://github.com/aklajnert/changelogd/pull/8
+  pr_url: https://github.com/aklajnert/changelogd/pull
 message_types: # The order defined below will be preserved in the output changelog file
 - name: feature
   title: Features
