@@ -38,14 +38,17 @@ def dynamic_options(func: typing.Callable) -> typing.Callable:
 
 @command_decorator
 @click.option(*("-p", "--path"), help="Custom configuration directory")
+@click.option("--rst", is_flag=True, help="Use templates in RST format")
 def init(
     _: click.core.Context,
     config: Config,
     path: typing.Optional[str],
+    rst: bool,
     **options: typing.Optional[str],
 ) -> None:
     """Initialize changelogd config."""
-    config.init(path)
+    format = "rst" if rst else "md"
+    config.init(path, "md")
 
 
 @command_decorator

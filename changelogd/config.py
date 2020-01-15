@@ -180,7 +180,9 @@ class Config:
             level=levels.get(verbose, logging.WARNING), format="%(message)s",
         )
 
-    def init(self, path: typing.Union[str, Path, None] = None) -> None:
+    def init(
+        self, path: typing.Union[str, Path, None] = None, format: str = "md"
+    ) -> None:
         if isinstance(path, str):
             path = Path(path)
 
@@ -207,7 +209,7 @@ class Config:
         target = output_directory / "templates"
         if target.is_dir():
             shutil.rmtree(target)
-        dst = shutil.copytree(Path(__file__).parent / "templates", target)
+        dst = shutil.copytree(Path(__file__).parent / "templates" / format, target)
         if dst:
             logging.warning(f"Copied templates to {dst}")
 
