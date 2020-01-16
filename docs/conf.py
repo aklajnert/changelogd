@@ -16,7 +16,7 @@ from pathlib import Path
 
 import pkg_resources
 
-import changelogd
+from changelogd import changelogd
 
 ROOT_PATH = Path(__file__).parents[1]
 

@@ -28,8 +28,6 @@ dev_requirements = [
 
 docs_requirements = [
     "sphinx",
-    "sphinxcontrib-napoleon",
-    "sphinx-autodoc-typehints",
 ]
 
 setup(
