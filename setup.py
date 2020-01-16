@@ -9,6 +9,9 @@ from changelogd import __version__
 with open("README.rst") as readme_file:
     readme = readme_file.read()
 
+with open("HISTORY.rst") as readme_file:
+    readme += readme_file.read()
+
 requirements = [
     "Click>=7.0",
     "Jinja2>=2.10",
