@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 
+import pytest
 from click.testing import CliRunner
 
 from changelogd import commands
@@ -79,3 +80,33 @@ def test_init_config(fs, caplog, monkeypatch):
 
     result = runner.invoke(commands.init, "--path=/test/changelog.d", input="n")
     assert result.exit_code == 1
+
+
+def test_custom_path(fs):
+    # directory doesn't exist at all
+    with pytest.raises(SystemExit) as exc:
+        config.Config("/test")
+
+    assert str(exc.value) == "The given configuration path doesn't exist."
+
+    # the path is file, not a directory
+    fs.create_file("/config.yaml")
+    with pytest.raises(SystemExit) as exc:
+        config.Config("/config.yaml")
+
+    assert str(exc.value) == "The configuration path has to be a directory."
+
+    # the config.yaml is missing from the directory
+    fs.create_dir("/config_dir")
+    with pytest.raises(SystemExit) as exc:
+        config.Config("/config_dir")
+
+    assert (
+        str(exc.value) == "The 'config.yaml' file doesn't exist in provided directory."
+    )
+
+    # all good now
+    fs.create_file("/config_dir/config.yaml")
+    instance = config.Config("/config_dir")
+
+    assert str(instance.path) == f"{os.sep}config_dir"
