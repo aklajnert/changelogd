@@ -94,7 +94,8 @@ SUPPORTED_CONFIG_FILES: typing.List[typing.Tuple[Path, typing.Callable, str]] = 
 class Config:
     settings: typing.Dict[str, typing.Any] = dict()
 
-    def __init__(self, path: typing.Union[Path, str, str] = None) -> None:
+    def __init__(self, path: typing.Union[Path, str, None] = None) -> None:
+        self._path: typing.Optional[Path]
         if path:
             self._path = Path(path) if isinstance(path, str) else path
             if not self._path.exists():
@@ -104,7 +105,7 @@ class Config:
             if not (self._path / "config.yaml").is_file():
                 sys.exit("The 'config.yaml' file doesn't exist in provided directory.")
         else:
-            self._path: typing.Optional[Path] = None
+            self._path = None
         self._data: typing.Optional[dict] = None
 
     def get_context(self) -> typing.Dict[str, typing.Any]:
