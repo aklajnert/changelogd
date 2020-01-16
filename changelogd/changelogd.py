@@ -167,10 +167,12 @@ def release(
     check: bool = False,
     partial: bool = False,
     output: str = "",
-    config: typing.Optional[Config] = None,
+    config: typing.Union[Config, str, None] = None,
 ) -> None:
     if config is None:
         config = Config()
+    elif not isinstance(config, Config):
+        config = Config(config)
     config.settings["partial"] = partial
     if version is None:
         version = config.partial_name
