@@ -9,8 +9,8 @@ from changelogd import __version__
 with open("README.rst") as readme_file:
     readme = readme_file.read()
 
-with open("HISTORY.rst") as readme_file:
-    readme += readme_file.read()
+with open("HISTORY.rst") as history_file:
+    readme += history_file.read()
 
 requirements = [
     "Click>=7.0",
