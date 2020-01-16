@@ -81,6 +81,7 @@ Contents
 
    commands
    configuration
+   templates
    history
 
 Indices and tables
