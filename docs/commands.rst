@@ -9,7 +9,8 @@ init
 
 This command initialized ``changelogd`` configuration including default templates. 
 By default, it will create a new ``changelog.d`` directory in the current work directory. 
-You can select different directory with ``--path`` argument.
+You can select different directory with ``--path`` argument. If you want to use RST format,
+use ``--rst`` argument to the ``changelogd init``.
 
 .. code-block:: bash
 
