@@ -10,7 +10,7 @@ with open("README.rst") as readme_file:
     readme = readme_file.read()
 
 with open("HISTORY.rst") as history_file:
-    readme += history_file.read()
+    readme += "\n" + history_file.read()
 
 requirements = [
     "Click>=7.0",
