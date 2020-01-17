@@ -18,6 +18,7 @@ DEFAULT_PATH = Path(os.getcwd()) / "changelog.d"
 DEFAULT_OUTPUT = "../changelog."
 PARTIAL_KEY_NAME = "partial_release_name"
 DEFAULT_PARTIAL_VALUE = "unreleased"
+DEFAULT_USER_DATA = ["os_user", "git_user", "git_email"]
 DEFAULT_CONFIG = CommentedMap(
     {
         "entry_fields": [
@@ -37,6 +38,7 @@ DEFAULT_CONFIG = CommentedMap(
         ],
         "output_file": DEFAULT_OUTPUT,
         PARTIAL_KEY_NAME: DEFAULT_PARTIAL_VALUE,
+        "user_data": DEFAULT_USER_DATA,
     }
 )
 DEFAULT_CONFIG.insert(
