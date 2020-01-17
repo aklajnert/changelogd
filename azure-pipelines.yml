@@ -12,22 +12,22 @@ strategy:
   matrix:
     Python36:
       python.version: '3.6'
-      tox.env: 'py36'
+      nox.env: 'tests-3.6'
     Python37:
       python.version: '3.7'
-      tox.env: 'py37'
+      nox.env: 'tests-3.7'
     Python38:
       python.version: '3.8'
-      tox.env: 'py38'
+      nox.env: 'tests-3.8'
     Linting:
       python.version: '3.7'
-      tox.env: 'flake8'
+      nox.env: 'flake8'
     mypy:
       python.version: '3.7'
-      tox.env: 'mypy'
+      nox.env: 'mypy'
     docs:
       python.version: '3.7'
-      tox.env: 'docs'
+      nox.env: 'docs'
 
 steps:
   - task: UsePythonVersion@0
@@ -36,11 +36,11 @@ steps:
     displayName: 'Use Python $(python.version)'
 
   - script: |
-      python -m pip install --upgrade pip tox
+      python -m pip install --upgrade pip nox
     displayName: 'Install dependencies'
 
   - script: |
-      tox -e $(tox.env)
-    displayName: 'tox -e $(tox.env)'
+      nox --session $(nox.env)
+    displayName: 'nox: $(nox.env)'
 
 
