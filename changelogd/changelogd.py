@@ -112,7 +112,7 @@ def _add_user_data(entry: dict, user_data: typing.Union[typing.List[str], bool, 
                 f"Available choices are: '{', '.join(DEFAULT_USER_DATA)}'."
             )
 
-        entry[destination] = data[key]
+        entry[destination] = data[source]
 
 
 def _get_entry_type(
