@@ -3,6 +3,7 @@ include LICENSE
 include README.rst
 include HISTORY.rst
 
+recursive-include changelogd/templates *
 recursive-include tests *
 recursive-exclude * __pycache__
 recursive-exclude * *.py[co]

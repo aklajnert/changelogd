@@ -1,0 +1,11 @@
+entries:
+  bug:
+  - git_email: github@aklajnert.pl
+    git_user: Andrzej Klajnert
+    message: Fixed missing templates from the ``MANIFEST.in``
+    os_user: andrzejk
+    pr_ids: null
+previous_release: 0.1.1
+release_date: '2020-01-17'
+release_description: ''
+release_version: 0.1.2

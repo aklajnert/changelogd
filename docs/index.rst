@@ -71,7 +71,7 @@ Output file:
     This is the initial release.  
     
     ### Bug fixes  
-    * [#100](http://repo/issues/100): Changelog message ([@aklajnert](github@aklajnert.pl))  
+    * [#100](http://repo/issues/100): Changelog message ([@user](user@example.com))  
 
 Contents
 --------
