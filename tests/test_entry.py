@@ -234,6 +234,14 @@ def test_user_data(monkeypatch, fake_process):
         "overridden_git_user": "Some User",
     }
 
+    config._data["user_data"] = None
+    changelogd.entry(config, {})
+    assert namespace.data == {
+        "issue_id": ["1"],
+        "message": "1",
+        "type": "feature",
+    }
+
     config._data["user_data"] = ["not_exist"]
 
     with pytest.raises(SystemExit) as exc:

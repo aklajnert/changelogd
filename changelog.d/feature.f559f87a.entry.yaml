@@ -1,0 +1,4 @@
+message: Allow to control which user data will be saved in entries.
+pr_ids:
+- '2'
+type: feature
