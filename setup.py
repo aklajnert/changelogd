@@ -25,7 +25,7 @@ dev_requirements = [
     "bump2version==0.5.11",
     "wheel==0.33.6",
     "flake8==3.7.9",
-    "tox==3.14.1",
+    "nox==2019.11.9",
     "mypy==0.740",
 ]
 
