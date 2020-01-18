@@ -1,13 +1,46 @@
+import builtins
+import functools
+import getpass
 import glob
 import importlib
+from types import SimpleNamespace
 
 import pytest
 from click.testing import CliRunner
 from ruamel.yaml import YAML
 
+from changelogd import changelogd
 from changelogd import commands
+from changelogd.config import Config
+from changelogd.config import DEFAULT_CONFIG
 
 yaml = YAML()
+
+
+class FakeContext:
+    def __enter__(self):
+        pass
+
+    def __exit__(self, *_):
+        pass
+
+
+class FakePath:
+    def __init__(self, *args, **kwargs):
+        pass
+
+    def __truediv__(self, other):
+        return self
+
+    def open(self, *args, **kwargs):
+        return FakeContext()
+
+    def absolute(self):
+        return None
+
+
+def fake_yaml_dump(data, _, namespace):
+    namespace.data = data
 
 
 def test_incorrect_input_entry():
@@ -151,3 +184,69 @@ Options:
     entry = runner.invoke(commands.entry, input="1\n\n")
     assert entry.exit_code == 1
     assert "Each 'entry_fields' element needs to have 'name'." in caplog.messages
+
+
+def test_user_data(monkeypatch, fake_process):
+    namespace = SimpleNamespace()
+    config = Config()
+    config._data = {**DEFAULT_CONFIG}
+    config._path = FakePath("/test")
+
+    fake_process.register_subprocess(
+        ["git", "config", "--list"],
+        stdout=("user.name=Some User\n" "user.email=user@example.com\n"),
+    )
+    monkeypatch.setattr(getpass, "getuser", lambda: "test-user")
+    monkeypatch.setattr(
+        YAML, "dump", functools.partial(fake_yaml_dump, namespace=namespace)
+    )
+    monkeypatch.setattr(builtins, "input", lambda _: "1")
+
+    changelogd.entry(config, {})
+    assert namespace.data == {
+        "git_email": "user@example.com",
+        "git_user": "Some User",
+        "issue_id": ["1"],
+        "message": "1",
+        "os_user": "test-user",
+        "type": "feature",
+    }
+
+    config._data["user_data"] = ["os_user"]
+    changelogd.entry(config, {})
+    assert namespace.data == {
+        "issue_id": ["1"],
+        "message": "1",
+        "os_user": "test-user",
+        "type": "feature",
+    }
+
+    config._data["user_data"] = [
+        "os_user:overridden_username",
+        "git_user:overridden_git_user",
+    ]
+    changelogd.entry(config, {})
+    assert namespace.data == {
+        "issue_id": ["1"],
+        "message": "1",
+        "type": "feature",
+        "overridden_username": "test-user",
+        "overridden_git_user": "Some User",
+    }
+
+    config._data["user_data"] = None
+    changelogd.entry(config, {})
+    assert namespace.data == {
+        "issue_id": ["1"],
+        "message": "1",
+        "type": "feature",
+    }
+
+    config._data["user_data"] = ["not_exist"]
+
+    with pytest.raises(SystemExit) as exc:
+        changelogd.entry(config, {})
+    assert str(exc.value) == (
+        "The 'not_exist' variable is not supported in 'user_data'. "
+        "Available choices are: 'os_user, git_user, git_email'."
+    )

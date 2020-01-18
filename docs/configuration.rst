@@ -49,6 +49,10 @@ below:
      required: true
    output_file: ..\changelog.md
    partial_release_name: unreleased
+   user_data:
+   - os_user
+   - git_user
+   - git_email
 
 context
 -------
@@ -95,3 +99,13 @@ partial_release_name
 
 Name of the current, not-yet-released version when using the ``changelogd partial`` command. 
 Default: *unreleased*.
+
+user_data
+---------
+
+Define fields will be captured with each entry. Available choices are:
+ | - **os_user** - currently logged in system user username,
+ | - **git_user** - full name of the current user from the git configuration,
+ | - **git_email** - current user's e-mail from the git configuration.
+
+Each field's name can be changed, by defining new name after colon, e.g.: ``os_user:new_name``.
