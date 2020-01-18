@@ -1,0 +1,5 @@
+message: Automatically add new entries and releases to git.
+pr_ids:
+- '3'
+type: feature
+

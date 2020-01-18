@@ -16,6 +16,7 @@ from pathlib import Path
 from ruamel.yaml import YAML  # type: ignore
 
 from changelogd.resolver import Resolver
+from changelogd.utils import add_to_git
 from changelogd.utils import get_git_data
 
 from .config import Config
@@ -90,6 +91,7 @@ def entry(config: Config, options: typing.Dict[str, typing.Optional[str]]) -> No
     output_file = config.path / f"{entry_type}.{hash.hexdigest()[:8]}.entry.yaml"
     with output_file.open("w") as output_fh:
         yaml.dump(entry, output_fh)
+    add_to_git(output_file)
 
     logging.warning(f"Created changelog entry at {output_file.absolute()}")
 
@@ -233,6 +235,7 @@ def _save_release_file(
     with output_release_path.open("w") as output_release_fh:
         yaml.dump(current_release, output_release_fh)
         logging.warning(f"Saved new release data into {output_release_path}")
+    add_to_git(output_release_path)
 
 
 def _read_input_files(

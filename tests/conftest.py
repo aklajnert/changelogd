@@ -23,6 +23,7 @@ CliRunner.invoke = invoke
 
 @pytest.fixture
 def setup_env(fake_process, monkeypatch, tmpdir, fake_date):
+    fake_process.allow_unregistered(True)
     fake_process.keep_last_process(True)
     fake_process.register_subprocess(
         ["git", "config", "--list"],
