@@ -8,6 +8,10 @@ Features
 ~~~~~~~~
 * `#3 <https://github.com/aklajnert/changelogd/pull/3>`_: Automatically add new entries and releases to git.
 
+Features  
+~~~~~~~~
+* `#2 <https://github.com/aklajnert/changelogd/pull/2>`_: Allow to control which user data will be saved in entries.
+
 Other changes  
 ~~~~~~~~~~~~~
 * `#1 <https://github.com/aklajnert/changelogd/pull/1>`_: Switch from ``tox`` to ``nox`` for running tests and tasks.

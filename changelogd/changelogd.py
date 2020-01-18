@@ -20,6 +20,7 @@ from changelogd.utils import add_to_git
 from changelogd.utils import get_git_data
 
 from .config import Config
+from .config import DEFAULT_USER_DATA
 
 yaml = YAML(typ="unsafe")
 yaml.default_flow_style = False
@@ -81,10 +82,7 @@ def entry(config: Config, options: typing.Dict[str, typing.Optional[str]]) -> No
     }
     entry["type"] = entry_type
 
-    entry["os_user"] = getpass.getuser()
-    git_data = get_git_data()
-    if git_data:
-        entry["git_user"], entry["git_email"] = git_data
+    _add_user_data(entry, config.get_value("user_data", DEFAULT_USER_DATA))
 
     hash = hashlib.md5()
     entries_flat = " ".join(f"{key}={value}" for key, value in entry.items())
@@ -96,6 +94,29 @@ def entry(config: Config, options: typing.Dict[str, typing.Optional[str]]) -> No
     add_to_git(output_file)
 
     logging.warning(f"Created changelog entry at {output_file.absolute()}")
+
+
+def _add_user_data(
+    entry: dict, user_data: typing.Union[typing.List[str], None]
+) -> None:
+    if not user_data:
+        return
+    data = {}
+    data["os_user"] = getpass.getuser()
+    git_data = get_git_data()
+    if git_data:
+        data["git_user"], data["git_email"] = git_data
+
+    for key in user_data:
+        source, destination, *_ = key.split(":", maxsplit=1) * 2
+
+        if source not in DEFAULT_USER_DATA:
+            sys.exit(
+                f"The '{source}' variable is not supported in 'user_data'. "
+                f"Available choices are: '{', '.join(DEFAULT_USER_DATA)}'."
+            )
+
+        entry[destination] = data[source]
 
 
 def _get_entry_type(
