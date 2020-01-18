@@ -1,8 +1,12 @@
 History  
 =======
 
-unreleased (2020-01-17)  
+unreleased (2020-01-18)  
 -----------------------
+
+Features  
+~~~~~~~~
+* `#3 <https://github.com/aklajnert/changelogd/pull/3>`_: Automatically add new entries and releases to git.
 
 Other changes  
 ~~~~~~~~~~~~~
