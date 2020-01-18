@@ -7,9 +7,6 @@ unreleased (2020-01-18)
 Features  
 ~~~~~~~~
 * `#3 <https://github.com/aklajnert/changelogd/pull/3>`_: Automatically add new entries and releases to git.
-
-Features  
-~~~~~~~~
 * `#2 <https://github.com/aklajnert/changelogd/pull/2>`_: Allow to control which user data will be saved in entries.
 
 Other changes  
