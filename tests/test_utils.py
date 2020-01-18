@@ -1,3 +1,7 @@
+import logging
+import os
+
+from changelogd.utils import add_to_git
 from changelogd.utils import get_git_data
 
 
@@ -28,3 +32,18 @@ def test_get_git_data(fake_process):
 def test_get_git_data_failed(fake_process):
     fake_process.register_subprocess(["git", "config", "--list"], returncode=1)
     assert get_git_data() is None
+
+
+def test_add_to_git(fake_process, caplog):
+    caplog.set_level(logging.INFO)
+    fake_process.register_subprocess(["git", "add", "/test"])
+    fake_process.register_subprocess(
+        ["git", "add", "/other-test"], returncode=1, stderr="error message"
+    )
+
+    add_to_git("/test")
+    assert "Added to git: /test" in caplog.messages
+
+    caplog.clear()
+    add_to_git("/other-test")
+    assert f"Failed to add to git: error message{os.linesep}" in caplog.messages

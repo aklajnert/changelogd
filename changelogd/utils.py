@@ -23,8 +23,11 @@ def get_git_data() -> typing.Optional[typing.Tuple[str, str]]:
 
 
 def add_to_git(path: typing.Union[Path, str]) -> None:
-    try:
-        subprocess.check_call(["git", "add", str(path)])
+    process = subprocess.Popen(
+        ["git", "add", str(path)], stdout=subprocess.PIPE, stderr=subprocess.PIPE
+    )
+    _, err = process.communicate()
+    if process.returncode == 0:
         logging.info(f"Added to git: {path}")
-    except subprocess.CalledProcessError:
-        logging.error(f"Failed to add to git: {path}")
+    else:
+        logging.error(f"Failed to add to git: {err.decode()}")
