@@ -94,7 +94,9 @@ def entry(config: Config, options: typing.Dict[str, typing.Optional[str]]) -> No
     logging.warning(f"Created changelog entry at {output_file.absolute()}")
 
 
-def _add_user_data(entry: dict, user_data: typing.Union[typing.List[str], bool, None]):
+def _add_user_data(
+    entry: dict, user_data: typing.Union[typing.List[str], None]
+) -> None:
     if not user_data:
         return
     data = {}
