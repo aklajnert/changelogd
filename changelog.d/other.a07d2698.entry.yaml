@@ -1,4 +1,0 @@
-message: Switch from ``tox`` to ``nox`` for running tests and tasks.
-pr_ids:
-- '1'
-type: other

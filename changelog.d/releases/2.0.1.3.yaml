@@ -1,0 +1,16 @@
+entries:
+  feature:
+  - message: Allow to control which user data will be saved in entries.
+    pr_ids:
+    - '2'
+  - message: Automatically add new entries and releases to git.
+    pr_ids:
+    - '3'
+  other:
+  - message: Switch from ``tox`` to ``nox`` for running tests and tasks.
+    pr_ids:
+    - '1'
+previous_release: 0.1.2
+release_date: '2020-01-20'
+release_description: ''
+release_version: 0.1.3

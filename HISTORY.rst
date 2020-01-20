@@ -1,13 +1,13 @@
 History  
 =======
 
-unreleased (2020-01-18)  
------------------------
+0.1.3 (2020-01-20)  
+------------------
 
 Features  
 ~~~~~~~~
-* `#3 <https://github.com/aklajnert/changelogd/pull/3>`_: Automatically add new entries and releases to git.
 * `#2 <https://github.com/aklajnert/changelogd/pull/2>`_: Allow to control which user data will be saved in entries.
+* `#3 <https://github.com/aklajnert/changelogd/pull/3>`_: Automatically add new entries and releases to git.
 
 Other changes  
 ~~~~~~~~~~~~~
