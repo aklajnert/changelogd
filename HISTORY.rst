@@ -1,6 +1,14 @@
 History  
 =======
 
+unreleased (2020-01-24)  
+-----------------------
+
+Minor improvements  
+~~~~~~~~~~~~~~~~~~
+* `#5 <https://github.com/aklajnert/changelogd/pull/5>`_: Save timestamp with entry YAML, so the order won't be affected by simple file modification.
+* `#4 <https://github.com/aklajnert/changelogd/pull/4>`_: Display entry title with `Select message type` question.
+
 0.1.3 (2020-01-20)  
 ------------------
 

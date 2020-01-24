@@ -300,10 +300,11 @@ def _create_new_release(
         else None,
     }
 
-    for entry in _sort_entries(entries):
-        with open(entry) as entry_file:
-            entry_data = yaml.load(entry_file)
-        release["entries"][entry_data.pop("type")].append(entry_data)
+    _grab_entries(entries, release)
+
+    for group_name, items in release["entries"].items():
+        release["entries"][group_name] = list(_sort_entries(items))
+
     # normalize release by dumping and loading it back via JSON
     release = json.loads(json.dumps(release))
     if not entries and not empty:
@@ -311,11 +312,17 @@ def _create_new_release(
     return release, entries
 
 
-def _sort_entries(entries: typing.List[str]) -> typing.Iterator[str]:
-    with_timestamp = {entry: os.path.getmtime(entry) for entry in entries}
-    return reversed(
-        [item[0] for item in sorted(with_timestamp.items(), key=lambda x: (x[1], x[0]))]
-    )
+def _grab_entries(entries, release):
+    for entry_path in entries:
+        with open(entry_path) as entry_file:
+            entry_data = yaml.load(entry_file)
+        timestamp = entry_data.get("timestamp") or os.path.getmtime(entry_path)
+        entry_data["timestamp"] = timestamp
+        release["entries"][entry_data.pop("type")].append(entry_data)
+
+
+def _sort_entries(items) -> typing.Iterator[str]:
+    return reversed(sorted(items, key=lambda x: (x["timestamp"])))
 
 
 def _get_partial_timestamp(

@@ -1,0 +1,6 @@
+message: Save timestamp with entry YAML, so the order won't be affected by simple
+  file modification.
+pr_ids:
+- '5'
+timestamp: 1579857306
+type: minor
