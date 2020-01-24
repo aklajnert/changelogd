@@ -12,6 +12,7 @@ from ruamel.yaml import YAML
 from changelogd import cli
 from changelogd import commands
 from changelogd import config
+from tests.conftest import FakeDateTime
 
 yaml = YAML()
 
@@ -42,8 +43,8 @@ SECOND_RELEASE_HEADER = """
 """
 SECOND_RELEASE = """
 ### Features  
-* Great feature ([@test-user](mailto:user@example.com))  
 * [#202](http://repo/issues/202), [#203](http://repo/issues/203), [#204](http://repo/issues/204): Something new ([@test-user](mailto:user@example.com))  
+* Great feature ([@test-user](mailto:user@example.com))  
 * [#201](http://repo/issues/201): Super cool feature ([@test-user](mailto:user@example.com))  
 
 ### Deprecations  
@@ -70,6 +71,7 @@ def test_full_flow(setup_env, monkeypatch, caplog, fake_date):
     """
     This function tests full functionality from fresh start through few releases.
     """
+    monkeypatch.setattr(datetime, "datetime", FakeDateTime)
 
     runner = CliRunner()
 
