@@ -31,11 +31,11 @@ conflicts. The filename can be changed, as long as it follows the following patt
 .. code-block:: bash
 
    $ changelogd entry
-           [1]: feature
-           [2]: bug
-           [3]: doc
-           [4]: deprecation
-           [5]: other
+            [1]: Features [feature]
+            [2]: Bug fixes [bug]
+            [3]: Documentation changes [doc]
+            [4]: Deprecations [deprecation]
+            [5]: Other changes [other]
    > Select message type [1]: 1
    > Issue ID (separate multiple values with comma): 100
    > Changelog message (required): A new feature implementation.

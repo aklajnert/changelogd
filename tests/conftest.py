@@ -54,6 +54,23 @@ class FakeDate(datetime.date):
         cls._date = date
 
 
+class FakeNow:
+    def __init__(self, timestamp):
+        self._timestamp = timestamp
+
+    def timestamp(self):
+        return self._timestamp
+
+
+class FakeDateTime(datetime.datetime):
+    timestamp = 0
+
+    @classmethod
+    def now(cls, tz=None):
+        cls.timestamp += 1
+        return FakeNow(cls.timestamp)
+
+
 @pytest.fixture()
 def fake_date() -> typing.Type[FakeDate]:
     return FakeDate

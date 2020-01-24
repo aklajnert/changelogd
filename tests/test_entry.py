@@ -97,6 +97,7 @@ def test_non_interactive_data(setup_env, type_input):
     with open(entries[0]) as entry_fh:
         entry_content = yaml.load(entry_fh)
 
+    assert entry_content.pop("timestamp")
     assert entry_content == {
         "git_email": "user@example.com",
         "git_user": "Some User",
@@ -203,6 +204,7 @@ def test_user_data(monkeypatch, fake_process):
     monkeypatch.setattr(builtins, "input", lambda _: "1")
 
     changelogd.entry(config, {})
+    assert namespace.data.pop("timestamp")
     assert namespace.data == {
         "git_email": "user@example.com",
         "git_user": "Some User",
@@ -214,6 +216,7 @@ def test_user_data(monkeypatch, fake_process):
 
     config._data["user_data"] = ["os_user"]
     changelogd.entry(config, {})
+    assert namespace.data.pop("timestamp")
     assert namespace.data == {
         "issue_id": ["1"],
         "message": "1",
@@ -226,6 +229,7 @@ def test_user_data(monkeypatch, fake_process):
         "git_user:overridden_git_user",
     ]
     changelogd.entry(config, {})
+    assert namespace.data.pop("timestamp")
     assert namespace.data == {
         "issue_id": ["1"],
         "message": "1",
@@ -236,6 +240,7 @@ def test_user_data(monkeypatch, fake_process):
 
     config._data["user_data"] = None
     changelogd.entry(config, {})
+    assert namespace.data.pop("timestamp")
     assert namespace.data == {
         "issue_id": ["1"],
         "message": "1",
