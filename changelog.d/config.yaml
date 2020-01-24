@@ -5,6 +5,8 @@ message_types: # The order defined below will be preserved in the output changel
   title: Features
 - name: bug
   title: Bug fixes
+- name: minor
+  title: Minor improvements
 - name: doc
   title: Documentation changes
 - name: deprecation

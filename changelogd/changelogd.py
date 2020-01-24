@@ -88,6 +88,7 @@ def entry(config: Config, options: typing.Dict[str, typing.Optional[str]]) -> No
     entries_flat = " ".join(f"{key}={value}" for key, value in entry.items())
     hash.update(entries_flat.encode())
 
+    entry["timestamp"] = int(datetime.datetime.now().timestamp())
     output_file = config.path / f"{entry_type}.{hash.hexdigest()[:8]}.entry.yaml"
     with output_file.open("w") as output_fh:
         yaml.dump(entry, output_fh)
