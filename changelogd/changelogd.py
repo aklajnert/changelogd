@@ -312,7 +312,9 @@ def _create_new_release(
     return release, entries
 
 
-def _grab_entries(entries, release):
+def _grab_entries(
+    entries: typing.List[str], release: typing.Dict[str, typing.Any]
+) -> None:
     for entry_path in entries:
         with open(entry_path) as entry_file:
             entry_data = yaml.load(entry_file)
@@ -321,7 +323,7 @@ def _grab_entries(entries, release):
         release["entries"][entry_data.pop("type")].append(entry_data)
 
 
-def _sort_entries(items) -> typing.Iterator[str]:
+def _sort_entries(items: typing.List[typing.Dict]) -> typing.Iterator[typing.Dict]:
     return reversed(sorted(items, key=lambda x: (x["timestamp"])))
 
 
