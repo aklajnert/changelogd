@@ -1,0 +1,15 @@
+entries:
+  minor:
+  - message: Save timestamp with entry YAML, so the order won't be affected by simple
+      file modification.
+    pr_ids:
+    - '5'
+    timestamp: 1579857306
+  - message: Display entry title with `Select message type` question.
+    pr_ids:
+    - '4'
+    timestamp: 1579855508
+previous_release: 0.1.3
+release_date: '2020-01-24'
+release_description: ''
+release_version: 0.1.4

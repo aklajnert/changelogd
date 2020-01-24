@@ -1,5 +1,0 @@
-message: Display entry title with `Select message type` question.
-pr_ids:
-- '4'
-timestamp: 1579855508
-type: minor
