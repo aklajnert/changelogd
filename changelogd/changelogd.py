@@ -148,7 +148,7 @@ def _get_entry_type(
             raise TypeError
 
     for i, message_type in enumerate(message_types):
-        print(f"\t[{i + 1}]: {message_type.get('name')}")
+        print(f"\t[{i + 1}]: {message_type.get('title')} [{message_type.get('name')}]")
     selection = None
     while not _is_int(selection) or not (
         _is_in_range(selection, message_types)  # type: ignore
