@@ -40,11 +40,11 @@ Then, create changelog entries:
 .. code-block:: bash
 
     $ changelogd entry
-            [1]: feature
-            [2]: bug
-            [3]: doc
-            [4]: deprecation
-            [5]: other
+            [1]: Features [feature]
+            [2]: Bug fixes [bug]
+            [3]: Documentation changes [doc]
+            [4]: Deprecations [deprecation]
+            [5]: Other changes [other]
     > Select message type [1]: 2
     > Issue ID: 100
     > Changelog message: Changelog message
