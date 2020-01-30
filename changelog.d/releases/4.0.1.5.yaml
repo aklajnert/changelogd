@@ -1,0 +1,10 @@
+entries:
+  minor:
+  - message: Add __main__.py file to allow invoking via `python -m changelogd`.
+    pr_ids:
+    - '6'
+    timestamp: 1580362053
+previous_release: 0.1.4
+release_date: '2020-01-30'
+release_description: ''
+release_version: 0.1.5
