@@ -1,6 +1,13 @@
 History  
 =======
 
+unreleased (2020-01-30)  
+-----------------------
+
+Minor improvements  
+~~~~~~~~~~~~~~~~~~
+* `#6 <https://github.com/aklajnert/changelogd/pull/6>`_: Add __main__.py file to allow invoking via `python -m changelogd`.
+
 0.1.4 (2020-01-24)  
 ------------------
 

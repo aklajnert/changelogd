@@ -1,0 +1,5 @@
+message: Add __main__.py file to allow invoking via `python -m changelogd`.
+pr_ids:
+- '6'
+timestamp: 1580362053
+type: minor
