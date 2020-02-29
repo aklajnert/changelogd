@@ -57,6 +57,7 @@ def test_init_config(fs, caplog, monkeypatch):
 
     assert os.listdir("/test") == ["changelog.d"]
     assert sorted(os.listdir("/test/changelog.d")) == [
+        "README.md",
         "config.yaml",
         "releases",
         "templates",

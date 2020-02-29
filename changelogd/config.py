@@ -221,6 +221,11 @@ class Config:
                 f"Created main configuration file: {output_path.absolute().resolve()}"
             )
 
+        shutil.copy(
+            Path(__file__).parent / "templates" / "README.md",
+            output_directory / "README.md",
+        )
+
         target = output_directory / "templates"
         if target.is_dir():
             shutil.rmtree(target)

@@ -80,6 +80,7 @@ def test_full_flow(setup_env, monkeypatch, caplog, fake_date):
     assert init.exit_code == 0
     assert sorted(_list_directory(setup_env)) == sorted(
         [
+            "changelog.d/README.md",
             "changelog.d/config.yaml",
             "changelog.d/releases/.gitkeep",
             "changelog.d/templates/entry.md",
@@ -110,6 +111,7 @@ def test_full_flow(setup_env, monkeypatch, caplog, fake_date):
     assert release.exit_code == 0
     assert sorted(_list_directory(setup_env)) == sorted(
         [
+            "changelog.d/README.md",
             "changelog.d/config.yaml",
             "changelog.d/releases/.gitkeep",
             "changelog.d/releases/0.initial-release.yaml",
@@ -153,6 +155,7 @@ def test_full_flow(setup_env, monkeypatch, caplog, fake_date):
     assert release.exit_code == 0
     assert sorted(_list_directory(setup_env)) == sorted(
         [
+            "changelog.d/README.md",
             "changelog.d/config.yaml",
             "changelog.d/releases/.gitkeep",
             "changelog.d/releases/0.initial-release.yaml",
@@ -341,6 +344,7 @@ def test_init_rst(setup_env, monkeypatch, caplog, fake_date):
     assert init.exit_code == 0
     assert sorted(_list_directory(setup_env)) == sorted(
         [
+            "changelog.d/README.md",
             "changelog.d/config.yaml",
             "changelog.d/releases/.gitkeep",
             "changelog.d/templates/entry.rst",
