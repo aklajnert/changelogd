@@ -1,6 +1,13 @@
 History  
 =======
 
+unreleased (2020-02-29)  
+-----------------------
+
+Minor improvements  
+~~~~~~~~~~~~~~~~~~
+* `#7 <https://github.com/aklajnert/changelogd/pull/7>`_: Add a readme file that will be put into the changelogd config directory.
+
 0.1.5 (2020-01-30)  
 ------------------
 
