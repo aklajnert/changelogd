@@ -244,7 +244,7 @@ def test_partial_releases(setup_env, caplog, fake_date):
 
 def test_empty_release(setup_env, caplog):
     """
-    This is also a regression. The program was crashing when there was 
+    This is also a regression. The program was crashing when there was
     no releases and no entries with --empty argument.
     """
     HEADER = "# Changelog  \n\n\n"

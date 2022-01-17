@@ -87,7 +87,11 @@ CONFIG_SNIPPET = "[tool:changelogd]\nconfig={path}"
 CONFIG_SNIPPET_TOML = "[tool.changelogd]\nconfig = '{path}'"
 
 SUPPORTED_CONFIG_FILES: typing.List[typing.Tuple[Path, typing.Callable, str]] = [
-    (Path("pyproject.toml"), load_toml, CONFIG_SNIPPET_TOML,),
+    (
+        Path("pyproject.toml"),
+        load_toml,
+        CONFIG_SNIPPET_TOML,
+    ),
     (Path("setup.cfg"), load_ini, CONFIG_SNIPPET),
     (Path("tox.ini"), load_ini, CONFIG_SNIPPET),
 ]
@@ -189,7 +193,8 @@ class Config:
     ) -> None:
         levels = {0: logging.WARNING, 1: logging.INFO, 2: logging.DEBUG}
         logging.basicConfig(
-            level=levels.get(verbose, logging.WARNING), format="%(message)s",
+            level=levels.get(verbose, logging.WARNING),
+            format="%(message)s",
         )
 
     def init(

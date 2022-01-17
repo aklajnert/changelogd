@@ -48,7 +48,11 @@ setup(
         "Programming Language :: Python :: 3.8",
     ],
     description="Changelogs without conflicts.",
-    entry_points={"console_scripts": ["changelogd=changelogd.cli:main",],},
+    entry_points={
+        "console_scripts": [
+            "changelogd=changelogd.cli:main",
+        ],
+    },
     install_requires=requirements,
     extras_require={
         "test": test_requirements,
