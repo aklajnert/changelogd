@@ -65,7 +65,9 @@ def draft(
 @command_decorator
 @click.argument("version")
 @click.option(
-    "--empty", is_flag=True, help="Do not crash if there are no entry files.",
+    "--empty",
+    is_flag=True,
+    help="Do not crash if there are no entry files.",
 )
 def release(
     _: click.core.Context,

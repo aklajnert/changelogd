@@ -58,7 +58,10 @@ def test_entry_help(setup_env):
     # after initializing configuration
     importlib.reload(commands)
 
-    entry = runner.invoke(commands.entry, ["--help"],)
+    entry = runner.invoke(
+        commands.entry,
+        ["--help"],
+    )
     assert entry.exit_code == 0
     assert (
         entry.stdout
@@ -146,7 +149,10 @@ def test_entry_incorrect_entry_fields(setup_env, caplog):
 
     importlib.reload(commands)
     # make sure that missing verbose_name doesn't cause a problem
-    entry = runner.invoke(commands.entry, ["--help"],)
+    entry = runner.invoke(
+        commands.entry,
+        ["--help"],
+    )
     assert entry.exit_code == 0
     # also the `--just-name` option won't have any help
     assert (
