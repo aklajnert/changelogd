@@ -15,12 +15,11 @@ from pathlib import Path
 
 from ruamel.yaml import YAML  # type: ignore
 
+from .config import Config
+from .config import DEFAULT_USER_DATA
 from changelogd.resolver import Resolver
 from changelogd.utils import add_to_git
 from changelogd.utils import get_git_data
-
-from .config import Config
-from .config import DEFAULT_USER_DATA
 
 yaml = YAML(typ="unsafe")
 yaml.default_flow_style = False
@@ -324,7 +323,7 @@ def _grab_entries(
 
 
 def _sort_entries(items: typing.List[typing.Dict]) -> typing.Iterator[typing.Dict]:
-    return reversed(sorted(items, key=lambda x: (x["timestamp"])))
+    return reversed(sorted(items, key=lambda x: (x["timestamp"])))  # type: ignore
 
 
 def _get_partial_timestamp(

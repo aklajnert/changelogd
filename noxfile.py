@@ -3,7 +3,7 @@ import nox
 nox.options.sessions = ["tests", "flake8", "mypy", "docs"]
 
 
-@nox.session(python=["3.6", "3.7", "3.8"])
+@nox.session(python=["3.6", "3.7", "3.8", "3.9", "3.10"])
 def tests(session):
     session.install(".[test]")
     session.run("pytest")
@@ -17,7 +17,7 @@ def flake8(session):
 
 @nox.session
 def mypy(session):
-    session.install("mypy")
+    session.install("mypy", "types-toml", "types-click", "types-jinja2")
     session.run("mypy", "changelogd")
 
 

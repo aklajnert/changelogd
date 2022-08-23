@@ -199,10 +199,13 @@ def test_user_data(monkeypatch, fake_process):
     config._data = {**DEFAULT_CONFIG}
     config._path = FakePath("/test")
 
-    fake_process.register_subprocess(
+    fake_process.register(
         ["git", "config", "--list"],
         stdout=("user.name=Some User\n" "user.email=user@example.com\n"),
     )
+    fake_process.register(["git", "add", fake_process.any()])
+    fake_process.keep_last_process(True)
+
     monkeypatch.setattr(getpass, "getuser", lambda: "test-user")
     monkeypatch.setattr(
         YAML, "dump", functools.partial(fake_yaml_dump, namespace=namespace)
