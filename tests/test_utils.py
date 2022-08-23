@@ -46,4 +46,4 @@ def test_add_to_git(fake_process, caplog):
 
     caplog.clear()
     add_to_git("/other-test")
-    assert f"Failed to add to git: error message{os.linesep}" in caplog.messages
+    assert f"Failed to add to git: error message" in caplog.messages
