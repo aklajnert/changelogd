@@ -2,7 +2,8 @@ import logging
 import re
 import subprocess
 import sys
-from typing import Optional, List
+from typing import List
+from typing import Optional
 
 
 def remote_branch_name() -> Optional[str]:
