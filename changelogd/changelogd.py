@@ -15,6 +15,7 @@ from pathlib import Path
 
 from ruamel.yaml import YAML  # type: ignore
 
+from .computed_values import ComputedValueProcessor
 from .config import Config
 from .config import DEFAULT_USER_DATA
 from changelogd.resolver import Resolver
@@ -73,6 +74,9 @@ def _is_int(input: typing.Any) -> bool:
 
 def entry(config: Config, options: typing.Dict[str, typing.Optional[str]]) -> None:
     data = config.get_data()
+    computed_value_processors = [
+        ComputedValueProcessor(item) for item in data.get("computed_values", [])
+    ]
     entry_fields = [EntryField(**entry) for entry in data.get("entry_fields", [])]
     entry_type = _get_entry_type(data, options)
 
@@ -82,6 +86,10 @@ def entry(config: Config, options: typing.Dict[str, typing.Optional[str]]) -> No
     entry["type"] = entry_type
 
     _add_user_data(entry, config.get_value("user_data", DEFAULT_USER_DATA))
+
+    if computed_value_processors:
+        for processor in computed_value_processors:
+            entry.update(processor.get_data())
 
     hash = hashlib.md5()
     entries_flat = " ".join(f"{key}={value}" for key, value in entry.items())
@@ -168,6 +176,11 @@ def _get_type_name(
     selection: typing.Union[int, str],
 ) -> str:
     return message_types[int(selection) - 1].get("name", "")
+
+
+def _process_computed_values(data: typing.Sequence[dict], entry: dict) -> None:
+    for item in data:
+        processor = ComputedValueProcessor(item)
 
 
 def _is_in_range(
