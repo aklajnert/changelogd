@@ -11,7 +11,7 @@ pip install --upgrade changelogd
 # Creating a new changelogd entry
 
 To create a new entry, use `changelogd entry` command. After replying to a few 
-questions, the entry file will be created in the `changnelog.d` directory.
+questions, the entry file will be created in the `changelog.d` directory.
 
 # Releasing a new version
 
