@@ -178,11 +178,6 @@ def _get_type_name(
     return message_types[int(selection) - 1].get("name", "")
 
 
-def _process_computed_values(data: typing.Sequence[dict], entry: dict) -> None:
-    for item in data:
-        processor = ComputedValueProcessor(item)
-
-
 def _is_in_range(
     index: int, message_types: typing.List[typing.Dict[str, typing.Any]]
 ) -> bool:

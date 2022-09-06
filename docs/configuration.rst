@@ -124,10 +124,10 @@ The allowed types are:
    suitable for running regex over it).
 
 Besides type, there are additional variables that can influence the output:
-- ``regex`` - regular expression that will be used to extract a value from the 
-  command output. The regex need to define a named group called ``value``
-  (e.g. ``(?P<value>expression)``) which will be taken as a final value,
-- ``name`` - name of the variable in the entry file, if not provided, the 
-  ``type`` value will be taken,
-- ``default`` - the default value that will be used if the value (matched or
-  returned from the dynamic command) will be empty.
+ - ``regex`` - regular expression that will be used to extract a value from the 
+   command output. The regex need to define a named group called ``value``
+   (e.g. ``(?P<value>expression)``) which will be taken as a final value,
+ - ``name`` - name of the variable in the entry file, if not provided, the 
+   ``type`` value will be taken,
+ - ``default`` - the default value that will be used if the value (matched or
+   returned from the dynamic command) will be empty.

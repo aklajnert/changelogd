@@ -2,6 +2,7 @@ import logging
 import re
 import subprocess
 import sys
+import typing
 from typing import List
 from typing import Optional
 
@@ -57,25 +58,26 @@ class ComputedValueProcessor:
         type_ = data.get("type", None)
         if not type_:
             sys.exit(f"Missing `type` for computed value: {dict(**data)}")
-        self.function = next(
+        function: typing.Optional[typing.Callable[[], Optional[str]]] = next(
             (function for function in self.FUNCTIONS if function.__name__ == type_),
             None,
         )
-        if not self.function:
+        if not function:
             available_types = [function.__name__ for function in self.FUNCTIONS]
             sys.exit(
                 f"Unavailable type: '{type_}'. "
                 f"Available types: {' '.join(available_types)}"
             )
+        self.function: typing.Callable[[], Optional[str]] = function
         self.name = data.get("name", None) or type_
         self.regex = data.get("regex", None)
         self.default = data.get("default", None)
         self._data = data
 
-    def get_data(self):
+    def get_data(self) -> typing.Dict[str, typing.Any]:
         value = self.function()
         if self.regex:
-            match = re.search(self.regex, value)
+            match = re.search(self.regex, value) if value is not None else None
             if match:
                 value = match.group("value")
             else:
