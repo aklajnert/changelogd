@@ -8,13 +8,16 @@ from typing import Optional, List
 def remote_branch_name() -> Optional[str]:
     """Extract remote branch name"""
     return _value_from_process(
-        ["git", "rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{u}"]
+        ["git", "rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{u}"],
+        "remote branch name",
     )
 
 
 def local_branch_name() -> Optional[str]:
     """Extract local branch name"""
-    return _value_from_process(["git", "rev-parse", "--abbrev-ref", "HEAD"])
+    return _value_from_process(
+        ["git", "rev-parse", "--abbrev-ref", "HEAD"], "local branch name"
+    )
 
 
 def branch_name() -> Optional[str]:
@@ -26,14 +29,21 @@ def branch_name() -> Optional[str]:
     remote = remote_branch_name()
     if remote:
         data.append(remote)
-    return " ".join(data)
+    result = " - ".join(data)
+    return result or None
 
 
-def _value_from_process(command: List[str]) -> Optional[str]:
+def _value_from_process(
+    command: List[str], error_context: Optional[str] = None
+) -> Optional[str]:
     process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     out, err = process.communicate()
     if process.returncode:
-        logging.error(f"Failed to run '{' '.join(command)}'")
+        if error_context:
+            error_context = f" to get {error_context}"
+        else:
+            error_context = ""
+        logging.error(f"Failed to run '{' '.join(command)}'{error_context}")
         logging.error(err.decode())
         return None
     return out.decode()
@@ -43,9 +53,9 @@ class ComputedValueProcessor:
     FUNCTIONS = (local_branch_name, remote_branch_name, branch_name)
 
     def __init__(self, data: dict):
-        type_ = data.pop("type", None)
+        type_ = data.get("type", None)
         if not type_:
-            sys.exit(f"Missing `type` for computed value: {data}")
+            sys.exit(f"Missing `type` for computed value: {dict(**data)}")
         self.function = next(
             (function for function in self.FUNCTIONS if function.__name__ == type_),
             None,
@@ -56,9 +66,10 @@ class ComputedValueProcessor:
                 f"Unavailable type: '{type_}'. "
                 f"Available types: {' '.join(available_types)}"
             )
-        self.name = data.pop("name", None) or type_
-        self.regex = data.pop("regex", None)
-        self.default = data.pop("default", None)
+        self.name = data.get("name", None) or type_
+        self.regex = data.get("regex", None)
+        self.default = data.get("default", None)
+        self._data = data
 
     def get_data(self):
         value = self.function()
@@ -66,4 +77,7 @@ class ComputedValueProcessor:
             match = re.search(self.regex, value)
             if match:
                 value = match.group("value")
+            else:
+                logging.warning(f"The regex '{self.regex}' didn't match '{value}'.")
+                value = None
         return {self.name: value}
