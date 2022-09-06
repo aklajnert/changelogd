@@ -89,7 +89,7 @@ For full documentation, please see https://changelogd.readthedocs.io/en/latest/.
 License
 -------
 
-Distributed under the terms of the `MIT`_ license, "pytest-subprocess" is free and open source software
+Distributed under the terms of the `MIT`_ license, "changelogd" is free and open source software
 
 Issues
 ------
