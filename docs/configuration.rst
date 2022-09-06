@@ -109,3 +109,25 @@ Define fields will be captured with each entry. Available choices are:
  | - **git_email** - current user's e-mail from the git configuration.
 
 Each field's name can be changed, by defining new name after colon, e.g.: ``os_user:new_name``.
+Set the ``user_data`` value to ``null`` to avoid capturing the user data at all.
+
+computed_values
+---------------
+
+Computed values is a feature, that allows to capture a dynamic value from environment.
+The ``computed_values`` variable is a list of objects that have to define a ``type`` value.
+
+The allowed types are:
+ - ``local_branch_name`` - get the name of a local branch,
+ - ``remote_branch_name`` - get the name of a remote branch,
+ - ``branch_name`` - get the local and remote branch name separated by ``-`` (mostly 
+   suitable for running regex over it).
+
+Besides type, there are additional variables that can influence the output:
+- ``regex`` - regular expression that will be used to extract a value from the 
+  command output. The regex need to define a named group called ``value``
+  (e.g. ``(?P<value>expression)``) which will be taken as a final value,
+- ``name`` - name of the variable in the entry file, if not provided, the 
+  ``type`` value will be taken,
+- ``default`` - the default value that will be used if the value (matched or
+  returned from the dynamic command) will be empty.

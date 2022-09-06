@@ -229,3 +229,80 @@ def test_subprocess_failure(monkeypatch, fp: FakeProcess, fs, caplog):
         "Failed to run 'git rev-parse --abbrev-ref --symbolic-full-name @{u}' "
         "to get remote branch name"
     )
+
+
+def test_default_value(monkeypatch, fp: FakeProcess, fs, caplog):
+    namespace = SimpleNamespace()
+    config_path = Path("/fake/path/to/changelog.d")
+    fs.create_file(
+        config_path / "config.yaml",
+        contents=(
+            "message_types:\n"
+            "- name: feature\n"
+            "  title: Features\n"
+            "computed_values:\n"
+            "- type: branch_name\n"
+            "  default: default_name\n"
+            "user_data: null\n"
+        ),
+    )
+    config = Config(config_path)
+    fp.register(["git", "rev-parse", "--abbrev-ref", "HEAD"], returncode=128)
+    fp.register(
+        ["git", "rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{u}"],
+        returncode=128,
+    )
+    fp.register(["git", "add", fp.any()])
+    fp.keep_last_process(True)
+
+    monkeypatch.setattr(
+        YAML, "dump", functools.partial(fake_yaml_dump, namespace=namespace)
+    )
+    monkeypatch.setattr(builtins, "input", lambda _: "1")
+
+    changelogd.entry(config, {})
+    assert namespace.data.pop("timestamp")
+    assert namespace.data == {
+        "type": "feature",
+        "branch_name": "default_name",
+    }
+
+
+def test_default_not_matching_regex(monkeypatch, fp: FakeProcess, fs, caplog):
+    namespace = SimpleNamespace()
+    config_path = Path("/fake/path/to/changelog.d")
+    fs.create_file(
+        config_path / "config.yaml",
+        contents=(
+            "message_types:\n"
+            "- name: feature\n"
+            "  title: Features\n"
+            "computed_values:\n"
+            "- type: local_branch_name\n"
+            "  default: default_name\n"
+            "  regex: '(?P<value>JIRA-\d+)'\n"
+            "user_data: null\n"
+        ),
+    )
+    config = Config(config_path)
+    fp.register(
+        ["git", "rev-parse", "--abbrev-ref", "HEAD"], stdout="local_branch_name"
+    )
+    fp.register(["git", "add", fp.any()])
+    fp.keep_last_process(True)
+
+    monkeypatch.setattr(
+        YAML, "dump", functools.partial(fake_yaml_dump, namespace=namespace)
+    )
+    monkeypatch.setattr(builtins, "input", lambda _: "1")
+
+    changelogd.entry(config, {})
+    assert namespace.data.pop("timestamp")
+    assert namespace.data == {
+        "type": "feature",
+        "local_branch_name": "default_name",
+    }
+    assert (
+        caplog.messages[0]
+        == "The regex '(?P<value>JIRA-\\d+)' didn't match 'local_branch_name'."
+    )

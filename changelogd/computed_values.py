@@ -80,4 +80,6 @@ class ComputedValueProcessor:
             else:
                 logging.warning(f"The regex '{self.regex}' didn't match '{value}'.")
                 value = None
+        if self.default and not value:
+            value = self.default
         return {self.name: value}
