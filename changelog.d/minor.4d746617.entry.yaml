@@ -1,5 +1,0 @@
-message: Add a readme file that will be put into the changelogd config directory.
-pr_ids:
-- '7'
-timestamp: 1582975986
-type: minor

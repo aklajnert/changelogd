@@ -1,0 +1,24 @@
+entries:
+  feature:
+  - message: Add support for computed values.
+    pr_ids:
+    - '21'
+    timestamp: 1662456941
+  minor:
+  - message: Add a readme file that will be put into the changelogd config directory.
+    pr_ids:
+    - '7'
+    timestamp: 1582975986
+  other:
+  - message: Remove invalid pytest option.
+    pr_ids:
+    - '19'
+    timestamp: 1661314815
+  - message: Add support for python 3.9 and 3.10, fix tests.
+    pr_ids:
+    - '18'
+    timestamp: 1661257022
+previous_release: 0.1.5
+release_date: '2022-09-06'
+release_description: ''
+release_version: 0.1.6

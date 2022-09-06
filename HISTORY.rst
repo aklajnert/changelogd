@@ -1,12 +1,21 @@
 History  
 =======
 
-unreleased (2020-02-29)  
------------------------
+0.1.6 (2022-09-06)  
+------------------
+
+Features  
+~~~~~~~~
+* `#21 <https://github.com/aklajnert/changelogd/pull/21>`_: Add support for computed values.
 
 Minor improvements  
 ~~~~~~~~~~~~~~~~~~
 * `#7 <https://github.com/aklajnert/changelogd/pull/7>`_: Add a readme file that will be put into the changelogd config directory.
+
+Other changes  
+~~~~~~~~~~~~~
+* `#19 <https://github.com/aklajnert/changelogd/pull/19>`_: Remove invalid pytest option.
+* `#18 <https://github.com/aklajnert/changelogd/pull/18>`_: Add support for python 3.9 and 3.10, fix tests.
 
 0.1.5 (2020-01-30)  
 ------------------
