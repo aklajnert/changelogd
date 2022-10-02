@@ -45,21 +45,6 @@ jobs:
       - name: Update coverage
         uses: codecov/codecov-action@v1
 
-    steps:
-      - uses: actions/checkout@v2
-      - name: Setup python
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python-version }}
-          architecture: x64
-      - name: Setup Nox
-        uses: aklajnert/setup-nox@v2.0.1
-      - name: Run tests
-        run: |
-          nox -s tests-pypy3 --error-on-missing-interpreters
-        env:
-          PLATFORM: ${{ matrix.platform }}
-
   mypy:
     runs-on: ubuntu-latest
 
