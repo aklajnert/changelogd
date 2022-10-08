@@ -111,15 +111,14 @@ def test_non_interactive_data(setup_env, type_input):
     }
 
 
-
-
 def test_multi_value_string(setup_env):
     runner = CliRunner()
     runner.invoke(commands.init)
 
     entry = runner.invoke(
         commands.entry,
-        ["--type", "1", "--message", "test message"], input='a, b,"c,d", e,f'
+        ["--type", "1", "--message", "test message"],
+        input='a, b,"c,d", e,f',
     )
     assert entry.exit_code == 0
 
@@ -133,11 +132,12 @@ def test_multi_value_string(setup_env):
     assert entry_content == {
         "git_email": "user@example.com",
         "git_user": "Some User",
-        "issue_id": ['a', 'b', 'c,d', 'e', 'f'],
+        "issue_id": ["a", "b", "c,d", "e", "f"],
         "message": "test message",
         "os_user": "test-user",
         "type": "feature",
     }
+
 
 def test_entry_missing_message_types(setup_env, caplog):
     runner = CliRunner()

@@ -63,7 +63,7 @@ class EntryField:
                 break
         if value is not None and self.multiple:
             csv_string = io.StringIO(value)
-            reader = csv.reader(csv_string, delimiter=',')
+            reader = csv.reader(csv_string, delimiter=",")
             value = [value.strip() for value in next(reader)]
         return value
 
