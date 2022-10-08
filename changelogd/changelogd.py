@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 """Main module."""
+import csv
 import datetime
 import getpass
 import glob
 import hashlib
+import io
 import json
 import logging
 import os
@@ -60,7 +62,9 @@ class EntryField:
             if value is None and not self.required:
                 break
         if value is not None and self.multiple:
-            value = value.split(",")
+            csv_string = io.StringIO(value)
+            reader = csv.reader(csv_string, delimiter=',')
+            value = [value.strip() for value in next(reader)]
         return value
 
 
