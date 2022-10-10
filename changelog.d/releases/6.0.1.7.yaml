@@ -1,0 +1,15 @@
+entries:
+  minor:
+  - message: Trim whitespace from multi-value fields.
+    pr_ids:
+    - '26'
+    timestamp: 1665243991
+  other:
+  - message: Switch to GitHub Actions.
+    pr_ids:
+    - '25'
+    timestamp: 1664691880
+previous_release: 0.1.6
+release_date: '2022-10-10'
+release_description: ''
+release_version: 0.1.7

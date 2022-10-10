@@ -1,6 +1,17 @@
 History  
 =======
 
+0.1.7 (2022-10-10)  
+------------------
+
+Minor improvements  
+~~~~~~~~~~~~~~~~~~
+* `#26 <https://github.com/aklajnert/changelogd/pull/26>`_: Trim whitespace from multi-value fields.
+
+Other changes  
+~~~~~~~~~~~~~
+* `#25 <https://github.com/aklajnert/changelogd/pull/25>`_: Switch to GitHub Actions.
+
 0.1.6 (2022-09-06)  
 ------------------
 
