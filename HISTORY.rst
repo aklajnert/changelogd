@@ -1,6 +1,14 @@
 History  
 =======
 
+0.1.8 (2023-02-24)  
+------------------
+
+Features  
+~~~~~~~~
+* `#37 <https://github.com/aklajnert/changelogd/pull/37>`_: Allow to set default values for entries.
+* `#36 <https://github.com/aklajnert/changelogd/pull/36>`_: Allow to add entry to the existing release.
+
 0.1.7 (2022-10-10)  
 ------------------
 

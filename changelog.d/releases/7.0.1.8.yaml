@@ -1,0 +1,14 @@
+entries:
+  feature:
+  - message: Allow to set default values for entries.
+    pr_ids:
+    - '37'
+    timestamp: 1677246934
+  - message: Allow to add entry to the existing release.
+    pr_ids:
+    - '36'
+    timestamp: 1677241422
+previous_release: 0.1.7
+release_date: '2023-02-24'
+release_description: ''
+release_version: 0.1.8
