@@ -37,7 +37,7 @@ def test_missing_type(monkeypatch, fp: FakeProcess, fs):
         SystemExit,
         match="Missing `type` for computed value: {'name': 'test'}",
     ):
-        changelogd.entry(config, {})
+        changelogd.entry(config, None, {})
 
 
 def test_invalid_type(monkeypatch, fp: FakeProcess, fs):
@@ -62,7 +62,7 @@ def test_invalid_type(monkeypatch, fp: FakeProcess, fs):
             "local_branch_name remote_branch_name branch_name"
         ),
     ):
-        changelogd.entry(config, {})
+        changelogd.entry(config, None, {})
 
 
 def test_basic_data(monkeypatch, fp: FakeProcess, fs):
@@ -95,7 +95,7 @@ def test_basic_data(monkeypatch, fp: FakeProcess, fs):
     )
     monkeypatch.setattr(builtins, "input", lambda _: "1")
 
-    changelogd.entry(config, {})
+    changelogd.entry(config, None, {})
     assert namespace.data.pop("timestamp")
     assert namespace.data == {
         "type": "feature",
@@ -140,7 +140,7 @@ def test_matching_regex(monkeypatch, fp: FakeProcess, fs, branches):
     )
     monkeypatch.setattr(builtins, "input", lambda _: "1")
 
-    changelogd.entry(config, {})
+    changelogd.entry(config, None, {})
     assert namespace.data.pop("timestamp")
     assert namespace.data == {
         "type": "feature",
@@ -175,7 +175,7 @@ def test_not_matching_regex(monkeypatch, fp: FakeProcess, fs, caplog):
     )
     monkeypatch.setattr(builtins, "input", lambda _: "1")
 
-    changelogd.entry(config, {})
+    changelogd.entry(config, None, {})
     assert namespace.data.pop("timestamp")
     assert namespace.data == {
         "type": "feature",
@@ -215,7 +215,7 @@ def test_subprocess_failure(monkeypatch, fp: FakeProcess, fs, caplog):
     )
     monkeypatch.setattr(builtins, "input", lambda _: "1")
 
-    changelogd.entry(config, {})
+    changelogd.entry(config, None, {})
     assert namespace.data.pop("timestamp")
     assert namespace.data == {
         "type": "feature",
@@ -260,7 +260,7 @@ def test_default_value(monkeypatch, fp: FakeProcess, fs, caplog):
     )
     monkeypatch.setattr(builtins, "input", lambda _: "1")
 
-    changelogd.entry(config, {})
+    changelogd.entry(config, None, {})
     assert namespace.data.pop("timestamp")
     assert namespace.data == {
         "type": "feature",
@@ -296,7 +296,7 @@ def test_default_not_matching_regex(monkeypatch, fp: FakeProcess, fs, caplog):
     )
     monkeypatch.setattr(builtins, "input", lambda _: "1")
 
-    changelogd.entry(config, {})
+    changelogd.entry(config, None, {})
     assert namespace.data.pop("timestamp")
     assert namespace.data == {
         "type": "feature",

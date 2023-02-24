@@ -82,7 +82,7 @@ def entry(
     options: typing.Dict[str, typing.Optional[str]],
 ) -> None:
     data = config.get_data()
-    release = _get_release_entry(config, release)
+    release_ = _get_release_entry(config, release)
     computed_value_processors = [
         ComputedValueProcessor(item) for item in data.get("computed_values", [])
     ]
@@ -105,8 +105,8 @@ def entry(
     hash.update(entries_flat.encode())
 
     entry["timestamp"] = int(datetime.datetime.now().timestamp())
-    if release:
-        output_file, release_data = release
+    if release_:
+        output_file, release_data = release_
         entries: typing.List[typing.Any] = release_data["entries"].get(entry_type, [])
         entries.insert(0, entry)
         release_data["entries"][entry_type] = entries
@@ -122,8 +122,10 @@ def entry(
 
 
 def _get_release_entry(
-    config, release: str
+    config: Config, release: typing.Optional[str]
 ) -> typing.Optional[typing.Tuple[Path, typing.Dict[str, typing.Any]]]:
+    if not release:
+        return None
     releases_files = [
         item for item in config.releases_dir.iterdir() if item.suffix == ".yaml"
     ]
