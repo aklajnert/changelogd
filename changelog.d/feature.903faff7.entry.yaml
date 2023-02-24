@@ -1,0 +1,5 @@
+message: Allow to add entry to the existing release.
+pr_ids:
+- '36'
+timestamp: 1677241422
+type: feature
