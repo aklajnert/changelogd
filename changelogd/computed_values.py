@@ -35,6 +35,13 @@ def branch_name() -> Optional[str]:
     return result or None
 
 
+def last_commit_message() -> Optional[str]:
+    """Get the last commit message."""
+    return _value_from_process(
+        ["git", "log", "-1", "--pretty=%B"], "last commit message"
+    )
+
+
 def _value_from_process(
     command: List[str], error_context: Optional[str] = None
 ) -> Optional[str]:
@@ -52,7 +59,12 @@ def _value_from_process(
 
 
 class ComputedValueProcessor:
-    FUNCTIONS = (local_branch_name, remote_branch_name, branch_name)
+    FUNCTIONS = (
+        local_branch_name,
+        remote_branch_name,
+        branch_name,
+        last_commit_message,
+    )
 
     def __init__(self, data: dict):
         type_ = data.get("type", None)
@@ -66,13 +78,17 @@ class ComputedValueProcessor:
             available_types = [function.__name__ for function in self.FUNCTIONS]
             sys.exit(
                 f"Unavailable type: '{type_}'. "
-                f"Available types: {' '.join(available_types)}"
+                f"Available types: {', '.join(available_types)}"
             )
         self.function: typing.Callable[[], Optional[str]] = function
         self.name = data.get("name", None) or type_
         self.regex = data.get("regex", None)
         self.default = data.get("default", None)
         self._data = data
+
+    @classmethod
+    def from_string(cls, value: str) -> "ComputedValueProcessor":
+        return cls({"type": value})
 
     def get_data(self) -> typing.Dict[str, typing.Any]:
         value = self.function()

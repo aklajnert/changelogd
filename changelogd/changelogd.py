@@ -33,6 +33,7 @@ class EntryField:
     verbose_name: str
     required: bool
     multiple: bool
+    default: typing.Any
 
     def __init__(self, **data: typing.Dict[str, typing.Any]) -> None:
         self.name = str(data.get("name", ""))
@@ -47,6 +48,7 @@ class EntryField:
         self.verbose_name = str(data.get("verbose_name", ""))
         self.required = bool(data.get("required", True))
         self.multiple = bool(data.get("multiple", False))
+        self.default = data.get("default", None)
 
     @property
     def value(self) -> typing.Any:
@@ -57,8 +59,22 @@ class EntryField:
                 modifiers.append("required")
             if self.multiple:
                 modifiers.append("separate multiple values with comma")
+            if self.default:
+                if isinstance(self.default, dict) and "compute" in self.default:
+                    processor = ComputedValueProcessor.from_string(
+                        self.default["compute"]
+                    )
+                    default = processor.function()
+                else:
+                    default = self.default
+            else:
+                default = None
             aux = f" ({', '.join(modifiers)})" if modifiers else ""
+            if default:
+                aux += f" [{default.strip()}]"
             value = input(f"{self.verbose_name or self.name}{aux}: ") or None
+            if value is None and default:
+                return default.strip()
             if value is None and not self.required:
                 break
         if value is not None and self.multiple:

@@ -59,7 +59,7 @@ def test_invalid_type(monkeypatch, fp: FakeProcess, fs):
         SystemExit,
         match=(
             "Unavailable type: 'invalid'. Available types: "
-            "local_branch_name remote_branch_name branch_name"
+            "local_branch_name, remote_branch_name, branch_name, last_commit_message"
         ),
     ):
         changelogd.entry(config, None, {})

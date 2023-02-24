@@ -21,6 +21,8 @@ entry_fields:
   multiple: true
 - name: message
   verbose_name: Changelog message
+  default:
+    compute: last_commit_message
   type: str
   required: true
 output_file: ../HISTORY.rst
