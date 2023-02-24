@@ -96,11 +96,15 @@ def partial(
 
 @command_decorator
 @dynamic_options
+@click.option("--release", help="Attach entry to a release.")
 def entry(
-    _: click.core.Context, config: Config, **options: typing.Optional[str]
+    _: click.core.Context,
+    config: Config,
+    release: typing.Optional[str],
+    **options: typing.Optional[str],
 ) -> None:
     """Create a new changelog entry."""
-    changelogd.entry(config, options)
+    changelogd.entry(config, release, options)
 
 
 def register_commands(cli: click.core.Group) -> None:
