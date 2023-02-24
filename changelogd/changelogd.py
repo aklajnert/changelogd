@@ -76,8 +76,13 @@ def _is_int(input: typing.Any) -> bool:
         return False
 
 
-def entry(config: Config, options: typing.Dict[str, typing.Optional[str]]) -> None:
+def entry(
+    config: Config,
+    release: typing.Optional[str],
+    options: typing.Dict[str, typing.Optional[str]],
+) -> None:
     data = config.get_data()
+    release_ = _get_release_entry(config, release)
     computed_value_processors = [
         ComputedValueProcessor(item) for item in data.get("computed_values", [])
     ]
@@ -100,12 +105,36 @@ def entry(config: Config, options: typing.Dict[str, typing.Optional[str]]) -> No
     hash.update(entries_flat.encode())
 
     entry["timestamp"] = int(datetime.datetime.now().timestamp())
-    output_file = config.path / f"{entry_type}.{hash.hexdigest()[:8]}.entry.yaml"
+    if release_:
+        output_file, release_data = release_
+        entries: typing.List[typing.Any] = release_data["entries"].get(entry_type, [])
+        entries.insert(0, entry)
+        release_data["entries"][entry_type] = entries
+        data = release_data
+    else:
+        output_file = config.path / f"{entry_type}.{hash.hexdigest()[:8]}.entry.yaml"
+        data = entry
     with output_file.open("w") as output_fh:
-        yaml.dump(entry, output_fh)
+        yaml.dump(data, output_fh)
     add_to_git(output_file)
 
     logging.warning(f"Created changelog entry at {output_file.absolute()}")
+
+
+def _get_release_entry(
+    config: Config, release: typing.Optional[str]
+) -> typing.Optional[typing.Tuple[Path, typing.Dict[str, typing.Any]]]:
+    if not release:
+        return None
+    releases_files = [
+        item for item in config.releases_dir.iterdir() if item.suffix == ".yaml"
+    ]
+    for release_file in releases_files:
+        with release_file.open() as release_file_fh:
+            release_data = yaml.load(release_file_fh)
+        if release_data.get("release_version") == release:
+            return (release_file, release_data)
+    sys.exit(f"The release '{release}' doesn't exist.")
 
 
 def _add_user_data(

@@ -54,6 +54,23 @@ SECOND_RELEASE = """
 * Refactor ([@test-user](mailto:user@example.com))  
 
 """
+SECOND_RELEASE_UPDATED = """
+### Features  
+* [#205](http://repo/issues/205): last-minute-change ([@test-user](mailto:user@example.com))  
+* [#202](http://repo/issues/202), [#203](http://repo/issues/203), [#204](http://repo/issues/204): Something new ([@test-user](mailto:user@example.com))  
+* Great feature ([@test-user](mailto:user@example.com))  
+* [#201](http://repo/issues/201): Super cool feature ([@test-user](mailto:user@example.com))  
+
+### Bug fixes  
+* [#206](http://repo/issues/206): last-minute-change-2 ([@test-user](mailto:user@example.com))  
+
+### Deprecations  
+* [#200](http://repo/issues/200): Deprecated test feature ([@test-user](mailto:user@example.com))  
+
+### Other changes  
+* Refactor ([@test-user](mailto:user@example.com))  
+
+"""
 
 
 def test_command_line_interface():
@@ -153,7 +170,7 @@ def test_full_flow(setup_env, monkeypatch, caplog, fake_date):
     # release a new version
     release = runner.invoke(commands.release, ["second-release"], "\n")
     assert release.exit_code == 0
-    assert sorted(_list_directory(setup_env)) == sorted(
+    directory_list = sorted(
         [
             "changelog.d/README.md",
             "changelog.d/config.yaml",
@@ -166,10 +183,33 @@ def test_full_flow(setup_env, monkeypatch, caplog, fake_date):
             "changelog.md",
         ]
     )
+    assert sorted(_list_directory(setup_env)) == directory_list
     assert _count_entry_files(setup_env) == 0
 
+    # two last-minute changes were added
+    entry = runner.invoke(
+        commands.entry,
+        ["--release", "second-release"],
+        input=os.linesep.join(["1", "205", "last-minute-change"]),
+    )
+    assert entry.exit_code == 0
+    entry = runner.invoke(
+        commands.entry,
+        ["--release", "second-release"],
+        input=os.linesep.join(["2", "206", "last-minute-change-2"]),
+    )
+    assert entry.exit_code == 0
+
+    assert sorted(_list_directory(setup_env)) == directory_list
+
+    partial = runner.invoke(commands.partial)
+    assert partial.exit_code == 0
+
     changelog = _read_changelog(setup_env)
-    assert changelog == BASE + SECOND_RELEASE_HEADER + SECOND_RELEASE + INITIAL_RELEASE
+    assert (
+        changelog
+        == BASE + SECOND_RELEASE_HEADER + SECOND_RELEASE_UPDATED + INITIAL_RELEASE
+    )
     caplog.clear()
 
     # another attempt to release shall raise an error due to no entries

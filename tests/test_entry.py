@@ -74,6 +74,7 @@ Options:
   --message TEXT   Changelog message
   --issue-id TEXT  Issue ID
   --type TEXT      Message type (as number or string).
+  --release TEXT   Attach entry to a release.
   --help           Show this message and exit.
 """
     )
@@ -193,6 +194,7 @@ Options:
   -v, --verbose     Increase verbosity.
   --just-name TEXT
   --type TEXT       Message type (as number or string).
+  --release TEXT    Attach entry to a release.
   --help            Show this message and exit.
 """
     )
@@ -240,7 +242,7 @@ def test_user_data(monkeypatch, fake_process):
     )
     monkeypatch.setattr(builtins, "input", lambda _: "1")
 
-    changelogd.entry(config, {})
+    changelogd.entry(config, None, {})
     assert namespace.data.pop("timestamp")
     assert namespace.data == {
         "git_email": "user@example.com",
@@ -252,7 +254,7 @@ def test_user_data(monkeypatch, fake_process):
     }
 
     config._data["user_data"] = ["os_user"]
-    changelogd.entry(config, {})
+    changelogd.entry(config, None, {})
     assert namespace.data.pop("timestamp")
     assert namespace.data == {
         "issue_id": ["1"],
@@ -265,7 +267,7 @@ def test_user_data(monkeypatch, fake_process):
         "os_user:overridden_username",
         "git_user:overridden_git_user",
     ]
-    changelogd.entry(config, {})
+    changelogd.entry(config, None, {})
     assert namespace.data.pop("timestamp")
     assert namespace.data == {
         "issue_id": ["1"],
@@ -276,7 +278,7 @@ def test_user_data(monkeypatch, fake_process):
     }
 
     config._data["user_data"] = None
-    changelogd.entry(config, {})
+    changelogd.entry(config, None, {})
     assert namespace.data.pop("timestamp")
     assert namespace.data == {
         "issue_id": ["1"],
@@ -287,7 +289,7 @@ def test_user_data(monkeypatch, fake_process):
     config._data["user_data"] = ["not_exist"]
 
     with pytest.raises(SystemExit) as exc:
-        changelogd.entry(config, {})
+        changelogd.entry(config, None, {})
     assert str(exc.value) == (
         "The 'not_exist' variable is not supported in 'user_data'. "
         "Available choices are: 'os_user, git_user, git_email'."
