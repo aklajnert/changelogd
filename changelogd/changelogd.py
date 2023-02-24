@@ -59,6 +59,7 @@ class EntryField:
                 modifiers.append("required")
             if self.multiple:
                 modifiers.append("separate multiple values with comma")
+            default: typing.Any
             if self.default:
                 if isinstance(self.default, dict) and "compute" in self.default:
                     processor = ComputedValueProcessor.from_string(

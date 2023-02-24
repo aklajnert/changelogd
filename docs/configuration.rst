@@ -123,7 +123,7 @@ The allowed types are:
  - ``remote_branch_name`` - get the name of a remote branch,
  - ``branch_name`` - get the local and remote branch name separated by ``-`` (mostly 
    suitable for running regex over it).
-- ``last_commit_message`` - get the latest commit message.
+ - ``last_commit_message`` - get the latest commit message.
 
 Besides type, there are additional variables that can influence the output:
  - ``regex`` - regular expression that will be used to extract a value from the 
