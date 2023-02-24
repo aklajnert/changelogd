@@ -83,6 +83,7 @@ objects with the following fields:
  | - **verbose_name** - the name displayed when the program will ask for the field value.
  | - **required** (default: *true*) - the ``changelog entry`` won't allow to leave the field blank if ``required=True``
  | - **multiple** (default: *false*) - the variable can be provided as comma-separated values. This will be converted into a list of strings (even if there is no comma in it).
+ | - **default** (default: *empty*) - define a default value. Can use computed values by specifying ``compute: <type>``.
  
 The defined ``entry_fields`` can be also provided as a *command-line* arguments, e.g. 
 ``changelogd entry --message "Some message"``. The missing fields will be asked 
@@ -122,6 +123,7 @@ The allowed types are:
  - ``remote_branch_name`` - get the name of a remote branch,
  - ``branch_name`` - get the local and remote branch name separated by ``-`` (mostly 
    suitable for running regex over it).
+ - ``last_commit_message`` - get the latest commit message.
 
 Besides type, there are additional variables that can influence the output:
  - ``regex`` - regular expression that will be used to extract a value from the 
