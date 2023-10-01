@@ -7,7 +7,7 @@ on:
   push:
     branches:
       - master
-
+  
   pull_request:
     branches:
       - master
@@ -18,29 +18,41 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        platform: [ ubuntu-20.04, macos-latest, windows-latest ]
+        platform: [ ubuntu-latest, macos-latest, windows-latest ]
         python-version: [ 3.6, 3.7, 3.8, 3.9, '3.10', '3.11' ]
-
+    
     steps:
       - uses: actions/checkout@v2
-      - name: Setup python
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python-version }}
-          architecture: x64
-      - name: Setup Nox
-        uses: aklajnert/setup-nox@v2.0.1
-      - name: Run tests
+      - name: Install Python 3.6
+        if: matrix.platform == 'ubuntu-latest' && matrix.python-version == '3.6'
         run: |
-            nox -s tests-${{ matrix.python-version }} --error-on-missing-interpreters
+          sudo add-apt-repository ppa:deadsnakes/ppa
+          sudo apt-get update
+          sudo apt-get install python3.6
+      - name: Setup Nox
+        if: matrix.platform != 'ubuntu-latest' || matrix.python-version != '3.6'
+        uses: wntrblm/nox@2023.04.22
+        with:
+          python-versions: ${{ matrix.python-version }}
+      - name: Run tests
+        if: matrix.python-version != '3.6'
+        run: |
+          nox -s tests-${{ matrix.python-version }}
         env:
-          PLATFORM: ${{ matrix.platform }}    
+          PLATFORM: ${{ matrix.platform }}
+      - name: Run tests ubuntu 3.6
+        if: matrix.platform == 'ubuntu-latest' && matrix.python-version == '3.6'
+        run: |
+          sudo apt-get install -y nox
+          nox -s tests-${{ matrix.python-version }}
+        env:
+          PLATFORM: ${{ matrix.platform }}
       - name: Update coverage
         uses: codecov/codecov-action@v1
-
+  
   mypy:
     runs-on: ubuntu-latest
-
+    
     steps:
       - uses: actions/checkout@v2
       - name: Setup Nox
@@ -50,7 +62,7 @@ jobs:
           nox -s mypy
   flake8:
     runs-on: ubuntu-latest
-
+    
     steps:
       - uses: actions/checkout@v2
       - name: Setup Nox
@@ -60,7 +72,7 @@ jobs:
           nox -s flake8
   check-docs:
     runs-on: ubuntu-latest
-
+    
     steps:
       - uses: actions/checkout@v2
       - name: Setup Nox
