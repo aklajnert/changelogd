@@ -352,9 +352,9 @@ def _create_new_release(
         "entries": defaultdict(list),
         "release_version": version,
         "release_date": date.strftime("%Y-%m-%d"),
-        "release_description": input("Release description (hit ENTER to omit): ")
-        if not partial
-        else None,
+        "release_description": (
+            input("Release description (hit ENTER to omit): ") if not partial else None
+        ),
     }
 
     _grab_entries(entries, release)
