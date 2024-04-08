@@ -24,7 +24,7 @@ from changelogd.resolver import Resolver
 from changelogd.utils import add_to_git
 from changelogd.utils import get_git_data
 
-yaml = YAML(typ="unsafe")
+yaml = YAML(typ="safe")
 yaml.default_flow_style = False
 
 
@@ -222,7 +222,7 @@ def _get_entry_type(
 
 
 def _get_type_name(
-    message_types: typing.List[typing.Dict[str, typing.Any]],
+    message_types: typing.List[typing.Dict[str, str]],
     selection: typing.Union[int, str],
 ) -> str:
     return message_types[int(selection) - 1].get("name", "")

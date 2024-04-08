@@ -121,7 +121,7 @@ def test_matching_regex(monkeypatch, fp: FakeProcess, fs, branches):
             "  title: Features\n"
             "computed_values:\n"
             "- type: branch_name\n"
-            "  regex: '(?P<value>JIRA-\d+)'\n"
+            "  regex: '(?P<value>JIRA-\\d+)'\n"
             "user_data: null\n"
         ),
     )
@@ -159,7 +159,7 @@ def test_not_matching_regex(monkeypatch, fp: FakeProcess, fs, caplog):
             "  title: Features\n"
             "computed_values:\n"
             "- type: local_branch_name\n"
-            "  regex: '(?P<value>JIRA-\d+)'\n"
+            "  regex: '(?P<value>JIRA-\\d+)'\n"
             "user_data: null\n"
         ),
     )
@@ -280,7 +280,7 @@ def test_default_not_matching_regex(monkeypatch, fp: FakeProcess, fs, caplog):
             "computed_values:\n"
             "- type: local_branch_name\n"
             "  default: default_name\n"
-            "  regex: '(?P<value>JIRA-\d+)'\n"
+            "  regex: '(?P<value>JIRA-\\d+)'\n"
             "user_data: null\n"
         ),
     )
