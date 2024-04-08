@@ -13,20 +13,20 @@ with open("HISTORY.rst") as history_file:
     readme += "\n" + history_file.read()
 
 requirements = [
-    "Click>=7.0",
-    "Jinja2>=2.10",
-    "toml>=0.9.4",
-    "ruamel.yaml>=0.17.0",
+    "Click>=8.1.7",
+    "Jinja2>=3.1.3",
+    "toml>=0.10.2",
+    "ruamel.yaml>=0.18.6",
 ]
 
-test_requirements = ["pytest>=5", "pyfakefs==4.6.3", "pytest-subprocess"]
+test_requirements = ["pytest>=5", "pyfakefs==5.4", "pytest-subprocess"]
 
 dev_requirements = [
-    "bump2version==0.5.11",
-    "wheel==0.38.1",
-    "flake8==3.7.9",
-    "nox==2019.11.9",
-    "mypy==0.740",
+    "bump2version==1.0.1",
+    "wheel==0.43.0",
+    "flake8==7.0.0",
+    "nox==2024.3.2",
+    "mypy==1.9.0",
 ]
 
 docs_requirements = [
@@ -49,6 +49,7 @@ setup(
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
     ],
     description="Changelogs without conflicts.",
     entry_points={
