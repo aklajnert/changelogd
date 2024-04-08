@@ -19,7 +19,7 @@ requirements = [
     "ruamel.yaml>=0.18.6",
 ]
 
-test_requirements = ["pytest>=8", "pyfakefs==5.4", "pytest-subprocess"]
+test_requirements = ["pytest>=5", "pyfakefs==5.4", "pytest-subprocess"]
 
 dev_requirements = [
     "bump2version==1.0.1",
