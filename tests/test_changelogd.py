@@ -423,3 +423,48 @@ def _create_entry(runner, type, issue_id, message):
         commands.entry, input=os.linesep.join([type, issue_id, message])
     )
     assert entry.exit_code == 0
+
+
+def test_release_same_version(setup_env, monkeypatch, caplog, fake_date):
+    """
+    This function tests full functionality from fresh start through few releases.
+    """
+    monkeypatch.setattr(datetime, "datetime", FakeDateTime)
+
+    runner = CliRunner()
+
+    # start with init
+    init = runner.invoke(commands.init)
+    assert init.exit_code == 0
+
+    _create_entry(runner, "1", "100", "Test feature")
+
+    # now release first version
+    release = runner.invoke(commands.release, ["1.0"], "This is the initial release.")
+    assert release.exit_code == 0
+
+    # try second release with already existing version
+    _create_entry(runner, "2", "102", "Bug fixes")
+    release = runner.invoke(commands.release, ["1.0"], "This is the second release.")
+    assert release.exit_code == 1
+    assert "The release '1.0' already exists." in release.stdout
+
+    # try second release with new version
+    _create_entry(runner, "2", "102", "Bug fixes")
+    release = runner.invoke(commands.release, ["1.1"], "This is the second release.")
+    assert release.exit_code == 0
+
+    directory_list = sorted(
+        [
+            "changelog.d/README.md",
+            "changelog.d/config.yaml",
+            "changelog.d/releases/.gitkeep",
+            "changelog.d/releases/0.1.0.yaml",
+            "changelog.d/releases/1.1.1.yaml",
+            "changelog.d/templates/entry.md",
+            "changelog.d/templates/main.md",
+            "changelog.d/templates/release.md",
+            "changelog.md",
+        ]
+    )
+    assert sorted(_list_directory(setup_env)) == directory_list

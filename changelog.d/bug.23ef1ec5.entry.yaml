@@ -1,0 +1,5 @@
+message: Fixed release command when already existing release version is passed.
+pr_ids:
+- '65'
+timestamp: 1728454614
+type: bug

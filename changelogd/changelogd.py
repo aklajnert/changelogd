@@ -257,6 +257,15 @@ def release(
     config.settings["partial"] = partial
     if version is None:
         version = config.partial_name
+    else:
+        release_versions = {
+            item.stem[item.stem.find(".") + 1 :]
+            for item in config.releases_dir.iterdir()
+            if item.suffix == ".yaml"
+        }
+        if version in release_versions:
+            sys.exit(f"The release '{version}' already exists.")
+
     releases, entries = _read_input_files(config, version, check)
 
     if not config.get_bool_setting("partial"):
