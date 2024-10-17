@@ -27,7 +27,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4.1.1
       - name: Setup Nox
-        uses: wntrblm/nox@2024.03.02
+        uses: wntrblm/nox@2024.10.09
         with:
           python-versions: ${{ matrix.python-version }}
       - name: Run tests      
