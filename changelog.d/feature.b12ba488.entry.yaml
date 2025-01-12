@@ -1,0 +1,5 @@
+message: Allow to render empty sections.
+pr_ids:
+- '71'
+timestamp: 1736684961
+type: feature
