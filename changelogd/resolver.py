@@ -48,11 +48,10 @@ class Resolver:
             release["entry_groups"] = []
             for message_type in message_types:
                 name = message_type.get("name")
-                title = message_type.get("title", name)
 
-                if name in groups:
+                if name in groups or message_type.get("include_empty"):
                     release["entry_groups"].append(
-                        {"name": name, "title": title, "entries": groups.get(name)}
+                        {**message_type, "entries": groups.get(name, [])}
                     )
 
         template = templates["release"]

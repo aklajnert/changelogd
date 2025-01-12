@@ -70,6 +70,22 @@ the changelog file.
 The changelog entries are grouped by their message type. The order of the message types 
 definitions within the configuration file will be preserved in the output changelog file.
 
+By default, a message type will not be rendered if it doesn't have any entries. To change
+that, set ``include_empty`` to ``true`` for a particular message type. You can then change
+the template, to render some message in place of entries as in the example below:
+
+.. code-block:: rst
+
+    {% for entry in group.entries %}
+        {{ entry }}
+    {% else %}
+        {{group.empty_message }}
+    {% endfor %}
+
+.. note:: You will need to define ``empty_message`` (or similar) variable for the
+    message type that has the ``include_empty`` enabled or just hardcode the empty message
+    in the template that will be the same for all message types.
+
 If a message type will be removed from the configuration, and they're still will be some
 entries that are using that type, they will not be generated into the output changelog file.
 
