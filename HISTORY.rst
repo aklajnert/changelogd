@@ -1,6 +1,17 @@
 History  
 =======
 
+0.1.9 (2025-01-12)  
+------------------
+
+Features  
+~~~~~~~~
+* `#71 <https://github.com/aklajnert/changelogd/pull/71>`_: Allow to render empty sections.
+
+Bug fixes  
+~~~~~~~~~
+* `#65 <https://github.com/aklajnert/changelogd/pull/65>`_: Fixed release command when already existing release version is passed.
+
 0.1.8 (2023-02-24)  
 ------------------
 
