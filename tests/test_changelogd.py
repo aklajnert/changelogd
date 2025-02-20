@@ -4,8 +4,10 @@
 import datetime
 import glob
 import os
+import sys
 from pathlib import Path
 
+import click
 from click.testing import CliRunner
 from ruamel.yaml import YAML
 
@@ -13,6 +15,14 @@ from changelogd import cli
 from changelogd import commands
 from changelogd import config
 from tests.conftest import FakeDateTime
+
+if sys.version_info >= (3, 8):
+    from importlib import metadata as imp_metadata
+
+    _HAVE_IMPORTLIB_METADATA = True
+else:
+    _HAVE_IMPORTLIB_METADATA = False
+
 
 yaml = YAML()
 
@@ -73,11 +83,30 @@ SECOND_RELEASE_UPDATED = """
 """
 
 
+def _click_version():
+    """Get the (major, minor) version of `click`."""
+    if _HAVE_IMPORTLIB_METADATA:
+        # If this fails, we have bigger problems...
+        version_str = imp_metadata.version("click")
+    else:
+        version_str = getattr(click, "__version__", "0.0")
+
+    try:
+        parts_int = [int(part) for part in version_str.split(".")[:2]]
+    except ValueError:
+        parts_int = (0, 0)
+
+    try:
+        return parts_int[0], parts_int[1]
+    except IndexError:
+        return 0, 0
+
+
 def test_command_line_interface():
     """Test the CLI."""
     runner = CliRunner()
     result = runner.invoke(cli.cli)
-    assert result.exit_code == 0
+    assert result.exit_code == (2 if _click_version() >= (8, 2) else 0)
     assert "Changelogs without conflicts." in result.output
     help_result = runner.invoke(cli.cli, ["--help"])
     assert help_result.exit_code == 0
