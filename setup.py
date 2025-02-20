@@ -30,6 +30,7 @@ dev_requirements = [
 ]
 
 docs_requirements = [
+    "setuptools",
     "sphinx",
 ]
 

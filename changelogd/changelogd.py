@@ -52,7 +52,7 @@ class EntryField:
 
     @property
     def value(self) -> typing.Any:
-        value = None
+        value: typing.Any = None
         while value is None:
             modifiers = []
             if self.required:
