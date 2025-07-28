@@ -68,7 +68,7 @@ DEFAULT_CONFIG.insert(
 def load_toml(path: Path) -> typing.Optional[str]:
     if not path.is_file():
         return None
-    with path.open('rb') as file_handle:
+    with path.open("rb") as file_handle:
         config = tomllib.load(file_handle)
 
     return config.get("tool", {}).get("changelogd", {}).get("config")  # type:ignore
