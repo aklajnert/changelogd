@@ -17,7 +17,7 @@ def flake8(session):
 
 @nox.session
 def mypy(session):
-    session.install("mypy", "types-toml", "types-click", "types-jinja2")
+    session.install("mypy", "types-click", "types-jinja2")
     session.run("mypy", "changelogd")
 
 
