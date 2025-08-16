@@ -7,8 +7,12 @@ import typing
 from copy import deepcopy
 from pathlib import Path
 
+if sys.version_info >= (3, 11):
+    import tomllib
+else:
+    import tomli as tomllib
+
 import click
-import toml
 from ruamel.yaml import YAML  # type: ignore
 from ruamel.yaml.comments import CommentedMap  # type: ignore
 
@@ -64,8 +68,8 @@ DEFAULT_CONFIG.insert(
 def load_toml(path: Path) -> typing.Optional[str]:
     if not path.is_file():
         return None
-    with path.open() as file_handle:
-        config = toml.load(file_handle)
+    with path.open("rb") as file_handle:
+        config = tomllib.load(file_handle)
 
     return config.get("tool", {}).get("changelogd", {}).get("config")  # type:ignore
 

@@ -15,7 +15,7 @@ with open("HISTORY.rst") as history_file:
 requirements = [
     "Click>=8.1.7",
     "Jinja2>=3.1.3",
-    "toml>=0.10.2",
+    "tomli;python_version<'3.11'",
     "ruamel.yaml>=0.18.6",
 ]
 

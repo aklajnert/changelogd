@@ -1,0 +1,5 @@
+message: Replace old "toml" with newer "tomli"/"tomllib".
+pr_ids:
+- '76'
+timestamp: 1755329213
+type: other
