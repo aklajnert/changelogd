@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Console script for changelogd."""
+
 import sys
 
 import click
