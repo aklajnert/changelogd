@@ -63,9 +63,7 @@ def test_entry_help(setup_env):
         ["--help"],
     )
     assert entry.exit_code == 0
-    assert (
-        entry.stdout
-        == """Usage: entry [OPTIONS]
+    assert entry.stdout == """Usage: entry [OPTIONS]
 
   Create a new changelog entry.
 
@@ -77,7 +75,6 @@ Options:
   --release TEXT   Attach entry to a release.
   --help           Show this message and exit.
 """
-    )
 
 
 @pytest.mark.parametrize("type_input", ["1", "feature"])
@@ -184,9 +181,7 @@ def test_entry_incorrect_entry_fields(setup_env, caplog):
     )
     assert entry.exit_code == 0
     # also the `--just-name` option won't have any help
-    assert (
-        entry.stdout
-        == """Usage: entry [OPTIONS]
+    assert entry.stdout == """Usage: entry [OPTIONS]
 
   Create a new changelog entry.
 
@@ -197,7 +192,6 @@ Options:
   --release TEXT    Attach entry to a release.
   --help            Show this message and exit.
 """
-    )
 
     # name contains space, not good
     config_content["entry_fields"] = [{"name": "just name", "required": False}]

@@ -71,7 +71,7 @@ def load_toml(path: Path) -> typing.Optional[str]:
     with path.open("rb") as file_handle:
         config = tomllib.load(file_handle)
 
-    return config.get("tool", {}).get("changelogd", {}).get("config")  # type:ignore
+    return config.get("tool", {}).get("changelogd", {}).get("config")  # type: ignore
 
 
 def load_ini(path: Path) -> typing.Optional[str]:

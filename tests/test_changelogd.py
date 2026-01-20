@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Tests for `changelogd` package."""
+
 import datetime
 import glob
 import os
