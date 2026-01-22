@@ -24,7 +24,7 @@ test_requirements = ["pytest>=5", "pyfakefs==5.4", "pytest-subprocess"]
 
 dev_requirements = [
     "bump2version==1.0.1",
-    "wheel==0.43.0",
+    "wheel==0.46.2",
     "flake8==7.0.0",
     "nox==2024.3.2",
     "mypy==1.9.0",
