@@ -14,7 +14,7 @@
 # -- Project information -----------------------------------------------------
 from pathlib import Path
 
-import pkg_resources
+import importlib.metadata
 
 from changelogd import changelogd
 
@@ -27,7 +27,7 @@ copyright = "2020, Andrzej Klajnert"
 author = "Andrzej Klajnert"
 
 # The full version, including alpha/beta/rc tags
-release = pkg_resources.get_distribution("pip").version
+release = importlib.metadata.version("changelogd")
 
 
 # -- General configuration ---------------------------------------------------
