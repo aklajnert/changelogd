@@ -1,6 +1,17 @@
 History  
 =======
 
+0.1.10 (2026-03-22)  
+-------------------
+
+Features  
+~~~~~~~~
+* `#90 <https://github.com/aklajnert/changelogd/pull/90>`_: Add support for hotfix releases.
+
+Other changes  
+~~~~~~~~~~~~~
+* `#76 <https://github.com/aklajnert/changelogd/pull/76>`_: Replace old "toml" with newer "tomli"/"tomllib".
+
 0.1.9 (2025-01-12)  
 ------------------
 

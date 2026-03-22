@@ -1,0 +1,15 @@
+entries:
+  feature:
+  - message: Add support for hotfix releases.
+    pr_ids:
+    - '90'
+    timestamp: 1774170200
+  other:
+  - message: Replace old "toml" with newer "tomli"/"tomllib".
+    pr_ids:
+    - '76'
+    timestamp: 1755329213
+previous_release: 0.1.9
+release_date: '2026-03-22'
+release_description: ''
+release_version: 0.1.10
