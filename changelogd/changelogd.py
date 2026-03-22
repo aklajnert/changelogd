@@ -16,6 +16,8 @@ import typing
 from collections import defaultdict
 from pathlib import Path
 
+from packaging.version import InvalidVersion
+from packaging.version import Version
 from ruamel.yaml import YAML  # type: ignore
 
 from .computed_values import ComputedValueProcessor
@@ -294,11 +296,123 @@ def release(
         sys.exit(1)
 
 
+def _parse_version(version_str: str) -> typing.Optional[Version]:
+    """Parse a version string, returning a Version object or None if invalid."""
+    try:
+        return Version(version_str)
+    except InvalidVersion:
+        return None
+
+
+def _find_insertion_index(
+    existing_releases: typing.List[typing.Dict[str, typing.Any]], new_version: str
+) -> int:
+    """Find the index at which a new version should be inserted.
+
+    Returns the index in the existing_releases list (sorted oldest-first by id)
+    where the new release should be placed. If the version cannot be parsed,
+    or is newer than all existing releases, returns len(existing_releases)
+    (i.e. append at the end).
+    """
+    parsed_new = _parse_version(new_version)
+    if parsed_new is None:
+        return len(existing_releases)
+
+    for i, rel in enumerate(existing_releases):
+        parsed_existing = _parse_version(rel.get("release_version", ""))
+        if parsed_existing is not None and parsed_new < parsed_existing:
+            return i
+
+    return len(existing_releases)
+
+
+def _renumber_release_files(
+    releases_dir: Path,
+    existing_releases: typing.List[typing.Dict[str, typing.Any]],
+    insertion_index: int,
+) -> None:
+    """Renumber release files starting at insertion_index to make room.
+
+    All release files with id >= insertion_index are renamed so their id
+    is incremented by 1.
+    """
+    # Process in reverse order to avoid naming conflicts
+    releases_to_renumber = [
+        rel for rel in existing_releases if rel["id"] >= insertion_index
+    ]
+    for rel in reversed(releases_to_renumber):
+        old_id = rel["id"]
+        new_id = old_id + 1
+        old_path = rel["_path"]
+        # Build new filename: replace the leading integer prefix
+        old_name = old_path.name
+        new_name = str(new_id) + old_name[len(str(old_id)) :]
+        new_path = releases_dir / new_name
+        old_path.rename(new_path)
+        rel["id"] = new_id
+        rel["_path"] = new_path
+        logging.info(f"Renumbered release file {old_name} -> {new_name}")
+
+
+def _discover_release_files(releases_dir: Path) -> typing.Dict[int, Path]:
+    """Discover release YAML files in releases_dir and return a mapping of id -> path.
+
+    Exits with an error if duplicate integer ids are found.
+    """
+    versions: typing.Dict[int, Path] = dict()
+    for item in os.listdir(releases_dir.as_posix()):
+        match = re.match(r"(\d+).*\.ya?ml", item)
+        if match:
+            version = int(match.group(1))
+            if version in versions:
+                sys.exit(f"The version {version} is duplicated.")
+            versions[version] = releases_dir / match.group(0)
+    return versions
+
+
+def _get_existing_releases_sorted(
+    releases_dir: Path,
+) -> typing.List[typing.Dict[str, typing.Any]]:
+    """Read all existing release files and return them sorted by id (ascending)."""
+    versions = _discover_release_files(releases_dir)
+    releases = []
+    for vid in sorted(versions.keys()):
+        with versions[vid].open() as fh:
+            release_item = yaml.load(fh)
+            if not release_item:
+                continue
+            release_item["id"] = vid
+            release_item["_path"] = versions[vid]
+            releases.append(release_item)
+    return releases
+
+
 def _save_release_file(
     config: Config, releases: typing.List[typing.Dict[str, typing.Any]], version: str
 ) -> None:
-    current_release = releases[0]
-    release_id = releases[1]["id"] + 1 if len(releases) > 1 else 0
+    # Find the release matching the version being saved (releases are newest-first)
+    current_release = next(
+        rel for rel in releases if rel.get("release_version") == version
+    )
+
+    # Read existing releases sorted by id (oldest first)
+    existing_releases = _get_existing_releases_sorted(config.releases_dir)
+
+    if not existing_releases:
+        release_id = 0
+    else:
+        insertion_index = _find_insertion_index(existing_releases, version)
+
+        if insertion_index < len(existing_releases):
+            # Inserting between existing releases - renumber subsequent files
+            _renumber_release_files(
+                config.releases_dir, existing_releases, insertion_index
+            )
+            release_id = insertion_index
+        else:
+            # Appending at the end (normal case)
+            release_id = existing_releases[-1]["id"] + 1
+
     output_release_path = config.releases_dir / f"{release_id}.{version}.yaml"
     with output_release_path.open("w") as output_release_fh:
         yaml.dump(current_release, output_release_fh)
@@ -318,15 +432,7 @@ def _read_input_files(
 def _prepare_releases(
     release: typing.Dict, releases_dir: Path
 ) -> typing.List[typing.Dict]:
-    versions: typing.Dict[int, Path] = dict()
-    for item in os.listdir(releases_dir.as_posix()):
-        match = re.match(r"(\d+).*\.ya?ml", item)
-        if match:
-            version = int(match.group(1))
-            if version in versions:
-                sys.exit(f"The version {version} is duplicated.")
-            versions[version] = releases_dir / match.group(0)
-    previous_release = None
+    versions = _discover_release_files(releases_dir)
     releases = []
     for version in sorted(versions.keys()):
         with versions[version].open() as release_fh:
@@ -336,13 +442,22 @@ def _prepare_releases(
                     f"Release file {versions[version]} is corrupted and will be ignored."
                 )
                 continue
-            release_item["previous_release"] = previous_release
             release_item["id"] = version
-            previous_release = release_item.get("release_version")
             releases.append(release_item)
     if release:
-        release["previous_release"] = previous_release
-        releases.append(release)
+        # Find the correct insertion point for the new release using version comparison
+        insertion_index = _find_insertion_index(
+            releases, release.get("release_version", "")
+        )
+        releases.insert(insertion_index, release)
+
+    # Set previous_release links based on final ordering
+    for i, rel in enumerate(releases):
+        if i == 0:
+            rel["previous_release"] = None
+        else:
+            rel["previous_release"] = releases[i - 1].get("release_version")
+
     return list(reversed(releases))
 
 

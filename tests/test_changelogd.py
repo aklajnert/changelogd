@@ -498,3 +498,181 @@ def test_release_same_version(setup_env, monkeypatch, caplog, fake_date):
         ]
     )
     assert sorted(_list_directory(setup_env)) == directory_list
+
+
+def test_hotfix_release_between_versions(setup_env, monkeypatch, fake_date):
+    """
+    Test inserting a hotfix release between two existing releases.
+    For example: after releasing 1.10 and 1.11, insert 1.10.1 between them.
+    """
+    monkeypatch.setattr(datetime, "datetime", FakeDateTime)
+
+    runner = CliRunner()
+
+    HEADER = "# Changelog  \n\n\n"
+    CHANGELOG_1_10 = (
+        "## 1.10 (2020-02-02)  \n\nFirst release  \n\n"
+        "### Features  \n"
+        "* [#100](http://repo/issues/100): Feature for 1.10 "
+        "([@test-user](mailto:user@example.com))  \n"
+    )
+    CHANGELOG_1_11 = (
+        "## 1.11 (2020-02-02)  \n\nSecond release  \n\n"
+        "### Features  \n"
+        "* [#200](http://repo/issues/200): Feature for 1.11 "
+        "([@test-user](mailto:user@example.com))  \n\n\n"
+    )
+    CHANGELOG_1_10_1 = (
+        "## 1.10.1 (2020-02-02)  \n\nHotfix release  \n\n"
+        "### Bug fixes  \n"
+        "* [#150](http://repo/issues/150): Hotfix for 1.10 "
+        "([@test-user](mailto:user@example.com))  \n\n\n"
+    )
+
+    # start with init
+    init = runner.invoke(commands.init)
+    assert init.exit_code == 0
+
+    # create and release 1.10
+    _create_entry(runner, "1", "100", "Feature for 1.10")
+    release = runner.invoke(commands.release, ["1.10"], "First release\n")
+    assert release.exit_code == 0
+
+    # create and release 1.11
+    _create_entry(runner, "1", "200", "Feature for 1.11")
+    release = runner.invoke(commands.release, ["1.11"], "Second release\n")
+    assert release.exit_code == 0
+
+    # verify the changelog has 1.11 before 1.10
+    changelog = _read_changelog(setup_env)
+    assert changelog == HEADER + CHANGELOG_1_11 + CHANGELOG_1_10
+
+    # verify the release files before hotfix
+    directory_before = _list_directory(setup_env)
+    assert "changelog.d/releases/0.1.10.yaml" in directory_before
+    assert "changelog.d/releases/1.1.11.yaml" in directory_before
+
+    # now insert a hotfix 1.10.1 between 1.10 and 1.11
+    _create_entry(runner, "2", "150", "Hotfix for 1.10")
+    release = runner.invoke(commands.release, ["1.10.1"], "Hotfix release\n")
+    assert release.exit_code == 0
+
+    # verify the changelog now has correct ordering: 1.11 > 1.10.1 > 1.10
+    changelog = _read_changelog(setup_env)
+    assert changelog == HEADER + CHANGELOG_1_11 + CHANGELOG_1_10_1 + CHANGELOG_1_10
+
+    # verify the release files were renumbered correctly
+    directory_after = _list_directory(setup_env)
+    assert "changelog.d/releases/0.1.10.yaml" in directory_after
+    assert "changelog.d/releases/1.1.10.1.yaml" in directory_after
+    assert "changelog.d/releases/2.1.11.yaml" in directory_after
+    # Ensure the old 1.1.11.yaml no longer exists (it was renumbered to 2.1.11.yaml)
+    assert "changelog.d/releases/1.1.11.yaml" not in directory_after
+
+
+def test_hotfix_release_at_beginning(setup_env, monkeypatch, fake_date):
+    """
+    Test inserting a version that should go before all existing releases.
+    """
+    monkeypatch.setattr(datetime, "datetime", FakeDateTime)
+
+    runner = CliRunner()
+
+    HEADER = "# Changelog  \n\n\n"
+
+    # start with init
+    init = runner.invoke(commands.init)
+    assert init.exit_code == 0
+
+    # create and release 2.0
+    _create_entry(runner, "1", "100", "Feature for 2.0")
+    release = runner.invoke(commands.release, ["2.0"], "Second major\n")
+    assert release.exit_code == 0
+
+    # create and release 3.0
+    _create_entry(runner, "1", "200", "Feature for 3.0")
+    release = runner.invoke(commands.release, ["3.0"], "Third major\n")
+    assert release.exit_code == 0
+
+    # verify directory before inserting earlier version
+    directory_before = _list_directory(setup_env)
+    assert "changelog.d/releases/0.2.0.yaml" in directory_before
+    assert "changelog.d/releases/1.3.0.yaml" in directory_before
+
+    # now insert 1.0 which should go before everything
+    _create_entry(runner, "1", "50", "Feature for 1.0")
+    release = runner.invoke(commands.release, ["1.0"], "First major\n")
+    assert release.exit_code == 0
+
+    # verify directory: 1.0 should be id 0, 2.0 should be id 1, 3.0 should be id 2
+    directory_after = _list_directory(setup_env)
+    assert "changelog.d/releases/0.1.0.yaml" in directory_after
+    assert "changelog.d/releases/1.2.0.yaml" in directory_after
+    assert "changelog.d/releases/2.3.0.yaml" in directory_after
+    # Ensure old files are gone (renumbered)
+    assert "changelog.d/releases/0.2.0.yaml" not in directory_after
+    assert "changelog.d/releases/1.3.0.yaml" not in directory_after
+
+    # verify changelog ordering: 3.0 > 2.0 > 1.0
+    changelog = _read_changelog(setup_env)
+    pos_3_0 = changelog.index("## 3.0")
+    pos_2_0 = changelog.index("## 2.0")
+    pos_1_0 = changelog.index("## 1.0")
+    assert pos_3_0 < pos_2_0 < pos_1_0
+
+
+def test_multiple_hotfix_insertions(setup_env, monkeypatch, fake_date):
+    """
+    Test multiple hotfix insertions to verify repeated renumbering works.
+    """
+    monkeypatch.setattr(datetime, "datetime", FakeDateTime)
+
+    runner = CliRunner()
+
+    # start with init
+    init = runner.invoke(commands.init)
+    assert init.exit_code == 0
+
+    # create releases 1.0, 2.0, 3.0
+    for version in ["1.0", "2.0", "3.0"]:
+        _create_entry(runner, "1", "", f"Feature for {version}")
+        release = runner.invoke(commands.release, [version], f"Release {version}\n")
+        assert release.exit_code == 0
+
+    # insert 1.1 between 1.0 and 2.0
+    _create_entry(runner, "2", "", "Bugfix for 1.1")
+    release = runner.invoke(commands.release, ["1.1"], "Hotfix 1.1\n")
+    assert release.exit_code == 0
+
+    # verify files before second insertion
+    directory_before_second = _list_directory(setup_env)
+    assert "changelog.d/releases/0.1.0.yaml" in directory_before_second
+    assert "changelog.d/releases/1.1.1.yaml" in directory_before_second
+    assert "changelog.d/releases/2.2.0.yaml" in directory_before_second
+    assert "changelog.d/releases/3.3.0.yaml" in directory_before_second
+
+    # insert 1.0.1 between 1.0 and 1.1
+    _create_entry(runner, "2", "", "Bugfix for 1.0.1")
+    release = runner.invoke(commands.release, ["1.0.1"], "Hotfix 1.0.1\n")
+    assert release.exit_code == 0
+
+    # verify all files exist with correct numbering after second insertion
+    directory_after_second = _list_directory(setup_env)
+    assert "changelog.d/releases/0.1.0.yaml" in directory_after_second
+    assert "changelog.d/releases/1.1.0.1.yaml" in directory_after_second
+    assert "changelog.d/releases/2.1.1.yaml" in directory_after_second
+    assert "changelog.d/releases/3.2.0.yaml" in directory_after_second
+    assert "changelog.d/releases/4.3.0.yaml" in directory_after_second
+    # Ensure old files are gone (renumbered)
+    assert "changelog.d/releases/1.1.1.yaml" not in directory_after_second
+    assert "changelog.d/releases/2.2.0.yaml" not in directory_after_second
+    assert "changelog.d/releases/3.3.0.yaml" not in directory_after_second
+
+    # verify changelog ordering: 3.0 > 2.0 > 1.1 > 1.0.1 > 1.0
+    changelog = _read_changelog(setup_env)
+    pos_3_0 = changelog.index("## 3.0")
+    pos_2_0 = changelog.index("## 2.0")
+    pos_1_1 = changelog.index("## 1.1")
+    pos_1_0_1 = changelog.index("## 1.0.1")
+    pos_1_0 = changelog.index("## 1.0 ")  # space to avoid matching 1.0.1
+    assert pos_3_0 < pos_2_0 < pos_1_1 < pos_1_0_1 < pos_1_0
