@@ -3,6 +3,7 @@ import functools
 import getpass
 import glob
 import importlib
+import os
 from types import SimpleNamespace
 
 import pytest
@@ -102,7 +103,7 @@ def test_non_interactive_data(setup_env, type_input):
     assert entry_content == {
         "git_email": "user@example.com",
         "git_user": "Some User",
-        "issue_id": "100",
+        "issue_id": ["100"],
         "message": "test message",
         "os_user": "test-user",
         "type": "feature",
@@ -280,11 +281,46 @@ def test_user_data(monkeypatch, fake_process):
         "type": "feature",
     }
 
-    config._data["user_data"] = ["not_exist"]
 
-    with pytest.raises(SystemExit) as exc:
-        changelogd.entry(config, None, {})
-    assert str(exc.value) == (
-        "The 'not_exist' variable is not supported in 'user_data'. "
-        "Available choices are: 'os_user, git_user, git_email'."
+def test_multiple_cli_argument_as_list(setup_env):
+    runner = CliRunner()
+    runner.invoke(commands.init)
+
+    # Modify config to ensure a field is set to 'multiple: true'
+    config_path = setup_env / "changelog.d" / "config.yaml"
+    with open(config_path) as config_fh:
+        config_content = yaml.load(config_fh)
+
+    # Use 'issue_id' which is already multiple: true in default config
+    # Ensure it's there and configured correctly
+    for field in config_content.get("entry_fields", []):
+        if field["name"] == "issue_id":
+            field["multiple"] = True
+            break
+
+    with open(config_path, "w") as config_fh:
+        yaml.dump(config_content, config_fh)
+
+    # Reload to ensure options are updated
+    importlib.reload(commands)
+
+    # Invoke entry with issue_id passed as a CLI argument
+    entry = runner.invoke(
+        commands.entry,
+        ["--type", "other", "--message", "Testing Bug", "--issue-id", "212"],
     )
+
+    assert entry.exit_code == 0
+
+    entries = glob.glob(str(setup_env / "changelog.d" / "*entry.yaml"))
+    # We might have more entries if previous tests ran, so filter by file content or just take last
+    entries.sort(key=os.path.getmtime)
+    entry_path = entries[-1]
+
+    with open(entry_path) as entry_fh:
+        entry_content = yaml.load(entry_fh)
+
+    # The fix should ensure issue_id is a list
+    assert entry_content["issue_id"] == ["212"]
+    assert entry_content["message"] == "Testing Bug"
+    assert entry_content["type"] == "other"

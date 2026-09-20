@@ -96,6 +96,22 @@ def _is_int(input: typing.Any) -> bool:
         return False
 
 
+def _parse_entry_value(entry_field: EntryField, value: str) -> typing.Any:
+    if entry_field.multiple:
+        csv_string = io.StringIO(value)
+        reader = csv.reader(csv_string, delimiter=",")
+        return [item.strip() for item in next(reader)]
+    return value
+
+
+def _get_entry_value(
+    entry_field: EntryField, option_value: typing.Optional[str]
+) -> typing.Any:
+    if option_value:
+        return _parse_entry_value(entry_field, option_value)
+    return entry_field.value
+
+
 def entry(
     config: Config,
     release: typing.Optional[str],
@@ -110,7 +126,8 @@ def entry(
     entry_type = _get_entry_type(data, options)
 
     entry = {
-        entry_.name: options.get(entry_.name) or entry_.value for entry_ in entry_fields
+        entry_.name: _get_entry_value(entry_, options.get(entry_.name))
+        for entry_ in entry_fields
     }
     entry["type"] = entry_type
 
