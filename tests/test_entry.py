@@ -290,14 +290,14 @@ def test_multiple_cli_argument_as_list(setup_env):
     config_path = setup_env / "changelog.d" / "config.yaml"
     with open(config_path) as config_fh:
         config_content = yaml.load(config_fh)
-    
+
     # Use 'issue_id' which is already multiple: true in default config
     # Ensure it's there and configured correctly
     for field in config_content.get("entry_fields", []):
         if field["name"] == "issue_id":
             field["multiple"] = True
             break
-    
+
     with open(config_path, "w") as config_fh:
         yaml.dump(config_content, config_fh)
 
@@ -309,7 +309,7 @@ def test_multiple_cli_argument_as_list(setup_env):
         commands.entry,
         ["--type", "other", "--message", "Testing Bug", "--issue-id", "212"],
     )
-    
+
     assert entry.exit_code == 0
 
     entries = glob.glob(str(setup_env / "changelog.d" / "*entry.yaml"))
