@@ -104,7 +104,9 @@ def _parse_entry_value(entry_field: EntryField, value: str) -> typing.Any:
     return value
 
 
-def _get_entry_value(entry_field: EntryField, option_value: typing.Optional[str]) -> typing.Any:
+def _get_entry_value(
+    entry_field: EntryField, option_value: typing.Optional[str]
+) -> typing.Any:
     if option_value:
         return _parse_entry_value(entry_field, option_value)
     return entry_field.value
