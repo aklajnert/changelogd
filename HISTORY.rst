@@ -1,6 +1,17 @@
 History  
 =======
 
+0.1.11 (2026-09-21)  
+-------------------
+
+Bug fixes  
+~~~~~~~~~
+* `#96 <https://github.com/aklajnert/changelogd/pull/96>`_: Fix parsing of CLI options for multiple entry fields.
+
+Deprecations  
+~~~~~~~~~~~~
+* `#98 <https://github.com/aklajnert/changelogd/pull/98>`_: Drop support for Python 3.8.
+
 0.1.10 (2026-03-22)  
 -------------------
 

@@ -1,0 +1,15 @@
+entries:
+  bug:
+  - message: Fix parsing of CLI options for multiple entry fields.
+    pr_ids:
+    - '96'
+    timestamp: 1789964552
+  deprecation:
+  - message: Drop support for Python 3.8.
+    pr_ids:
+    - '98'
+    timestamp: 1789964552
+previous_release: 0.1.10
+release_date: '2026-09-21'
+release_description: ''
+release_version: 0.1.11
