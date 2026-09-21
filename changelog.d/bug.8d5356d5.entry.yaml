@@ -1,5 +1,0 @@
-message: Fix parsing of CLI options for multiple entry fields.
-pr_ids:
-- '96'
-timestamp: 1789964552
-type: bug
