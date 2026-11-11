@@ -300,8 +300,12 @@ def release(
     output_path = Path(output) if output else config.output_path
 
     if check:
-        with output_path.open("r") as output_fh:
-            previous_content = output_fh.read()
+        try:
+            with output_path.open("r") as output_fh:
+                previous_content = output_fh.read()
+        except FileNotFoundError:
+            # No previous output means the content is trivially different.
+            previous_content = None
 
     with output_path.open("w") as output_fh:
         output_fh.truncate(0)

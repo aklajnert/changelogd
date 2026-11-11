@@ -312,6 +312,21 @@ def test_partial_releases(setup_env, caplog, fake_date):
     assert changelog_before != _read_changelog(setup_env)
 
 
+def test_partial_check_without_output_file(setup_env, caplog):
+    """--check with no previous output reports a difference instead of crashing."""
+    runner = CliRunner()
+
+    init = runner.invoke(commands.init)
+    assert init.exit_code == 0
+
+    _create_entry(runner, "1", "1", "First entry")
+    caplog.clear()
+    partial = runner.invoke(commands.partial, ["--check"])
+    assert partial.exit_code == 1
+    assert not isinstance(partial.exception, FileNotFoundError)
+    assert "Output file content is different than before." in caplog.messages
+
+
 def test_empty_release(setup_env, caplog):
     """
     This is also a regression. The program was crashing when there was
